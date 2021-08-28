@@ -1,0 +1,31 @@
+name: Backend CI
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  build:
+    name: Test & Lint - ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v1
+      - name: Clippy
+        run: cargo clippy --workspace -- -D warnings
+        if: runner.os == 'linux'
+      - name: Fmt
+        run: cargo fmt --all -- --check
+        if: runner.os == 'linux'
+      - name: Test
+        run: cargo test --workspace
