@@ -1,0 +1,12 @@
+baseURL = 'https://itjustworkstm.github.io/EiffelVis'
+languageCode = 'en-us'
+title = 'EiffelVis'
+theme = "ananke"
+
+[params]
+    favicon = "images/EiffelVisLogo.png"
+    site_logo = "images/EiffelVisLogo.png"
+    description = "The best innovational CI visualization tool"
+    github = "https://github.com/ItJustWorksTM/EiffelVis"
+    background_color_class = "bg-black"
+
