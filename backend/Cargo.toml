@@ -1,6 +1,23 @@
 [package]
-name = "eiffel_vis"
+name = "eiffelvis"
 version = "0.1.0"
 edition = "2018"
 
+[workspace]
+members = ["crates/*"]
+
 [dependencies]
+lapin = "1.8.0"
+tokio-amqp = "1.0"
+tokio = { version = "1.0", features = ["full"]}
+futures = "0.3"
+axum = "0.2.3"
+hyper = { version = "0.14", features = ["full"]}
+tower = "0.4"
+tower-http = { version = "0.1", features = ["trace"] }
+tracing = "0.1"
+tracing-subscriber = "0.2"
+eiffelvis_gen = { version = "0.1", path = "crates/eiffelvis_gen" }
+uuid = { version = "0.8", features=["serde", "v4"]}
+serde = { version="1.0", features=["derive"]}
+serde_json = { version = "1.0" }
