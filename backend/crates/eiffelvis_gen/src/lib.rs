@@ -11,28 +11,29 @@ mod test {
 
     #[test]
     fn test() {
-        let thing = EventChainBlueprint::new(0..5, 19..20, 0);
+        let thing = EventChainBlueprint::new(0..5, 10..11, 0);
 
-        let mut lol: Option<HashMap<Uuid, Vec<Uuid>>> = None;
+        let mut lol: Option<HashMap<Uuid, Event>> = None;
 
         for _ in 0..10 {
-            let event_map: HashMap<Uuid, Vec<Uuid>> = thing
+            let event_map: HashMap<Uuid, Event> = thing
                 .iter()
                 .take(100)
                 .map(|bytes| serde_json::from_slice::<Event>(&bytes).unwrap())
                 .map(|event| {
                     println!("{:#?}", event);
-                    (
-                        event.meta.id,
-                        event.links.iter().map(|link| link.target).collect(),
-                    )
+                    (event.meta.id, event)
                 })
                 .collect();
 
             // Check if we make valid links
             for vec in event_map.values() {
-                for id in vec {
-                    assert!(event_map.contains_key(id));
+                for link in &vec.links {
+                    assert!(event_map.contains_key(&link.target));
+
+                    let time_diff = vec.meta.time - event_map.get(&link.target).unwrap().meta.time;
+                    // link age may be unintuitive
+                    assert!(time_diff < 11)
                 }
             }
 
