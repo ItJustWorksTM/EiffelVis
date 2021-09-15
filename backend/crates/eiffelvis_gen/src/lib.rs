@@ -1,49 +1,47 @@
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-
-#[derive(Default, Debug, Serialize, Deserialize)]
-pub struct Meta {
-    pub id: Uuid,
-    #[serde(rename = "type")]
-    pub event_type: String,
-    pub version: String,
-    pub time: i64, // Not high priority?
-                   // source: Source
-                   // security: Security
-}
-
-#[derive(Default, Debug, Serialize, Deserialize)]
-pub struct Link {
-    #[serde(rename = "type")]
-    pub link_type: String,
-    pub target: Uuid,
-}
-
-#[derive(Default, Debug, Serialize, Deserialize)]
-pub struct Event<T: Default> {
-    pub meta: Meta,
-    pub data: T,
-    pub links: Vec<Link>,
-}
-
-pub fn make_event() -> Vec<u8> {
-    serde_json::to_vec(&Event {
-        links: vec![Link {
-            link_type: "fuck".to_string(),
-            target: Uuid::new_v4(),
-        }],
-        data: (),
-        ..Default::default()
-    })
-    .unwrap()
-}
+mod event;
+mod random;
 
 #[cfg(test)]
 mod test {
-    use super::make_event;
+    use std::collections::HashMap;
+
+    use crate::event::Event;
+    use crate::random::*;
+    use uuid::Uuid;
 
     #[test]
     fn test() {
-        println!("{:?}", make_event());
+        let thing = EventChainBlueprint::new(0..5, 19..20, 0);
+
+        let mut lol: Option<HashMap<Uuid, Vec<Uuid>>> = None;
+
+        for _ in 0..10 {
+            let event_map: HashMap<Uuid, Vec<Uuid>> = thing
+                .iter()
+                .take(100)
+                .map(|bytes| serde_json::from_slice::<Event>(&bytes).unwrap())
+                .map(|event| {
+                    println!("{:#?}", event);
+                    (
+                        event.meta.id,
+                        event.links.iter().map(|link| link.target).collect(),
+                    )
+                })
+                .collect();
+
+            // Check if we make valid links
+            for vec in event_map.values() {
+                for id in vec {
+                    assert!(event_map.contains_key(id));
+                }
+            }
+
+            // Check if we are reproducable
+            if let Some(events) = lol {
+                assert!(events.keys().all(|k| event_map.contains_key(k)));
+            }
+
+            lol = Some(event_map);
+        }
     }
 }
