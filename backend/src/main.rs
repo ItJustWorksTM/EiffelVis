@@ -1,19 +1,13 @@
 use axum::{
-    body::Full,
-    extract::Extension,
-    handler::get,
-    http::HeaderValue,
-    response::{IntoResponse, Json},
-    routing::BoxRoute,
-    AddExtensionLayer, Router,
+    body::Full, extract::Extension, handler::get, http::HeaderValue, response::IntoResponse,
+    routing::BoxRoute, AddExtensionLayer, Router,
 };
-use eiffelvis_gen::make_event;
 use futures::StreamExt;
 use hyper::{header, Response};
-use lapin::{Connection, ConnectionProperties};
+use lapin::{tcp::TLSConfig, uri::AMQPUri, Connection, ConnectionProperties};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::sync::Arc;
+use std::{collections::HashMap, str::FromStr};
 use tokio::sync::RwLock;
 use tokio_amqp::*;
 use tower_http::trace::DefaultMakeSpan;
@@ -55,54 +49,59 @@ async fn main() {
     }
     tracing_subscriber::fmt::init();
 
-    let nice = HashMap::new();
+    let locked_graph = Arc::new(RwLock::new(HashMap::new()));
 
-    let locked_test = Arc::new(RwLock::new(nice));
+    let http_addr = "127.0.0.1:3000".parse().unwrap();
+    let axum_app = axum_app(locked_graph.clone());
+    let axum_job = axum::Server::try_bind(&http_addr)
+        .unwrap()
+        .serve(axum_app.into_make_service());
 
-    let app = app(locked_test.clone());
-    let axum_job =
-        axum::Server::bind(&"127.0.0.1:3000".parse().unwrap()).serve(app.into_make_service());
-    let _ = tokio::join!(
-        tokio::spawn(amqp(locked_test.clone())),
-        tokio::spawn(axum_job)
-    );
+    let ampq_addr = "amqp://localhost:5672/%2f";
+    let consumer = make_ampq_channel(ampq_addr).await.unwrap();
+    let ampq_job = ampq_app(consumer, locked_graph);
+
+    let (_, _) = tokio::join!(ampq_job, axum_job);
 }
 
-async fn amqp(graph: EiffelGraphShared) {
-    let addr = "amqp://127.0.0.1:5672/%2f".to_string();
-    let conn = Connection::connect(&addr, ConnectionProperties::default().with_tokio())
-        .await
-        .unwrap();
-
-    let channel = conn.create_channel().await.unwrap();
-    let mut consumer = channel
+async fn make_ampq_channel(addr: &str) -> Result<lapin::Consumer, lapin::Error> {
+    let connection = Connection::connect_uri_with_identity(
+        AMQPUri::from_str(addr).unwrap(),
+        ConnectionProperties::default().with_tokio(),
+        TLSConfig::default(),
+    )
+    .await?;
+    let consumer = connection
+        .create_channel()
+        .await?
         .basic_consume(
             "hello",
             "my_consumer",
             lapin::options::BasicConsumeOptions::default(),
             lapin::types::FieldTable::default(),
         )
-        .await
-        .unwrap();
+        .await?;
 
-    tokio::spawn(async move {
-        while let Some(delivery) = consumer.next().await {
-            let delivery = delivery.unwrap().1;
-            // info!("message: {:?}", std::str::from_utf8(&delivery.data));
-            let test_event: Event<serde_json::Value> =
-                serde_json::from_slice(&delivery.data).unwrap();
-            let mut a = graph.write().await;
-            info!("Graph size: {}", a.keys().len());
-            a.insert(test_event.meta.id, test_event);
-            delivery
-                .ack(lapin::options::BasicAckOptions::default())
-                .await
-                .unwrap();
-        }
-    });
+    Ok(consumer)
 }
 
-fn app(graph: EiffelGraphShared) -> Router<BoxRoute> {
+async fn ampq_app(mut consumer: lapin::Consumer, graph: EiffelGraphShared) {
+    while let Some(delivery) = consumer.next().await {
+        let delivery = delivery.unwrap().1;
+
+        let test_event: Event<serde_json::Value> = serde_json::from_slice(&delivery.data).unwrap();
+
+        let mut a = graph.write().await;
+        info!("Graph size: {}", a.keys().len());
+        a.insert(test_event.meta.id, test_event);
+        delivery
+            .ack(lapin::options::BasicAckOptions::default())
+            .await
+            .unwrap();
+    }
+}
+
+fn axum_app(graph: EiffelGraphShared) -> Router<BoxRoute> {
     Router::new()
         .route("/", get(handler))
         .layer(
