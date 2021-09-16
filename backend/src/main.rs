@@ -20,9 +20,7 @@ pub struct Meta {
     #[serde(rename = "type")]
     pub event_type: String,
     pub version: String,
-    pub time: i64, // Not high priority?
-                   // source: Source
-                   // security: Security
+    pub time: i64,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -33,13 +31,13 @@ pub struct Link {
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
-pub struct Event<T: Default> {
+pub struct Event {
     pub meta: Meta,
-    pub data: T,
+    pub data: serde_json::Value,
     pub links: Vec<Link>,
 }
 
-type EiffelGraph = HashMap<Uuid, Event<serde_json::Value>>;
+type EiffelGraph = HashMap<Uuid, Event>;
 type EiffelGraphShared = Arc<RwLock<EiffelGraph>>;
 
 #[tokio::main]
@@ -61,7 +59,9 @@ async fn main() {
     let consumer = make_ampq_channel(ampq_addr).await.unwrap();
     let ampq_job = ampq_app(consumer, locked_graph);
 
-    let (_, _) = tokio::join!(ampq_job, axum_job);
+    let axum_handle = tokio::spawn(axum_job);
+    ampq_job.await;
+    axum_handle.abort();
 }
 
 async fn make_ampq_channel(addr: &str) -> Result<lapin::Consumer, lapin::Error> {
@@ -86,19 +86,23 @@ async fn make_ampq_channel(addr: &str) -> Result<lapin::Consumer, lapin::Error> 
 }
 
 async fn ampq_app(mut consumer: lapin::Consumer, graph: EiffelGraphShared) {
-    while let Some(delivery) = consumer.next().await {
-        let delivery = delivery.unwrap().1;
-
-        let test_event: Event<serde_json::Value> = serde_json::from_slice(&delivery.data).unwrap();
+    while let Some(Ok((_, delivery))) = consumer.next().await {
+        let test_event: Event = serde_json::from_slice(&delivery.data).unwrap();
 
         let mut a = graph.write().await;
         info!("Graph size: {}", a.keys().len());
         a.insert(test_event.meta.id, test_event);
-        delivery
+
+        if delivery
             .ack(lapin::options::BasicAckOptions::default())
             .await
-            .unwrap();
+            .is_err()
+        {
+            info!("ampq failed to ack");
+            break;
+        }
     }
+    info!("ampq app exiting");
 }
 
 fn axum_app(graph: EiffelGraphShared) -> Router<BoxRoute> {
