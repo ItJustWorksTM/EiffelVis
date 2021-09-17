@@ -1,4 +1,7 @@
-use crate::event::{Event, Link};
+use crate::{
+    event::{Event, Link},
+    event_type::EventType,
+};
 
 use rand::prelude::*;
 use rand::seq::SliceRandom;
@@ -10,27 +13,35 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct EventChainBlueprint {
     links: Range<u32>,
-    link_age: Range<u32>,
+    max_link_age: usize,
     seed: Seeder,
+    event_types: Vec<EventType>,
 }
 
 impl Default for EventChainBlueprint {
     fn default() -> Self {
         Self {
             links: 0..1,
-            link_age: 0..1,
+            max_link_age: usize::MAX,
             seed: Seeder::from(0),
+            event_types: vec![],
         }
     }
 }
 
 impl EventChainBlueprint {
-    pub fn new<T: Hash>(links: Range<u32>, link_age: Range<u32>, seed: T) -> Self {
+    pub fn new<T: Hash>(links: Range<u32>, max_link_age: usize, seed: T) -> Self {
         Self {
             links,
-            link_age,
+            max_link_age,
             seed: Seeder::from(seed),
+            event_types: vec![],
         }
+    }
+
+    pub fn with<T: Into<EventType>>(mut self, ev: T) -> Self {
+        self.event_types.push(ev.into());
+        self
     }
 
     pub fn iter(&self) -> EventGenerator {
@@ -41,7 +52,7 @@ impl EventChainBlueprint {
 pub struct EventGenerator {
     blueprint: EventChainBlueprint,
     rng: Pcg64,
-    events: Vec<Uuid>,
+    events: Vec<Event>,
 }
 
 impl EventGenerator {
@@ -59,33 +70,48 @@ impl Iterator for EventGenerator {
     type Item = Vec<u8>;
 
     fn next(&mut self) -> Option<Self::Item> {
+        let ev = self.blueprint.event_types.choose(&mut self.rng)?;
         let range = &self.blueprint.links;
 
         let mut event = Event::default();
 
         let events = self.events.len();
+
         event.meta.id = Uuid::from_bytes(self.rng.gen());
         event.meta.time = events as i64;
+        event.meta.event_type = ev.name.clone();
+        event.meta.version = ev.version.clone();
+
         if range.start < range.end {
-            let link_amount =
-                (self.rng.gen_range(self.blueprint.links.clone()) as usize).min(events);
+            let required_links = ev.links.iter().filter(|l| l.required).count();
+            let link_amount = (self.rng.gen_range(self.blueprint.links.clone()) as usize)
+                .min(events)
+                .max(required_links);
 
-            let link_hist = (self.rng.gen_range(self.blueprint.link_age.clone()) as usize)
-                .max(link_amount)
-                .min(events);
-
-            event.links = self.events[events - link_hist..events]
-                .choose_multiple(&mut self.rng, link_amount)
-                .map(|a| Link {
-                    link_type: "".into(),
-                    target: *a,
-                })
-                .collect();
+            // TODO: This is kinda wrong logic
+            for link in &ev.links {
+                event.links.append(
+                    &mut self
+                        .events
+                        .iter()
+                        .filter(|e| {
+                            link.targets.is_empty()
+                                || link.targets.iter().any(|a| *a == e.meta.event_type)
+                        })
+                        .choose_multiple(&mut self.rng, link_amount)
+                        .iter()
+                        .map(|a| Link {
+                            link_type: link.name.clone(),
+                            target: a.meta.id,
+                        })
+                        .collect(),
+                );
+            }
         }
 
         let ret = Some(serde_json::to_vec(&event).unwrap());
 
-        self.events.push(event.meta.id);
+        self.events.push(event);
 
         ret
     }

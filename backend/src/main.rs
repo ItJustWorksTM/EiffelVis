@@ -89,9 +89,11 @@ async fn ampq_app(mut consumer: lapin::Consumer, graph: EiffelGraphShared) {
     while let Some(Ok((_, delivery))) = consumer.next().await {
         let test_event: Event = serde_json::from_slice(&delivery.data).unwrap();
 
-        let mut a = graph.write().await;
-        info!("Graph size: {}", a.keys().len());
-        a.insert(test_event.meta.id, test_event);
+        {
+            let mut a = graph.write().await;
+            info!("Graph size: {}", a.keys().len());
+            a.insert(test_event.meta.id, test_event);
+        }
 
         if delivery
             .ack(lapin::options::BasicAckOptions::default())
