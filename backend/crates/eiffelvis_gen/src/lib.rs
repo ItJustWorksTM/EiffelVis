@@ -1,7 +1,7 @@
-mod event;
+pub mod event;
 #[macro_use]
-mod event_type;
-mod random;
+pub mod event_type;
+pub mod random;
 
 #[cfg(test)]
 mod test {

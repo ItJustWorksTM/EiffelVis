@@ -87,12 +87,12 @@ async fn make_ampq_channel(addr: &str) -> Result<lapin::Consumer, lapin::Error> 
 
 async fn ampq_app(mut consumer: lapin::Consumer, graph: EiffelGraphShared) {
     while let Some(Ok((_, delivery))) = consumer.next().await {
-        let test_event: Event = serde_json::from_slice(&delivery.data).unwrap();
-
-        {
+        if let Ok(test_event) = serde_json::from_slice::<Event>(&delivery.data) {
             let mut a = graph.write().await;
-            info!("Graph size: {}", a.keys().len());
-            a.insert(test_event.meta.id, test_event);
+            let hm = a.insert(test_event.meta.id, test_event);
+            info!("Graph size: {} + {:#?}", a.keys().len(), hm);
+        } else {
+            info!("Failed to deserialize into event");
         }
 
         if delivery
