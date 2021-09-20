@@ -1,35 +1,56 @@
 pub mod event;
-#[macro_use]
+
+pub mod event_set;
 pub mod event_type;
-pub mod random;
+pub mod generator;
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
 
-    use crate::event::Event;
-    use crate::random::*;
+    use rand::{thread_rng, Rng};
+    use std::collections::HashMap;
     use uuid::Uuid;
 
-    link_type!(TestLink, true, true, TestEventNice);
-    event_type!(TestEvent, "1.0.0", TestLinkNice);
+    use crate::event_set::EventSet;
+    use crate::event_type::{Event, Link};
+    use crate::generator::EventGenerator;
 
-    link_type!(TestLinkNice, true, true, TestEvent);
-    event_type!(TestEventNice, "2.0.0", TestLink);
+    use crate::event::Event as EventValue;
+
+    struct CustomSet;
+
+    impl From<CustomSet> for EventSet {
+        fn from(_: CustomSet) -> Self {
+            EventSet::build()
+                .add_link(Link::new("WOOP", true))
+                .build()
+                .expect("nice")
+        }
+    }
 
     #[test]
     fn test() {
-        let thing = EventChainBlueprint::new(0..5, usize::MAX, 0)
-            .with(TestEvent)
-            .with(TestEventNice);
+        let max_links = 20;
 
-        let mut lol: Option<HashMap<Uuid, Event>> = None;
+        let thing = EventGenerator::new(
+            thread_rng().gen::<usize>(),
+            max_links,
+            usize::MAX,
+            EventSet::build()
+                .add_link(Link::new("TestLinkNice", true))
+                .add_event(Event::new("TestEventNice", "2.0.0").with_link("TestLinkNice"))
+                .build()
+                .unwrap(),
+        );
+
+        let mut last_run: Option<HashMap<Uuid, EventValue>> = None;
 
         for _ in 0..2 {
-            let event_map: HashMap<Uuid, Event> = thing
+            println!("---");
+            let event_map: HashMap<Uuid, EventValue> = thing
                 .iter()
                 .take(100)
-                .map(|bytes| serde_json::from_slice::<Event>(&bytes).unwrap())
+                .map(|bytes| serde_json::from_slice::<EventValue>(&bytes).unwrap())
                 .map(|event| {
                     println!("{:#?}", event);
                     (event.meta.id, event)
@@ -38,17 +59,26 @@ mod test {
 
             // Check if we make valid links
             for vec in event_map.values() {
+                assert!(vec.links.len() < max_links);
+
                 for link in &vec.links {
                     assert!(event_map.contains_key(&link.target));
                 }
+
+                // Check if the links are unique
+                let mut l = vec.links.clone();
+                l.sort();
+                l.dedup();
+
+                assert_eq!(vec.links.len(), l.len());
             }
 
             // Check if we are reproducable
-            if let Some(events) = lol {
+            if let Some(events) = last_run {
                 assert!(events.keys().all(|k| event_map.contains_key(k)));
             }
 
-            lol = Some(event_map);
+            last_run = Some(event_map);
         }
     }
 }

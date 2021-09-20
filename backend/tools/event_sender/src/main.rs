@@ -1,16 +1,9 @@
+use eiffelvis_gen::event_type::{Event, Link};
+use eiffelvis_gen::{event_set::EventSet, generator::EventGenerator};
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use structopt::StructOpt;
 use tokio_amqp::LapinTokioExt;
-
-use eiffelvis_gen::event_type;
-use eiffelvis_gen::{link_type, random::EventChainBlueprint};
-
-link_type!(TestLink, true, true, TestEventNice);
-event_type!(TestEvent, "1.0.0", TestLinkNice);
-
-link_type!(TestLinkNice, true, true, TestEvent);
-event_type!(TestEventNice, "2.0.0", TestLink);
 
 #[derive(StructOpt)]
 #[structopt(
@@ -28,8 +21,14 @@ struct Cli {
     seed: usize,
 }
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
+    tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?
+        .block_on(app())
+}
+
+async fn app() -> anyhow::Result<()> {
     let cli = Cli::from_args();
     let addr = cli.url.as_str();
 
@@ -39,20 +38,31 @@ async fn main() -> anyhow::Result<()> {
 
     println!("Connected to broker.");
 
-    let mut thing = EventChainBlueprint::new(0..5, usize::MAX, cli.seed)
-        .with(TestEvent)
-        .with(TestEventNice)
-        .iter();
+    let thing = EventGenerator::new(
+        cli.seed,
+        100,
+        100,
+        EventSet::build()
+            .add_link(Link::new("Link0", true))
+            .add_link(Link::new("Link1", true))
+            .add_event(
+                Event::new("Event", "1.0.0")
+                    .with_link("Link0")
+                    .with_link("Link1"),
+            )
+            .build()
+            .expect("This should work"),
+    );
 
     println!("Sending out {} events..", cli.count);
 
-    for _ in 0..cli.count {
+    for ev in thing.iter().take(cli.count) {
         let _ = channel_a
             .basic_publish(
                 "amq.fanout",
                 "hello",
                 BasicPublishOptions::default(),
-                thing.next().unwrap(),
+                ev,
                 BasicProperties::default(),
             )
             .await?

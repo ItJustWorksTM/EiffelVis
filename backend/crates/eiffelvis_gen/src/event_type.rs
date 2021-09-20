@@ -1,62 +1,89 @@
-#[derive(Default, Clone, Debug)]
-pub struct EventType {
-    pub name: String,
-    pub version: String,
-    pub links: Vec<LinkType>,
+#[derive(Debug, Clone)]
+pub enum LinkTargets {
+    Any,
+    Events(Vec<String>),
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct LinkType {
+impl Default for LinkTargets {
+    fn default() -> Self {
+        Self::Any
+    }
+}
+
+impl From<Vec<String>> for LinkTargets {
+    fn from(targets: Vec<String>) -> Self {
+        Self::Events(targets)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Link {
     pub name: String,
-    pub targets: Vec<String>,
     pub allow_many: bool,
-    pub required: bool,
+    pub targets: LinkTargets,
 }
 
-impl LinkType {
-    fn new(name: String, targets: Vec<String>, allow_many: bool, required: bool) -> Self {
+impl Default for Link {
+    fn default() -> Self {
         Self {
-            name,
-            targets,
-            allow_many,
-            required,
+            name: String::new(),
+            allow_many: true,
+            targets: LinkTargets::default(),
         }
     }
 }
 
-#[macro_export]
-macro_rules! link_type {
-    ($name:ident, $many:literal, $requ:literal, $($targ:ty),*) => {
-        pub struct $name;
-
-        #[allow(clippy::from_over_into)]
-        impl Into<crate::event_type::LinkType> for $name {
-            fn into(self) ->crate::event_type::LinkType {
-                crate::event_type::LinkType {
-                    name: String::from(stringify!($name)),
-                    targets: vec![$(String::from((stringify!($targ)))),*],
-                    allow_many: $many,
-                    required: $requ,
-                }
-            }
+impl Link {
+    pub fn new(name: impl Into<String>, allow_many: bool) -> Self {
+        Self {
+            name: name.into(),
+            allow_many,
+            ..Self::default()
         }
-    };
+    }
+
+    pub fn with_target(mut self, target: impl Into<String>) -> Self {
+        match &mut self.targets {
+            LinkTargets::Events(vec) => vec.push(target.into()),
+            LinkTargets::Any => self.targets = LinkTargets::from(vec![(target.into())]),
+        };
+        self
+    }
 }
 
-#[macro_export]
-macro_rules! event_type {
-    ($name:ident, $ver:literal, $($link_types:expr),*) => {
-        pub struct $name;
-
-        #[allow(clippy::from_over_into)]
-        impl Into<crate::event_type::EventType> for $name {
-            fn into(self) -> crate::event_type::EventType {
-                crate::event_type::EventType {
-                    name: String::from(stringify!($name)),
-                    version: $ver.into(),
-                    links: vec![$(($link_types).into()),*],
-                }
-            }
+impl<T: Into<String>> From<T> for Link {
+    fn from(str: T) -> Self {
+        Self {
+            name: str.into(),
+            ..Self::default()
         }
-    };
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct Event {
+    pub name: String,
+    pub version: String,
+    pub links: Vec<String>,
+    pub required_links: Vec<String>,
+}
+
+impl Event {
+    pub fn new(name: impl Into<String>, version: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            version: version.into(),
+            ..Self::default()
+        }
+    }
+
+    pub fn with_link(mut self, link: impl Into<String>) -> Self {
+        self.links.push(link.into());
+        self
+    }
+
+    pub fn with_req_link(mut self, link: impl Into<String>) -> Self {
+        self.required_links.push(link.into());
+        self
+    }
 }
