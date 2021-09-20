@@ -1,5 +1,5 @@
 [package]
-name = "eiffel_vis"
+name = "eiffelvis"
 version = "0.1.0"
 edition = "2018"
 
