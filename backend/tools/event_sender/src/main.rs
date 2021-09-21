@@ -1,4 +1,4 @@
-use eiffelvis_gen::event_type::{Event, Link};
+use eiffelvis_gen::meta_event::{Event, Link};
 use eiffelvis_gen::{event_set::EventSet, generator::EventGenerator};
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
