@@ -11,7 +11,7 @@ use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
 use uuid::Uuid;
 
-use crate::event_set::EventBorrow;
+use crate::event_set::{EventBorrow, LinkBorrow};
 use crate::{base_event::BaseEvent, base_event::BaseLink, event_set::EventSet};
 
 pub struct EventGenerator {
@@ -73,12 +73,19 @@ impl<'a> Iter<'a> {
 
 impl Iter<'_> {
     fn can_generate(&self, event: &EventBorrow) -> bool {
+        if event.link_count() > self.inner.max_links {
+            return false;
+        }
         let history = &self.history;
-        event.links().all(|(link, _)| {
-            history.iter().any(|e| match link.targets() {
-                None => true,
-                Some(mut evs) => evs.any(|a| a.name() == e.meta.event_type.as_str()),
-            })
+        event.links().all(|(link, req)| {
+            if history.is_empty() {
+                !req
+            } else {
+                history.iter().any(|e| match (link.targets(), req) {
+                    (Some(mut evs), true) => evs.any(|a| a.name() == e.meta.event_type.as_str()),
+                    _ => true,
+                })
+            }
         })
     }
 }
@@ -121,52 +128,67 @@ impl Iterator for Iter<'_> {
             }
         }
 
+        let mut select_event = |a: LinkBorrow| {
+            match a.targets() {
+                None => {
+                    let t = dep_map.get_mut("").unwrap();
+                    (!t.is_empty())
+                        .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
+                }
+                Some(evs) => {
+                    let mut e = evs.collect::<Vec<EventBorrow>>();
+                    e.shuffle(&mut *self.rng.borrow_mut());
+                    e.iter().find_map(|&a| {
+                        dep_map.get_mut(a.name()).and_then(|t| {
+                            (!t.is_empty())
+                                .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
+                        })
+                    })
+                }
+            }
+            .map(|pick| {
+                for (_, v) in dep_map.iter_mut() {
+                    if let Some(pos) = v.iter().position(|&r| r.meta.id == pick.meta.id) {
+                        v.remove(pos);
+                        continue;
+                    }
+                }
+
+                BaseLink {
+                    target: pick.meta.id,
+                    link_type: a.name().to_string(),
+                }
+            })
+        };
+
         let mut result = Vec::<BaseLink>::new();
 
-        for (a, required) in meta_event.links() {
-            let mut rand =
-                self.rng.borrow_mut().gen::<usize>() % (self.inner.max_links - result.len());
+        // TODO: shuffle links first
 
-            rand += required as usize;
+        // First do the required links ONCE
+        result.extend(
+            meta_event
+                .links()
+                .filter(|(_, required)| *required)
+                .map(|(link, _)| select_event(link).unwrap()), // unwrap safe because we checked that we can generate this event
+        );
+
+        // Then randomly select
+        for (a, _) in meta_event.links() {
+            if self.inner.max_links < result.len() {
+                break;
+            }
+
+            let budget = self.inner.max_links - result.len();
+
+            let mut rand = self.rng.borrow_mut().gen::<usize>() % budget;
 
             if !a.multiple_allowed() {
                 rand = rand.clamp(0, 1);
             }
 
             while rand != 0 {
-                let ret = match a.targets() {
-                    None => {
-                        let t = dep_map.get_mut("").unwrap();
-                        (!t.is_empty())
-                            .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
-                    }
-                    Some(evs) => {
-                        let mut e = evs.collect::<Vec<EventBorrow>>();
-                        e.shuffle(&mut *self.rng.borrow_mut());
-                        e.iter().find_map(|&a| {
-                            dep_map.get_mut(a.name()).and_then(|t| {
-                                (!t.is_empty()).then(|| {
-                                    t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len()))
-                                })
-                            })
-                        })
-                    }
-                }
-                .map(|pick| {
-                    for (_, v) in dep_map.iter_mut() {
-                        if let Some(pos) = v.iter().position(|&r| r.meta.id == pick.meta.id) {
-                            v.remove(pos);
-                            continue;
-                        }
-                    }
-
-                    BaseLink {
-                        target: pick.meta.id,
-                        link_type: a.name().to_string(),
-                    }
-                });
-
-                if let Some(ret) = ret {
+                if let Some(ret) = select_event(a) {
                     result.push(ret);
                     rand -= 1;
                 } else {

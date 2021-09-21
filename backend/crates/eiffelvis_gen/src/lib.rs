@@ -19,15 +19,22 @@ mod test {
 
     impl From<CustomSet> for EventSet {
         fn from(_: CustomSet) -> Self {
-            EventSet::build()
-                .add_link(Link::new("WOOP", true))
-                .build()
-                .expect("nice")
+            EventSet::build().add_link("WOOP").build().expect("nice")
         }
     }
 
+    fn collect_events(gen: &EventGenerator, count: usize) -> Vec<BaseEvent> {
+        let ret: Vec<BaseEvent> = gen
+            .iter()
+            .take(count)
+            .map(|bytes| serde_json::from_slice::<BaseEvent>(&bytes).unwrap())
+            .collect();
+        assert_eq!(ret.len(), count);
+        ret
+    }
+
     #[test]
-    fn test() {
+    fn general() {
         let max_links = 20;
 
         let thing = EventGenerator::new(
@@ -35,7 +42,7 @@ mod test {
             max_links,
             usize::MAX,
             EventSet::build()
-                .add_link(Link::new("TestLinkNice", true))
+                .add_link("TestLinkNice")
                 .add_event(Event::new("TestEventNice", "2.0.0").with_link("TestLinkNice"))
                 .build()
                 .unwrap(),
@@ -44,15 +51,11 @@ mod test {
         let mut last_run: Option<HashMap<Uuid, BaseEvent>> = None;
 
         for _ in 0..2 {
-            println!("---");
             let event_map: HashMap<Uuid, BaseEvent> = thing
                 .iter()
                 .take(100)
                 .map(|bytes| serde_json::from_slice::<BaseEvent>(&bytes).unwrap())
-                .map(|event| {
-                    println!("{:#?}", event);
-                    (event.meta.id, event)
-                })
+                .map(|event| (event.meta.id, event))
                 .collect();
 
             // Check if we make valid links
@@ -77,6 +80,69 @@ mod test {
             }
 
             last_run = Some(event_map);
+        }
+    }
+
+    #[test]
+    fn impossible() {
+        for _ in 0..10 {
+            let gen = EventGenerator::new(
+                thread_rng().gen::<usize>(),
+                10,
+                100,
+                EventSet::build()
+                    .add_link("Link")
+                    .add_event(Event::new("Event", "").with_req_link("Link"))
+                    .build()
+                    .unwrap(),
+            );
+            assert!(gen.iter().next().is_none());
+        }
+    }
+
+    #[test]
+    fn required() {
+        for _ in 0..10 {
+            let gen = EventGenerator::new(
+                thread_rng().gen::<usize>(),
+                10,
+                100,
+                EventSet::build()
+                    .add_link("Link0")
+                    .add_link("Link1")
+                    .add_link(Link::new("Link2", false))
+                    .add_event(
+                        Event::new("Event", "")
+                            .with_link("Link0")
+                            .with_req_link("Link1"),
+                    )
+                    .add_event(Event::new("AnyEvent", "").with_link("Link2"))
+                    .build()
+                    .unwrap(),
+            );
+            let events = collect_events(&gen, 100);
+
+            events
+                .iter()
+                .inspect(|ev| {
+                    assert!(
+                        ev.links.iter().filter(|l| l.link_type == "Link2").count() <= 1,
+                        "Link2 is not allowed to appear multiple times"
+                    )
+                })
+                .filter(|ev| ev.meta.event_type == "Event")
+                .for_each(|ev| {
+                    assert_eq!(ev.meta.event_type, "Event");
+                    assert!(
+                        ev.links.iter().any(|l| l.link_type == "Link1"),
+                        "Failure: {:#?}",
+                        ev
+                    );
+                });
+
+            assert!(events
+                .iter()
+                .any(|ev| ev.links.iter().all(|l| l.link_type != "Link0")));
         }
     }
 }

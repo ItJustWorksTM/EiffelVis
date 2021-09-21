@@ -44,7 +44,7 @@ impl Default for Link {
         Self {
             name: String::new(),
             allow_many: true,
-            targets: LinkTargets::default(),
+            targets: None,
         }
     }
 }
@@ -116,7 +116,6 @@ impl EventSetBuilder {
 
     pub fn add_event_set(mut self, event_set: impl Into<EventSet>) -> Self {
         let event_set: EventSet = event_set.into();
-        println!("{:#?}", event_set);
         self.links.extend(event_set.links);
         self.events.extend(event_set.events);
         self
@@ -127,7 +126,8 @@ impl EventSetBuilder {
         self
     }
 
-    pub fn add_link(mut self, link: Link) -> Self {
+    pub fn add_link(mut self, link: impl Into<Link>) -> Self {
+        let link = link.into();
         self.links.insert(link.name.clone(), link);
         self
     }
@@ -190,6 +190,10 @@ impl<'a> EventBorrow<'a> {
                     )
                 })
             })
+    }
+
+    pub fn link_count(&self) -> usize {
+        self.event.links.len()
     }
 
     pub fn link(&self, name: &str) -> Option<&Link> {
