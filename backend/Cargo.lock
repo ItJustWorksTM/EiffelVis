@@ -172,6 +172,7 @@ dependencies = [
  "anyhow",
  "eiffelvis_gen",
  "lapin",
+ "rand",
  "structopt",
  "tokio",
  "tokio-amqp",
