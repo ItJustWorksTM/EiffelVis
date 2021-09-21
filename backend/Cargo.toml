@@ -7,4 +7,15 @@ edition = "2018"
 members = ["crates/*", "tools/*"]
 
 [dependencies]
+eiffelvis_core = { version = "0.1", path = "crates/eiffelvis_core" }
+eiffelvis_gen = { version = "0.1", path = "crates/eiffelvis_gen" }
 
+[dev-dependencies]
+criterion = "0.3"
+rand = "0.8"
+rand_pcg = "0.3"
+uuid = "0.8"
+
+[[bench]]
+name = "core"
+harness = false
