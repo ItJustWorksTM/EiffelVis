@@ -4,6 +4,7 @@ use eiffelvis_gen::{
 };
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
+use rand::{thread_rng, Rng};
 use structopt::StructOpt;
 use tokio_amqp::LapinTokioExt;
 
@@ -19,8 +20,14 @@ struct Cli {
     #[structopt(default_value = "amqp://127.0.0.1:5672/%2f", short, long)]
     url: String,
 
-    #[structopt(default_value = "0", long)]
-    seed: usize,
+    #[structopt(default_value = "amq.fanout", short, long)]
+    exchange: String,
+
+    #[structopt(short, long)]
+    routing_key: String,
+
+    #[structopt(long)]
+    seed: Option<usize>,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -41,7 +48,7 @@ async fn app() -> anyhow::Result<()> {
     println!("Connected to broker.");
 
     let thing = EventGenerator::new(
-        cli.seed,
+        cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
         100,
         100,
         EventSet::build()
@@ -61,8 +68,8 @@ async fn app() -> anyhow::Result<()> {
     for ev in thing.iter().take(cli.count) {
         let _ = channel_a
             .basic_publish(
-                "amq.fanout",
-                "hello",
+                cli.exchange.as_str(),
+                cli.routing_key.as_str(),
                 BasicPublishOptions::default(),
                 ev,
                 BasicProperties::default(),
