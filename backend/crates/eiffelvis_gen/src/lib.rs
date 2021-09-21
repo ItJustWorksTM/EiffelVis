@@ -1,8 +1,8 @@
-pub mod event;
+pub(crate) mod base_event;
 
 pub mod event_set;
-pub mod event_type;
 pub mod generator;
+pub mod meta_event;
 
 #[cfg(test)]
 mod test {
@@ -12,10 +12,10 @@ mod test {
     use uuid::Uuid;
 
     use crate::event_set::EventSet;
-    use crate::event_type::{Event, Link};
     use crate::generator::EventGenerator;
+    use crate::meta_event::{Event, Link};
 
-    use crate::event::Event as EventValue;
+    use crate::base_event::BaseEvent;
 
     struct CustomSet;
 
@@ -43,14 +43,14 @@ mod test {
                 .unwrap(),
         );
 
-        let mut last_run: Option<HashMap<Uuid, EventValue>> = None;
+        let mut last_run: Option<HashMap<Uuid, BaseEvent>> = None;
 
         for _ in 0..2 {
             println!("---");
-            let event_map: HashMap<Uuid, EventValue> = thing
+            let event_map: HashMap<Uuid, BaseEvent> = thing
                 .iter()
                 .take(100)
-                .map(|bytes| serde_json::from_slice::<EventValue>(&bytes).unwrap())
+                .map(|bytes| serde_json::from_slice::<BaseEvent>(&bytes).unwrap())
                 .map(|event| {
                     println!("{:#?}", event);
                     (event.meta.id, event)

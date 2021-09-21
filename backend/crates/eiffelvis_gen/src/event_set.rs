@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::event_type::{Event, Link, LinkTargets};
+use crate::meta_event::{Event, Link, LinkTargets};
 
 #[derive(Default)]
 pub struct EventSetBuilder {
@@ -74,7 +74,7 @@ impl EventSetBuilder {
 #[cfg(test)]
 mod test {
     use super::EventSet;
-    use crate::event_type::{Event, Link};
+    use crate::meta_event::{Event, Link};
 
     #[test]
     fn typical() {

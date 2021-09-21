@@ -11,8 +11,8 @@ use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
 use uuid::Uuid;
 
-use crate::event_type::{Event, LinkTargets};
-use crate::{event::Event as EventValue, event::Link as LinkValue, event_set::EventSet};
+use crate::meta_event::{Event, LinkTargets};
+use crate::{base_event::BaseEvent, base_event::BaseLink, event_set::EventSet};
 
 pub struct EventGenerator {
     pub seed: Seeder,
@@ -58,7 +58,7 @@ impl Default for EventGenerator {
 pub struct Iter<'a> {
     inner: &'a Inner,
     rng: RefCell<Pcg64>,
-    history: VecDeque<EventValue>,
+    history: VecDeque<BaseEvent>,
 }
 
 impl<'a> Iter<'a> {
@@ -105,9 +105,9 @@ impl Iterator for Iter<'_> {
         .find(|(_, e)| self.can_generate(e))?
         .1;
 
-        let mut event = EventValue::default();
+        let mut event = BaseEvent::default();
 
-        let mut dep_map: HashMap<String, Vec<&EventValue>> = HashMap::new();
+        let mut dep_map: HashMap<String, Vec<&BaseEvent>> = HashMap::new();
 
         meta_event
             .required_links
@@ -137,7 +137,7 @@ impl Iterator for Iter<'_> {
             }
         }
 
-        let mut result = Vec::<LinkValue>::new();
+        let mut result = Vec::<BaseLink>::new();
 
         for (a, required) in meta_event
             .required_links
@@ -182,7 +182,7 @@ impl Iterator for Iter<'_> {
                         }
                     }
 
-                    LinkValue {
+                    BaseLink {
                         target: pick.meta.id,
                         link_type: a.name.clone(),
                     }

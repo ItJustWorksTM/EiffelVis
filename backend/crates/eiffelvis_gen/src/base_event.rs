@@ -2,29 +2,27 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
-pub struct Data {}
+pub struct BaseData {}
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
-pub struct Meta {
+pub struct BaseMeta {
     pub id: Uuid,
     #[serde(rename = "type")]
     pub event_type: String,
     pub version: String,
-    pub time: u64, // Not high priority?
-                   // source: Source
-                   // security: Security
+    pub time: u64,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
-pub struct Link {
+pub struct BaseLink {
     #[serde(rename = "type")]
     pub link_type: String,
     pub target: Uuid,
 }
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
-pub struct Event {
-    pub meta: Meta,
-    pub data: Data,
-    pub links: Vec<Link>,
+pub struct BaseEvent {
+    pub meta: BaseMeta,
+    pub data: BaseData,
+    pub links: Vec<BaseLink>,
 }
