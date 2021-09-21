@@ -1,23 +1,112 @@
 use std::collections::HashMap;
-
-use crate::meta_event::{Event, Link, LinkTargets};
-
-#[derive(Default)]
-pub struct EventSetBuilder {
-    links: HashMap<String, Link>,
-    events: HashMap<String, Event>,
-}
+use std::iter::repeat;
 
 #[derive(Default, Debug)]
 pub struct EventSet {
-    pub links: HashMap<String, Link>,
-    pub events: HashMap<String, Event>,
+    links: HashMap<String, Link>,
+    events: HashMap<String, Event>,
 }
 
 impl EventSet {
     pub fn build() -> EventSetBuilder {
         EventSetBuilder::new()
     }
+
+    pub fn events(&self) -> impl Iterator<Item = EventBorrow> {
+        self.events
+            .values()
+            .zip(repeat(self))
+            .map(|(ev, s)| EventBorrow {
+                event_set: s,
+                event: ev,
+            })
+    }
+
+    pub fn get_event(&self, name: &str) -> Option<EventBorrow> {
+        self.events.get(name).map(|ev| EventBorrow {
+            event_set: self,
+            event: ev,
+        })
+    }
+}
+
+pub type LinkTargets = Option<Vec<String>>;
+
+#[derive(Debug, Clone)]
+pub struct Link {
+    name: String,
+    allow_many: bool,
+    targets: LinkTargets,
+}
+
+impl Default for Link {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            allow_many: true,
+            targets: LinkTargets::default(),
+        }
+    }
+}
+
+impl Link {
+    pub fn new(name: impl Into<String>, allow_many: bool) -> Self {
+        Self {
+            name: name.into(),
+            allow_many,
+            ..Self::default()
+        }
+    }
+
+    pub fn with_target(mut self, target: impl Into<String>) -> Self {
+        match &mut self.targets {
+            Some(vec) => vec.push(target.into()),
+            None => self.targets = LinkTargets::from(vec![(target.into())]),
+        };
+        self
+    }
+}
+
+impl<T: Into<String>> From<T> for Link {
+    fn from(str: T) -> Self {
+        Self {
+            name: str.into(),
+            ..Self::default()
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct Event {
+    name: String,
+    version: String,
+    links: Vec<(String, bool)>,
+}
+
+impl Event {
+    pub fn new(name: impl Into<String>, version: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            version: version.into(),
+            ..Self::default()
+        }
+    }
+
+    pub fn with_link(mut self, link: impl Into<String>) -> Self {
+        self.links.push((link.into(), false));
+        self
+    }
+
+    pub fn with_req_link(mut self, link: impl Into<String>) -> Self {
+        self.links.push((link.into(), true));
+        self
+    }
+}
+
+#[derive(Default)]
+pub struct EventSetBuilder {
+    links: HashMap<String, Link>,
+    events: HashMap<String, Event>,
 }
 
 impl EventSetBuilder {
@@ -45,7 +134,7 @@ impl EventSetBuilder {
 
     pub fn build(self) -> Option<EventSet> {
         let links_valid = self.links.iter().all(|(_, link)| {
-            if let LinkTargets::Events(evs) = &link.targets {
+            if let Some(evs) = &link.targets {
                 evs.iter().all(|event| self.events.contains_key(event))
             } else {
                 true
@@ -53,11 +142,10 @@ impl EventSetBuilder {
         });
 
         let events_valid = self.events.iter().all(|(_, event)| {
-            event.links.iter().all(|link| self.links.contains_key(link))
-                && event
-                    .required_links
-                    .iter()
-                    .all(|link| self.links.contains_key(link))
+            event
+                .links
+                .iter()
+                .all(|(link, _)| self.links.contains_key(link))
         });
 
         if links_valid && events_valid {
@@ -71,10 +159,71 @@ impl EventSetBuilder {
     }
 }
 
+#[derive(Clone, Copy)]
+pub struct EventBorrow<'a> {
+    event_set: &'a EventSet,
+    event: &'a Event,
+}
+
+impl<'a> EventBorrow<'a> {
+    pub fn name(&self) -> &'a str {
+        self.event.name.as_str()
+    }
+
+    pub fn version(&self) -> &'a str {
+        self.event.version.as_str()
+    }
+
+    pub fn links(&self) -> impl Iterator<Item = (LinkBorrow<'a>, bool)> {
+        self.event
+            .links
+            .iter()
+            .zip(repeat(self.event_set))
+            .filter_map(|((link, required), e)| {
+                e.links.get(link).map(|a| {
+                    (
+                        LinkBorrow {
+                            event_set: e,
+                            link: a,
+                        },
+                        *required,
+                    )
+                })
+            })
+    }
+
+    pub fn link(&self, name: &str) -> Option<&Link> {
+        self.event_set.links.get(name)
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct LinkBorrow<'a> {
+    event_set: &'a EventSet,
+    link: &'a Link,
+}
+
+impl<'a> LinkBorrow<'a> {
+    pub fn name(&self) -> &'a str {
+        self.link.name.as_str()
+    }
+
+    pub fn multiple_allowed(&self) -> bool {
+        self.link.allow_many
+    }
+
+    pub fn targets(&self) -> Option<impl Iterator<Item = EventBorrow<'a>>> {
+        self.link.targets.as_ref().map(|vec| {
+            vec.iter()
+                .zip(repeat(self.event_set))
+                .filter_map(|(event, event_set)| event_set.get_event(event))
+        })
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use super::EventSet;
-    use crate::meta_event::{Event, Link};
+    use crate::event_set::{Event, EventSet, Link};
 
     #[test]
     fn typical() {
@@ -126,5 +275,38 @@ mod test {
             .add_event(Event::new("NiceEvent", "1.0.0").with_link("Nice"))
             .build()
             .is_some());
+    }
+
+    #[test]
+    fn iterators() {
+        let event_set = EventSet::build()
+            .add_link(Link::new("0", true))
+            .add_link(Link::new("1", true))
+            .add_link(Link::new("2", true))
+            .add_event(
+                Event::new("Event", "1.0.0")
+                    .with_link("0")
+                    .with_link("1")
+                    .with_link("2"),
+            )
+            .add_event(Event::new("Event2", ""))
+            .add_event(Event::new("Event3", ""))
+            .build()
+            .unwrap();
+
+        let event = event_set.get_event("Event").unwrap();
+        let mut iter = event.links();
+
+        assert!(iter.all(|v| matches!(v.0.name(), "0" | "1" | "2")));
+
+        let mut iter = event_set.events();
+
+        assert!(iter.all(|v| matches!(v.name(), "Event" | "Event2" | "Event3")));
+    }
+
+    #[test]
+    fn get_event() {
+        let event_set = EventSet::default();
+        assert!(event_set.get_event("No").is_none());
     }
 }
