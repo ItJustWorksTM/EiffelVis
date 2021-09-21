@@ -11,7 +11,7 @@ use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
 use uuid::Uuid;
 
-use crate::meta_event::{Event, LinkTargets};
+use crate::event_set::EventBorrow;
 use crate::{base_event::BaseEvent, base_event::BaseLink, event_set::EventSet};
 
 pub struct EventGenerator {
@@ -72,16 +72,12 @@ impl<'a> Iter<'a> {
 }
 
 impl Iter<'_> {
-    fn can_generate(&self, event: &Event) -> bool {
-        let event_set = &self.inner.event_set;
+    fn can_generate(&self, event: &EventBorrow) -> bool {
         let history = &self.history;
-        event.required_links.iter().all(|l| {
-            history.iter().any(|e| {
-                let link = event_set.links.get(l).unwrap();
-                match &link.targets {
-                    LinkTargets::Any => true,
-                    LinkTargets::Events(evs) => evs.contains(&e.meta.event_type),
-                }
+        event.links().all(|(link, _)| {
+            history.iter().any(|e| match link.targets() {
+                None => true,
+                Some(mut evs) => evs.any(|a| a.name() == e.meta.event_type.as_str()),
             })
         })
     }
@@ -91,82 +87,64 @@ impl Iterator for Iter<'_> {
     type Item = Vec<u8>;
 
     fn next(&mut self) -> Option<Self::Item> {
+        let event_set = &self.inner.event_set;
         let meta_event = {
-            let mut q = self
-                .inner
-                .event_set
-                .events
-                .iter()
-                .collect::<Vec<(&String, &Event)>>();
+            let mut q = event_set.events().collect::<Vec<EventBorrow>>();
             q.shuffle(self.rng.get_mut());
-            q
-        }
-        .iter()
-        .find(|(_, e)| self.can_generate(e))?
-        .1;
+            *q.iter().find(|&e| self.can_generate(e))?
+        };
 
         let mut event = BaseEvent::default();
 
-        let mut dep_map: HashMap<String, Vec<&BaseEvent>> = HashMap::new();
+        let mut dep_map: HashMap<&str, Vec<&BaseEvent>> = HashMap::new();
 
-        meta_event
-            .required_links
-            .iter()
-            .chain(meta_event.links.iter())
-            .filter_map(|a| self.inner.event_set.links.get(a))
-            .for_each(|a| {
-                match &a.targets {
-                    LinkTargets::Any => {
-                        dep_map.insert("".to_string(), Vec::new());
-                    }
-                    LinkTargets::Events(evs) => {
-                        evs.iter().for_each(|a| {
-                            dep_map.insert(a.clone(), Vec::new());
-                        });
-                    }
-                };
-            });
+        meta_event.links().for_each(|(a, _)| {
+            match a.targets() {
+                None => {
+                    dep_map.insert("", Vec::new());
+                }
+                Some(evs) => {
+                    evs.for_each(|a| {
+                        dep_map.insert(a.name(), Vec::new());
+                    });
+                }
+            };
+        });
 
         if let Some(v) = dep_map.get_mut("") {
             *v = self.history.iter().collect();
         }
 
         for x in &self.history {
-            if let Some(v) = dep_map.get_mut(&x.meta.event_type) {
+            if let Some(v) = dep_map.get_mut(x.meta.event_type.as_str()) {
                 v.push(x);
             }
         }
 
         let mut result = Vec::<BaseLink>::new();
 
-        for (a, required) in meta_event
-            .required_links
-            .iter()
-            .zip(std::iter::repeat(true))
-            .chain(meta_event.links.iter().zip(std::iter::repeat(false)))
-            .filter_map(|(a, required)| self.inner.event_set.links.get(a).map(|a| (a, required)))
-        {
+        for (a, required) in meta_event.links() {
             let mut rand =
                 self.rng.borrow_mut().gen::<usize>() % (self.inner.max_links - result.len());
 
             rand += required as usize;
 
-            if !a.allow_many {
+            if !a.multiple_allowed() {
                 rand = rand.clamp(0, 1);
             }
 
             while rand != 0 {
-                let ret = match &a.targets {
-                    LinkTargets::Any => {
+                let ret = match a.targets() {
+                    None => {
                         let t = dep_map.get_mut("").unwrap();
                         (!t.is_empty())
                             .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
                     }
-                    LinkTargets::Events(evs) => {
-                        let mut e = evs.iter().collect::<Vec<&String>>();
+                    Some(evs) => {
+                        let mut e = evs.collect::<Vec<EventBorrow>>();
                         e.shuffle(&mut *self.rng.borrow_mut());
                         e.iter().find_map(|&a| {
-                            dep_map.get_mut(a).and_then(|t| {
+                            dep_map.get_mut(a.name()).and_then(|t| {
                                 (!t.is_empty()).then(|| {
                                     t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len()))
                                 })
@@ -184,7 +162,7 @@ impl Iterator for Iter<'_> {
 
                     BaseLink {
                         target: pick.meta.id,
-                        link_type: a.name.clone(),
+                        link_type: a.name().to_string(),
                     }
                 });
 
@@ -197,7 +175,7 @@ impl Iterator for Iter<'_> {
             }
         }
 
-        event.meta.event_type = meta_event.name.clone();
+        event.meta.event_type = meta_event.name().to_string();
         event.meta.id = Uuid::from_bytes(self.rng.get_mut().gen());
 
         // TODO: allow specifying a starting time and a time delay between events

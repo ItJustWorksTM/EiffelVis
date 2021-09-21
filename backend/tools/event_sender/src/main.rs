@@ -1,5 +1,7 @@
-use eiffelvis_gen::meta_event::{Event, Link};
-use eiffelvis_gen::{event_set::EventSet, generator::EventGenerator};
+use eiffelvis_gen::{
+    event_set::{Event, EventSet, Link},
+    generator::EventGenerator,
+};
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use structopt::StructOpt;

@@ -2,7 +2,6 @@ pub(crate) mod base_event;
 
 pub mod event_set;
 pub mod generator;
-pub mod meta_event;
 
 #[cfg(test)]
 mod test {
@@ -11,9 +10,8 @@ mod test {
     use std::collections::HashMap;
     use uuid::Uuid;
 
-    use crate::event_set::EventSet;
+    use crate::event_set::{Event, EventSet, Link};
     use crate::generator::EventGenerator;
-    use crate::meta_event::{Event, Link};
 
     use crate::base_event::BaseEvent;
 
