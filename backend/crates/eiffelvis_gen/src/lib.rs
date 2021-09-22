@@ -15,14 +15,6 @@ mod test {
 
     use crate::base_event::BaseEvent;
 
-    struct CustomSet;
-
-    impl From<CustomSet> for EventSet {
-        fn from(_: CustomSet) -> Self {
-            EventSet::build().add_link("WOOP").build().expect("nice")
-        }
-    }
-
     fn collect_events(gen: &EventGenerator, count: usize) -> Vec<BaseEvent> {
         let ret: Vec<BaseEvent> = gen
             .iter()
@@ -109,7 +101,7 @@ mod test {
                 100,
                 EventSet::build()
                     .add_link("Link0")
-                    .add_link("Link1")
+                    .add_link(Link::new("Link1", false))
                     .add_link(Link::new("Link2", false))
                     .add_event(
                         Event::new("Event", "")
@@ -125,10 +117,8 @@ mod test {
             events
                 .iter()
                 .inspect(|ev| {
-                    assert!(
-                        ev.links.iter().filter(|l| l.link_type == "Link2").count() <= 1,
-                        "Link2 is not allowed to appear multiple times"
-                    )
+                    assert!(ev.links.iter().filter(|l| l.link_type == "Link1").count() <= 1);
+                    assert!(ev.links.iter().filter(|l| l.link_type == "Link2").count() <= 1);
                 })
                 .filter(|ev| ev.meta.event_type == "Event")
                 .for_each(|ev| {

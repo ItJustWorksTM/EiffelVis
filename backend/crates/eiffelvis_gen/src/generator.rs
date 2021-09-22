@@ -174,7 +174,7 @@ impl Iterator for Iter<'_> {
         );
 
         // Then randomly select
-        for (a, _) in meta_event.links() {
+        for (a, required) in meta_event.links() {
             if self.inner.max_links < result.len() {
                 break;
             }
@@ -185,6 +185,9 @@ impl Iterator for Iter<'_> {
 
             if !a.multiple_allowed() {
                 rand = rand.clamp(0, 1);
+                if required {
+                    rand = 0;
+                }
             }
 
             while rand != 0 {
