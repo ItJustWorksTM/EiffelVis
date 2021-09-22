@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 use std::iter::repeat;
 
+/// [EventSet] allows you to describe the types of eiffel events and links you want to generate together.
+///
+/// A peculiarity with [EventSet] are the custom [EventBorrow] and [LinkBorrow] types,
+/// these act as a proxy for the real [Event] and [Link] types with the benefit of [EventBorrow::links()] and [LinkBorrow::targets()] returning the same Borrow types compared to just string names.
 #[derive(Default, Debug)]
 pub struct EventSet {
     links: HashMap<String, Link>,
@@ -8,10 +12,12 @@ pub struct EventSet {
 }
 
 impl EventSet {
+    /// Gives quick access to [EventSetBuilder].
     pub fn build() -> EventSetBuilder {
         EventSetBuilder::new()
     }
 
+    /// Provides an iterator over the events present in this set.
     pub fn events(&self) -> impl Iterator<Item = EventBorrow> {
         self.events
             .values()
@@ -22,16 +28,28 @@ impl EventSet {
             })
     }
 
+    /// Returns the Event that matches the given name.
     pub fn get_event(&self, name: &str) -> Option<EventBorrow> {
         self.events.get(name).map(|ev| EventBorrow {
             event_set: self,
             event: ev,
         })
     }
+
+    /// Returns the Link that matches the given name.
+    pub fn get_link(&self, name: &str) -> Option<LinkBorrow> {
+        self.links.get(name).map(|link| LinkBorrow {
+            link,
+            event_set: self,
+        })
+    }
 }
 
+/// Represents the 2 states of what a [Link] can target,
+/// either any (meaning any event) or a list of specific event names.
 pub type LinkTargets = Option<Vec<String>>;
 
+/// Describes an Event link
 #[derive(Debug, Clone)]
 pub struct Link {
     name: String,
@@ -39,6 +57,29 @@ pub struct Link {
     targets: LinkTargets,
 }
 
+impl Link {
+    /// Creates a new [Link] with given name.
+    /// `allow_many` hints to the generator that it's ok (or not)
+    /// for this link to be used multiple times on a single event.
+    pub fn new(name: impl Into<String>, allow_many: bool) -> Self {
+        Self {
+            name: name.into(),
+            allow_many,
+            ..Self::default()
+        }
+    }
+
+    /// Builder function that adds a target to self.
+    pub fn with_target(mut self, target: impl Into<String>) -> Self {
+        match &mut self.targets {
+            Some(vec) => vec.push(target.into()),
+            None => self.targets = LinkTargets::from(vec![(target.into())]),
+        };
+        self
+    }
+}
+
+/// Creates an unnamed Link, allowing many.
 impl Default for Link {
     fn default() -> Self {
         Self {
@@ -49,24 +90,7 @@ impl Default for Link {
     }
 }
 
-impl Link {
-    pub fn new(name: impl Into<String>, allow_many: bool) -> Self {
-        Self {
-            name: name.into(),
-            allow_many,
-            ..Self::default()
-        }
-    }
-
-    pub fn with_target(mut self, target: impl Into<String>) -> Self {
-        match &mut self.targets {
-            Some(vec) => vec.push(target.into()),
-            None => self.targets = LinkTargets::from(vec![(target.into())]),
-        };
-        self
-    }
-}
-
+/// Creates a default link, but named with given string.
 impl<T: Into<String>> From<T> for Link {
     fn from(str: T) -> Self {
         Self {
@@ -76,6 +100,8 @@ impl<T: Into<String>> From<T> for Link {
     }
 }
 
+/// Describes and Eiffel Event.  
+/// Note: as of yet, the `data` field Eiffel vocabulairy calls for is NOT supported, same goes for optional `meta` fields.
 #[derive(Debug, Clone, Default)]
 pub struct Event {
     name: String,
@@ -84,6 +110,7 @@ pub struct Event {
 }
 
 impl Event {
+    /// Creates a new [Event] with given name and version, see [Event::with_link()] to add links.
     pub fn new(name: impl Into<String>, version: impl Into<String>) -> Self {
         Self {
             name: name.into(),
@@ -92,17 +119,22 @@ impl Event {
         }
     }
 
+    /// Builder function that adds a non required link by name to self.
     pub fn with_link(mut self, link: impl Into<String>) -> Self {
         self.links.push((link.into(), false));
         self
     }
 
+    /// Builder function that adds a **required** link by name to self.  
+    /// Required links are guaranteed to be present on every event generator.
     pub fn with_req_link(mut self, link: impl Into<String>) -> Self {
         self.links.push((link.into(), true));
         self
     }
 }
 
+/// Provides a way to construct the otherwise non constructable [EventSet],  
+/// This builder type exists for convience and for validation purposes.
 #[derive(Default)]
 pub struct EventSetBuilder {
     links: HashMap<String, Link>,
@@ -114,6 +146,7 @@ impl EventSetBuilder {
         Self::default()
     }
 
+    /// Adds an existing event set, this is useful when want to combine multiple sets together.
     pub fn add_event_set(mut self, event_set: impl Into<EventSet>) -> Self {
         let event_set: EventSet = event_set.into();
         self.links.extend(event_set.links);
@@ -121,24 +154,35 @@ impl EventSetBuilder {
         self
     }
 
+    /// Adds an [Event] to the event set.  
+    /// Note: Event names are unique, so only the last added event is kept.
     pub fn add_event(mut self, event: Event) -> Self {
         self.events.insert(event.name.clone(), event);
         self
     }
 
+    /// Adds a [Link] to the event set.  
+    /// Note: Link names are unique, so only the last added link is kept.
     pub fn add_link(mut self, link: impl Into<Link>) -> Self {
         let link = link.into();
         self.links.insert(link.name.clone(), link);
         self
     }
 
+    /// Consumes the builder and returns a [EventSet].  
+    /// Fails if an event or a link references invalid links / events, e.g.:
+    /// ```
+    /// # use eiffelvis_gen::event_set::{EventSet, Event};
+    /// assert!(EventSet::build()
+    ///     .add_event(Event::new("Event", "1.0.0").with_link("NonExistant"))
+    ///     .build()
+    ///     .is_none());
+    /// ````
     pub fn build(self) -> Option<EventSet> {
         let links_valid = self.links.iter().all(|(_, link)| {
-            if let Some(evs) = &link.targets {
+            link.targets.as_ref().map_or(true, |evs| {
                 evs.iter().all(|event| self.events.contains_key(event))
-            } else {
-                true
-            }
+            })
         });
 
         let events_valid = self.events.iter().all(|(_, event)| {
@@ -159,6 +203,7 @@ impl EventSetBuilder {
     }
 }
 
+/// Proxy type that represents a borrowed Event obtained from [EventSet] or [LinkBorrow].
 #[derive(Clone, Copy)]
 pub struct EventBorrow<'a> {
     event_set: &'a EventSet,
@@ -174,6 +219,7 @@ impl<'a> EventBorrow<'a> {
         self.event.version.as_str()
     }
 
+    /// Returns an iterator over the links of this event.
     pub fn links(&self) -> impl Iterator<Item = (LinkBorrow<'a>, bool)> {
         self.event
             .links
@@ -196,11 +242,12 @@ impl<'a> EventBorrow<'a> {
         self.event.links.len()
     }
 
-    pub fn link(&self, name: &str) -> Option<&Link> {
-        self.event_set.links.get(name)
+    pub fn link(&self, name: &str) -> Option<LinkBorrow> {
+        self.event_set.get_link(name)
     }
 }
 
+/// Proxy type that represents a borrowed Link obtained from [EventSet] or [EventBorrow].
 #[derive(Clone, Copy)]
 pub struct LinkBorrow<'a> {
     event_set: &'a EventSet,
@@ -216,6 +263,7 @@ impl<'a> LinkBorrow<'a> {
         self.link.allow_many
     }
 
+    // Returns an iterator of events this link can target.
     pub fn targets(&self) -> Option<impl Iterator<Item = EventBorrow<'a>>> {
         self.link.targets.as_ref().map(|vec| {
             vec.iter()

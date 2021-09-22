@@ -1,7 +1,47 @@
-pub(crate) mod base_event;
+//! A library for generating mock eiffel events that actually link back to something.
+//!
+//! ## Glosary
+//!
+//! Which events with what links will be generated is dictated by [event_set::EventSet],
+//! you can view it as the template that is used to stamp out many events.  
+//! To actually generate events an [generator::EventGenerator] is needed with an event set
+//! along with a few more rules such as history limit, max link amount and a random seed.
+//! ```no_run
+//! use eiffelvis_gen::event_set::{EventSet, Link, Event};
+//! use eiffelvis_gen::generator::EventGenerator;
+//! let my_event_set = EventSet::build()
+//!     .add_link(Link::new("Link0", false))
+//!     .add_link(Link::new("Link1", true))
+//!     .add_event(
+//!        Event::new("Event", "1.0.0")
+//!            .with_link("Link0")
+//!            .with_req_link("Link1"),
+//!     )
+//!     .build()
+//!     .expect("I reference existing links and events");
+//!
+//! let seed = 123;
+//! let max_links = 5;
+//! let max_history = 100;
+//! let generator = EventGenerator::new(seed, max_links, max_history, my_event_set);
+//!
+//! /// Events can now be iterated over via .iter()
+//! for event in generator.iter().take(100) {
+//!     // Do something!   
+//! }
+//! ```
+//! Do note however that it is a never ending iterator; it only ever returns [None] when an impossible to generate [event_set::EventSet] is given.
+//! Always use in combination with [Iterator::take] if you want to collect it.
+//!
 
+/// Types that are used to describe Events.
 pub mod event_set;
+
+/// Generator that stamps out events.
 pub mod generator;
+
+#[doc(hidden)]
+pub(crate) mod base_event;
 
 #[cfg(test)]
 mod test {
