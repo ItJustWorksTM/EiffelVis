@@ -74,19 +74,21 @@ impl<'a> Iter<'a> {
 impl Iter<'_> {
     fn can_generate(&self, event: &EventBorrow) -> bool {
         if event.link_count() > self.inner.max_links {
-            return false;
+            false
+        } else {
+            event.links().all(|(link, req)| {
+                if self.history.is_empty() {
+                    !req
+                } else {
+                    self.history.iter().any(|e| match (link.targets(), req) {
+                        (Some(mut evs), true) => {
+                            evs.any(|a| a.name() == e.meta.event_type.as_str())
+                        }
+                        _ => true,
+                    })
+                }
+            })
         }
-        let history = &self.history;
-        event.links().all(|(link, req)| {
-            if history.is_empty() {
-                !req
-            } else {
-                history.iter().any(|e| match (link.targets(), req) {
-                    (Some(mut evs), true) => evs.any(|a| a.name() == e.meta.event_type.as_str()),
-                    _ => true,
-                })
-            }
-        })
     }
 }
 
@@ -97,7 +99,7 @@ impl Iterator for Iter<'_> {
         let event_set = &self.inner.event_set;
         let meta_event = {
             let mut q = event_set.events().collect::<Vec<EventBorrow>>();
-            q.shuffle(self.rng.get_mut());
+            q.shuffle(&mut *self.rng.borrow_mut());
             *q.iter().find(|&e| self.can_generate(e))?
         };
 
@@ -163,8 +165,6 @@ impl Iterator for Iter<'_> {
 
         let mut result = Vec::<BaseLink>::new();
 
-        // TODO: shuffle links first
-
         // First do the required links ONCE
         result.extend(
             meta_event
@@ -173,30 +173,36 @@ impl Iterator for Iter<'_> {
                 .map(|(link, _)| select_event(link).unwrap()), // unwrap safe because we checked that we can generate this event
         );
 
-        // Then randomly select
-        for (a, required) in meta_event.links() {
-            if self.inner.max_links < result.len() {
+        let mut generatable_events: Vec<(LinkBorrow, bool)> = meta_event
+            .links()
+            .filter(|(link, required)| !*required || link.multiple_allowed())
+            .collect();
+
+        let target_amount = self
+            .rng
+            .borrow_mut()
+            .gen_range(0..self.inner.max_links - result.len() - 1);
+        // Randomly pick a link and select an event for it until we reach our target or we exhaust possible events
+        while let Some((i, (link, _))) = {
+            let ret = generatable_events
+                .iter()
+                .enumerate()
+                .choose(&mut *self.rng.borrow_mut());
+            ret
+        } {
+            if result.len() > target_amount {
                 break;
             }
 
-            let budget = self.inner.max_links - result.len();
+            let exhausted = if let Some(bl) = select_event(*link) {
+                result.push(bl);
+                !link.multiple_allowed()
+            } else {
+                true
+            };
 
-            let mut rand = self.rng.borrow_mut().gen::<usize>() % budget;
-
-            if !a.multiple_allowed() {
-                rand = rand.clamp(0, 1);
-                if required {
-                    rand = 0;
-                }
-            }
-
-            while rand != 0 {
-                if let Some(ret) = select_event(a) {
-                    result.push(ret);
-                    rand -= 1;
-                } else {
-                    break;
-                }
+            if exhausted {
+                generatable_events.swap_remove(i);
             }
         }
 
