@@ -14,8 +14,33 @@ use uuid::Uuid;
 use crate::event_set::{EventBorrow, LinkBorrow};
 use crate::{base_event::BaseEvent, base_event::BaseLink, event_set::EventSet};
 
+/// Holds on to all the data needed to generate a infinite series of events and should not need be modified after creation.  
+/// Actual generated events come from the iterator [Iter] obtained through [EventGenerator::iter()].
+///
+/// Generated events come in the form of JSON, you will need to deserialize them on your own.  
+/// The produced JSON will at least include the "meta", "data" and "links" fields each with their non optional fields :
+/// ```json
+/// {
+///    "meta":{
+///       "id":"206f25df-f6a8-545b-7492-996f84e897ee",
+///       "type":"Event",
+///       "version":"1.0.0",
+///       "time":1632257822
+///    },
+///    "data":{
+///   
+///    },
+///    "links":[
+///       {
+///          "type":"Link0",
+///          "target":"13588b40-3c04-30f0-6437-f9712c17bc09"
+///       }
+///    ]
+/// }
+/// ```
+/// ("data" is always empty for now)
 pub struct EventGenerator {
-    pub seed: Seeder,
+    seed: Seeder,
     inner: Inner,
 }
 
@@ -26,6 +51,11 @@ struct Inner {
 }
 
 impl EventGenerator {
+    /// Constructs a new [EventGenerator],  
+    /// * `seed` : seeds the random generator used to generate random events.  
+    /// * `max_links` : the upper limit on how many links a generated event can have, however links marked required ignore this limit.  
+    /// * `history_max` : the upper limit on how many events will be kept to act as an event history from which new links are created.
+    /// * `event_set` : the events and links that should be generated
     pub fn new(seed: impl Hash, max_links: usize, history_max: usize, event_set: EventSet) -> Self {
         Self {
             inner: Inner {
@@ -37,6 +67,8 @@ impl EventGenerator {
         }
     }
 
+    /// Creates a new **infinite** event iterator.
+    /// Every [Iter] made from the same [EventGenerator] generate the same sequence of events.
     pub fn iter(&self) -> Iter {
         Iter::new(&self.inner, self.seed.clone().make_rng())
     }
