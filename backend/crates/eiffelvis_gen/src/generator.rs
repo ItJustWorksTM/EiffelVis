@@ -127,8 +127,10 @@ impl Iter<'_> {
 impl Iterator for Iter<'_> {
     type Item = Vec<u8>;
 
+    /// Yields a new event, fails if no events could be created due to rule constraints such as required links.
     fn next(&mut self) -> Option<Self::Item> {
         let event_set = &self.inner.event_set;
+
         let meta_event = {
             let mut q = event_set.events().collect::<Vec<EventBorrow>>();
             q.shuffle(&mut *self.rng.borrow_mut());
@@ -137,35 +139,35 @@ impl Iterator for Iter<'_> {
 
         let mut event = BaseEvent::default();
 
-        let mut dep_map: HashMap<&str, Vec<&BaseEvent>> = HashMap::new();
+        let mut allowed_events: HashMap<&str, Vec<&BaseEvent>> = HashMap::new();
 
-        meta_event.links().for_each(|(a, _)| {
-            match a.targets() {
+        for (link, _) in meta_event.links() {
+            match link.targets() {
                 None => {
-                    dep_map.insert("", Vec::new());
+                    allowed_events.insert("", Vec::new());
                 }
                 Some(evs) => {
                     evs.for_each(|a| {
-                        dep_map.insert(a.name(), Vec::new());
+                        allowed_events.insert(a.name(), Vec::new());
                     });
                 }
             };
-        });
+        }
 
-        if let Some(v) = dep_map.get_mut("") {
+        if let Some(v) = allowed_events.get_mut("") {
             *v = self.history.iter().collect();
         }
 
-        for x in &self.history {
-            if let Some(v) = dep_map.get_mut(x.meta.event_type.as_str()) {
-                v.push(x);
+        for ev in &self.history {
+            if let Some(v) = allowed_events.get_mut(ev.meta.event_type.as_str()) {
+                v.push(ev);
             }
         }
 
-        let mut select_event = |a: LinkBorrow| {
-            match a.targets() {
+        let mut select_event = |link: LinkBorrow| {
+            match link.targets() {
                 None => {
-                    let t = dep_map.get_mut("").unwrap();
+                    let t = allowed_events.get_mut("").unwrap();
                     (!t.is_empty())
                         .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
                 }
@@ -173,7 +175,7 @@ impl Iterator for Iter<'_> {
                     let mut e = evs.collect::<Vec<EventBorrow>>();
                     e.shuffle(&mut *self.rng.borrow_mut());
                     e.iter().find_map(|&a| {
-                        dep_map.get_mut(a.name()).and_then(|t| {
+                        allowed_events.get_mut(a.name()).and_then(|t| {
                             (!t.is_empty())
                                 .then(|| t.swap_remove(self.rng.borrow_mut().gen_range(0..t.len())))
                         })
@@ -181,7 +183,7 @@ impl Iterator for Iter<'_> {
                 }
             }
             .map(|pick| {
-                for (_, v) in dep_map.iter_mut() {
+                for (_, v) in allowed_events.iter_mut() {
                     if let Some(pos) = v.iter().position(|&r| r.meta.id == pick.meta.id) {
                         v.remove(pos);
                         continue;
@@ -190,15 +192,15 @@ impl Iterator for Iter<'_> {
 
                 BaseLink {
                     target: pick.meta.id,
-                    link_type: a.name().to_string(),
+                    link_type: link.name().to_string(),
                 }
             })
         };
 
-        let mut result = Vec::<BaseLink>::new();
+        let mut generated_links = Vec::new();
 
         // First do the required links ONCE
-        result.extend(
+        generated_links.extend(
             meta_event
                 .links()
                 .filter(|(_, required)| *required)
@@ -213,7 +215,7 @@ impl Iterator for Iter<'_> {
         let target_amount = self
             .rng
             .borrow_mut()
-            .gen_range(0..self.inner.max_links - result.len() - 1);
+            .gen_range(0..self.inner.max_links - generated_links.len() - 1);
         // Randomly pick a link and select an event for it until we reach our target or we exhaust possible events
         while let Some((i, (link, _))) = {
             let ret = generatable_events
@@ -222,12 +224,12 @@ impl Iterator for Iter<'_> {
                 .choose(&mut *self.rng.borrow_mut());
             ret
         } {
-            if result.len() > target_amount {
+            if generated_links.len() > target_amount {
                 break;
             }
 
             let exhausted = if let Some(bl) = select_event(*link) {
-                result.push(bl);
+                generated_links.push(bl);
                 !link.multiple_allowed()
             } else {
                 true
@@ -247,7 +249,7 @@ impl Iterator for Iter<'_> {
             .unwrap()
             .as_secs();
 
-        event.links = result;
+        event.links = generated_links;
 
         let event_bytes = serde_json::to_vec(&event).unwrap();
 

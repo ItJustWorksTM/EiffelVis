@@ -69,7 +69,7 @@ mod test {
     fn general() {
         let max_links = 20;
 
-        let thing = EventGenerator::new(
+        let gen = EventGenerator::new(
             thread_rng().gen::<usize>(),
             max_links,
             usize::MAX,
@@ -83,7 +83,7 @@ mod test {
         let mut last_run: Option<HashMap<Uuid, BaseEvent>> = None;
 
         for _ in 0..2 {
-            let event_map: HashMap<Uuid, BaseEvent> = thing
+            let event_map: HashMap<Uuid, BaseEvent> = gen
                 .iter()
                 .take(100)
                 .map(|bytes| serde_json::from_slice::<BaseEvent>(&bytes).unwrap())

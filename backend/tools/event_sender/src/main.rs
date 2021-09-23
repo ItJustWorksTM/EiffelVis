@@ -47,9 +47,9 @@ async fn app() -> anyhow::Result<()> {
 
     println!("Connected to broker.");
 
-    let thing = EventGenerator::new(
+    let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        100,
+        5,
         100,
         EventSet::build()
             .add_link(Link::new("Link0", true))
@@ -65,7 +65,7 @@ async fn app() -> anyhow::Result<()> {
 
     println!("Sending out {} events..", cli.count);
 
-    for ev in thing.iter().take(cli.count) {
+    for ev in gen.iter().take(cli.count) {
         let _ = channel_a
             .basic_publish(
                 cli.exchange.as_str(),
