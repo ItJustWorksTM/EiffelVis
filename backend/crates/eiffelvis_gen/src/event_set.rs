@@ -22,17 +22,14 @@ impl EventSet {
         self.events
             .values()
             .zip(repeat(self))
-            .map(|(ev, s)| EventBorrow {
-                event_set: s,
-                event: ev,
-            })
+            .map(|(event, event_set)| EventBorrow { event_set, event })
     }
 
     /// Returns the Event that matches the given name.
     pub fn get_event(&self, name: &str) -> Option<EventBorrow> {
-        self.events.get(name).map(|ev| EventBorrow {
+        self.events.get(name).map(|event| EventBorrow {
             event_set: self,
-            event: ev,
+            event,
         })
     }
 
@@ -225,16 +222,11 @@ impl<'a> EventBorrow<'a> {
             .links
             .iter()
             .zip(repeat(self.event_set))
-            .filter_map(|((link, required), e)| {
-                e.links.get(link).map(|a| {
-                    (
-                        LinkBorrow {
-                            event_set: e,
-                            link: a,
-                        },
-                        *required,
-                    )
-                })
+            .filter_map(|((link, required), event_set)| {
+                event_set
+                    .links
+                    .get(link)
+                    .map(|link| (LinkBorrow { event_set, link }, *required))
             })
     }
 
@@ -268,7 +260,7 @@ impl<'a> LinkBorrow<'a> {
         self.link.targets.as_ref().map(|vec| {
             vec.iter()
                 .zip(repeat(self.event_set))
-                .filter_map(|(event, event_set)| event_set.get_event(event))
+                .filter_map(|(event_name, event_set)| event_set.get_event(event_name))
         })
     }
 }
