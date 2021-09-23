@@ -1,12 +1,38 @@
 baseURL = 'https://itjustworkstm.github.io/EiffelVis'
 languageCode = 'en-us'
 title = 'EiffelVis'
-theme = "ananke"
+theme = "hugo-coder"
+languagecode = "en"
 
 [params]
-    favicon = "images/EiffelVisLogo.png"
-    site_logo = "images/EiffelVisLogo.png"
-    description = "The best innovational CI visualization tool"
     github = "https://github.com/ItJustWorksTM/EiffelVis"
     background_color_class = "bg-black"
 
+    author = "EiffelVis"
+    info = "Eiffel event visualization stack."
+    avatarurl = "images/EiffelVisLogo.png"
+
+    footercontent = "A project by ItJustWorks™"
+    hideCredits = true
+    hideCopyright = false
+    since = 2021
+
+    colorScheme = "auto"
+    hidecolorschemetoggle = true
+    customCSS = ["css/custom.css"]
+
+[[params.social]]
+  name = "Github"
+  icon = "fa fa-github fa-2x"
+  weight = 1
+  url = "https://github.com/ItJustWorksTM/EiffelVis"
+
+[[menu.main]]
+  name = "Api Docs"
+  weight = 1
+  url  = "docs/eiffelvis/index.html"
+
+[[menu.main]]
+  name = "About"
+  weight = 2
+  url = "about/"
