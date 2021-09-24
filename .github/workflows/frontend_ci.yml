@@ -8,13 +8,14 @@ defaults:
     
 jobs:
   build:
-
-    runs-on: [windows-latest, ubuntu-latest, macos-latest]
+    name: Build & Lint - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         node-version: [12.x, 14.x]
-
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
