@@ -1,0 +1,49 @@
+.navBar {
+  width: 4rem;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.logoContainer {
+  margin-top: 1rem;
+}
+.logoContainer img {
+  cursor: pointer;
+}
+
+.MenuItems {
+  list-style-type: none;
+  margin: 1rem auto;
+  padding: 0;
+  justify-self: flex-start;
+  flex-grow: 1;
+  width: 100%;
+  align-self: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-top: 1px solid #69696994;
+  border-bottom: 1px solid #69696994;
+}
+
+.MenuItem {
+  margin: 2rem auto;
+  cursor: pointer;
+}
+
+.navFooter {
+  margin-bottom: 1rem;
+}
+
+.navFooter a,
+a:hover {
+  color: #fff;
+}
