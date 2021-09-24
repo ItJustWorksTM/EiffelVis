@@ -31,12 +31,5 @@ jobs:
     - name: lint
       run: npm run lint --fix
       
-    - name: Run linters
-      uses: wearerequired/lint-action@v1
-      with:
-          eslint: true
-          prettier: true
-          
-      
     - name: Build
       run: npm run build
