@@ -19,7 +19,7 @@ const Graph: React.FC = () => {
         const g6data = dataParser(response.data)
         setData(g6data)
       })
-      .catch((err) => console.log(err))
+      .catch((err) => err)
   }, [])
 
   return data ? (
