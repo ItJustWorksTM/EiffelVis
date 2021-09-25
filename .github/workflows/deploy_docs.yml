@@ -3,8 +3,11 @@
 name: Backend Docs
 on:
   push:
-   branches:
-   - master
+    paths:
+      - 'backend/**'
+      - '.github/**'
+    branches:
+      - master
 
 defaults:
   run:
