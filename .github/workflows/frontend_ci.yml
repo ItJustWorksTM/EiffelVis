@@ -8,7 +8,7 @@ defaults:
     
 jobs:
   build:
-    name: Build & Lint - ${{ matrix.os }}
+    name: Build & Lint - ${{ runner.os }}
     runs-on: ubuntu-latest
 
     strategy:
