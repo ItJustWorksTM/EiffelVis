@@ -8,7 +8,7 @@ defaults:
     
 jobs:
   build:
-    name: Build & Lint - ${{ runner.os }}
+    name: Build & Lint 
     runs-on: ubuntu-latest
 
     strategy:
