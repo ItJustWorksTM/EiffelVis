@@ -2,65 +2,42 @@
 
 // Proof of concept Chunked storage as described in https://github.com/ItJustWorksTM/EiffelVis/issues/8
 
-use std::collections::HashMap;
-
-type Uuid = u8;
-type StorageIndex = usize;
+use indexmap::IndexMap;
+use std::hash::Hash;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct GraphIndex(usize, usize);
 
+trait GraphKey: Hash + Eq + Copy + Clone {}
+impl<T: Hash + Eq + Copy + Clone> GraphKey for T {}
+
+type Uuid = u8;
+type StorageIndex = usize;
 #[derive(Debug)]
-struct Edge {
-    data: (),
+struct Edge<T> {
+    data: T,
     target: GraphIndex,
 }
 
 #[derive(Debug)]
-struct Node {
-    uuid: Uuid,
-    data: (),
-    edges: Vec<Edge>,
+struct Node<T, E> {
+    data: T,
+    edges: Vec<Edge<E>>,
 }
 
 #[derive(Debug)]
-struct GraphStorage {
-    uuids: HashMap<Uuid, StorageIndex>,
-    events: Vec<Node>,
-    max_len: usize,
-}
-
-impl GraphStorage {
-    fn new(max_len: usize) -> Self {
-        Self {
-            uuids: {
-                let mut map = HashMap::new();
-                map.reserve(max_len);
-                map
-            },
-            events: Vec::with_capacity(max_len),
-            max_len,
-        }
-    }
-
-    fn is_full(&self) -> bool {
-        self.events.len() == self.max_len
-    }
-}
-
-#[derive(Debug)]
-struct Graph {
-    chunks: Vec<GraphStorage>,
+struct Graph<K: GraphKey, N, E> {
+    chunks: Vec<IndexMap<K, Node<N, E>>>,
     max_chunks: usize,
     chunk_size: usize,
     head: usize,
     tail: usize,
 }
 
-impl Graph {
+impl<K: GraphKey, N, E> Graph<K, N, E> {
     fn new(max_chunks: usize, chunk_size: usize) -> Self {
         Self {
-            chunks: vec![GraphStorage::new(chunk_size)],
+            chunks: vec![IndexMap::with_capacity(chunk_size)],
             max_chunks,
             chunk_size,
             head: 0,
@@ -68,47 +45,57 @@ impl Graph {
         }
     }
 
-    fn find_index(&self, key: Uuid) -> Option<GraphIndex> {
+    fn find_index(&self, key: K) -> Option<GraphIndex> {
         self.chunks
             .iter()
             .enumerate()
             .find_map(|(chunk_index, chunk)| {
-                chunk
-                    .uuids
-                    .get(&key)
-                    .copied()
-                    .map(|a| GraphIndex(chunk_index, a))
+                chunk.get_index_of(&key).map(|i| GraphIndex(chunk_index, i))
             })
     }
 
-    fn push_node(&mut self, node: Node) {
+    pub fn index(&mut self, index: GraphIndex) -> Option<&Node<N, E>> {
+        self.chunks
+            .get(index.0)
+            .and_then(|chunk| chunk.get_index(index.1))
+            .map(|(_, n)| n)
+    }
+
+    pub fn push(&mut self, key: K, mut edges: Vec<(K, E)>, data: N) -> Option<()> {
+        // Dont allow overwriting existing nodes
+        if self.find_index(key).is_some() {
+            return None;
+        }
+
+        let node = Node {
+            data,
+            edges: edges
+                .drain(..)
+                // If links dont exist we simply don't store them
+                .filter_map(|(uuid, data)| {
+                    self.find_index(uuid).map(|target| Edge { data, target })
+                })
+                .collect(),
+        };
+
         let chunk = {
-            if self.chunks[self.head].is_full() {
+            if self.chunks[self.head].len() == self.chunk_size {
                 if self.chunks.len() != self.max_chunks {
-                    self.chunks.push(GraphStorage::new(self.chunk_size));
-                    println!("adding new storage!");
+                    self.chunks.push(IndexMap::with_capacity(self.chunk_size));
                 }
 
-                // Wrap around
                 self.head = wrap_add(self.head, self.chunks.len());
-                println!("head: {}", self.head);
 
                 // If new head is full it means we wrapped around and we have to start dropping events
-                if self.chunks[self.head].is_full() {
+                if self.chunks[self.head].len() == self.chunk_size {
                     // Simply drop all events as we dont need them
-                    self.chunks[self.head].uuids.clear();
-                    self.chunks[self.head].events.clear();
+                    self.chunks[self.head].clear();
 
                     // Iterate over all events and drop any edge that references the cleared chunk
                     let cleared_page = self.head;
                     self.chunks.iter_mut().for_each(|chunk| {
-                        chunk.events.iter_mut().for_each(|ev| {
-                            // TODO: dont drain, instead swap remove to reuse the buffer
-                            ev.edges = ev
-                                .edges
-                                .drain(..)
-                                .filter(|e| e.target.0 != cleared_page)
-                                .collect();
+                        chunk.iter_mut().for_each(|(_, node)| {
+                            node.edges.retain(|e| e.target.0 != cleared_page);
                         });
                     });
 
@@ -118,74 +105,40 @@ impl Graph {
             }
             &mut self.chunks[self.head]
         };
-        chunk.uuids.insert(node.uuid, chunk.events.len());
-        chunk.events.push(node);
-    }
 
-    fn index_mut(&mut self, index: GraphIndex) -> Option<&mut Node> {
-        self.chunks
-            .get_mut(index.0)
-            .and_then(|chunk| chunk.events.get_mut(index.1))
-    }
-
-    pub fn index(&mut self, index: GraphIndex) -> Option<&Node> {
-        self.chunks
-            .get(index.0)
-            .and_then(|chunk| chunk.events.get(index.1))
-    }
-
-    pub fn push(&mut self, key: Uuid, edges: &[Uuid], data: ()) -> Option<()> {
-        // Dont allow overwriting existing nodes
-        if self.find_index(key).is_some() {
-            return None;
-        }
-
-        let node = Node {
-            uuid: key,
-            data,
-            edges: edges
-                .iter()
-                // If links dont exist we simply don't store them
-                .filter_map(|uuid| {
-                    self.find_index(*uuid)
-                        .map(|target| Edge { data: (), target })
-                })
-                .collect(),
-        };
-
-        self.push_node(node);
+        chunk.insert(key, node);
 
         Some(())
     }
 
     // Returns an iterator that yields nodes in the order they have been inserted
-    pub fn iter(&self) -> GraphIterator<'_> {
+    pub fn iter(&self) -> GraphIterator<'_, K, N, E> {
         GraphIterator {
-            inner: self.chunks[self.tail].events.iter(),
+            inner: self.chunks[self.tail].iter(),
             graph: self,
             chunk: self.tail,
         }
     }
 }
 
-struct GraphIterator<'a> {
-    inner: <&'a Vec<Node> as IntoIterator>::IntoIter,
-    graph: &'a Graph,
+struct GraphIterator<'a, K: GraphKey, N, E> {
+    inner: <&'a IndexMap<K, Node<N, E>> as IntoIterator>::IntoIter,
+    graph: &'a Graph<K, N, E>,
     chunk: usize,
 }
 
-impl<'a> Iterator for GraphIterator<'a> {
-    type Item = &'a Node;
+impl<'a, K: GraphKey, N, E> Iterator for GraphIterator<'a, K, N, E> {
+    type Item = &'a Node<N, E>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next = self.inner.next();
+        let mut next = self.inner.next().map(|(_, n)| n);
         if next.is_none() {
             if self.chunk == self.graph.head {
                 return None;
             }
             self.chunk = wrap_add(self.chunk, self.graph.chunks.len());
-            self.inner = self.graph.chunks[self.chunk].events.iter();
-            next = self.inner.next();
+            self.inner = self.graph.chunks[self.chunk].iter();
+            next = self.inner.next().map(|(_, n)| n);
         }
         next
     }
@@ -203,11 +156,12 @@ fn wrap_add(mut val: usize, max: usize) -> usize {
 fn test() {
     let mut g = Graph::new(3, 3);
 
-    g.push(0, &[], ()).unwrap();
+    g.push(0, vec![], "This is the beginning!").unwrap();
 
     for i in 1..30 {
         println!("{}:", i);
-        g.push(i, &[i - 1], ()).unwrap();
+        g.push(i, vec![(i - 1, format!("targets {}", i))], "more data")
+            .unwrap();
         g.iter().for_each(|node| println!("{:?}", node));
     }
 }
