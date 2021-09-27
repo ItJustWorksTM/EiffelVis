@@ -14,6 +14,9 @@ export default (data: IData) => {
             value: type,
             fontSize: 6,
           },
+          halo: {
+            lineWidth: 5,
+          },
         },
       })
     })

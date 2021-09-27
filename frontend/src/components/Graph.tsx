@@ -4,7 +4,7 @@ import Graphin, { Behaviors } from '@antv/graphin'
 import dataParser from '../helpers/dataParser'
 import G6Data from '../interfaces/G6Data'
 
-const { ZoomCanvas } = Behaviors
+const { ZoomCanvas, ActivateRelations, Hoverable, ClickSelect } = Behaviors
 
 const link =
   'https://gist.githubusercontent.com/IdreesSamadi/6aa2e5f0f8c3828b41f1e3446d2002cd/raw/messages.json'
@@ -30,6 +30,9 @@ const Graph: React.FC = () => {
       theme={{ mode: 'dark' }}
       layout={{ type: 'circular' }}
     >
+      <Hoverable />
+      <ClickSelect />
+      <ActivateRelations trigger="click" />
       <ZoomCanvas />
     </Graphin>
   ) : (
