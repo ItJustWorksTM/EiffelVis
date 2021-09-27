@@ -154,6 +154,10 @@ name = "eiffelvis"
 version = "0.1.0"
 
 [[package]]
+name = "eiffelvis_core"
+version = "0.1.0"
+
+[[package]]
 name = "eiffelvis_gen"
 version = "0.1.0"
 dependencies = [
