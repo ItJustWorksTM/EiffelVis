@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Graphin, { Behaviors, GraphinContext } from '@antv/graphin'
-import { Tooltip } from '@antv/graphin-components'
+import { MiniMap, Tooltip } from '@antv/graphin-components'
 import Card from './Card'
 import dataParser from '../helpers/dataParser'
 import G6Data from '../interfaces/G6Data'
@@ -45,14 +45,20 @@ const Graph: React.FC = () => {
       theme={{ mode: 'dark' }}
       layout={{ type: 'circular' }}
     >
-      <div>
-        <Tooltip bindType="node" placement="right">
-          <CustomTooltip />
-        </Tooltip>
-      </div>
-      <Hoverable />
-      <ClickSelect />
+      <Tooltip bindType="node" placement="right">
+        <CustomTooltip />
+      </Tooltip>
       <ActivateRelations trigger="click" />
+      <ClickSelect />
+      <Hoverable />
+      <MiniMap
+        visible
+        style={{
+          background: '#000000',
+          marginBottom: '3rem',
+          marginLeft: '0rem',
+        }}
+      />
       <ZoomCanvas />
     </Graphin>
   ) : (
