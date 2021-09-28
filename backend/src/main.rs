@@ -7,7 +7,37 @@
 use std::{sync::Arc, time::Duration};
 
 use eiffelvis_core::app::EiffelVisApp;
+use structopt::StructOpt;
 use tracing::info;
+
+/// Command line options
+#[derive(StructOpt, Debug)]
+#[structopt(name = "EiffelVis")]
+struct Cli {
+    /// HTTP host address
+    #[structopt(short, long, default_value = "127.0.0.1")]
+    address: String,
+
+    /// HTTP host port
+    #[structopt(short, long, default_value = "3001")]
+    port: u16,
+
+    /// AMQP URI
+    #[structopt(short = "r", long, default_value = "amqp://localhost:5672/%2f")]
+    rmq_uri: String,
+
+    /// AMQP reconnect timeout
+    #[structopt(short = "t", long, default_value = "3001")]
+    timeout: u64,
+
+    /// Maximum amount of chunks stored in memory
+    #[structopt(long, default_value = "10")]
+    max_chunks: usize,
+
+    /// Maximum amount of events a single chunk will hold
+    #[structopt(long, default_value = "100")]
+    chunk_size: usize,
+}
 
 /// Starts all the services that make up EiffelVis.
 #[tokio::main]
@@ -17,22 +47,29 @@ async fn main() {
     }
     tracing_subscriber::fmt::init();
 
-    let graph = Arc::new(tokio::sync::RwLock::new(EiffelVisApp::new(10, 1000)));
+    let cli = Cli::from_args();
+
+    let graph = Arc::new(tokio::sync::RwLock::new(EiffelVisApp::new(
+        cli.max_chunks,
+        cli.chunk_size,
+    )));
 
     let http_server = tokio::spawn(eiffelvis_http::app(
         graph.clone(),
-        "127.0.0.1:3001",
+        cli.address,
+        cli.port,
         shutdown_signal(),
     ));
 
     let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
-        "amqp://localhost:5672/%2f".into(),
+        cli.rmq_uri.into(),
         "hello".into(),
         "eiffelvis".into(),
     )
     .await
     .expect("Failed to connect to ampq server");
 
+    let timeout = cli.timeout;
     let event_parser = tokio::spawn(async move {
         loop {
             if let Some(bytes) = event_parser.next().await {
@@ -43,7 +80,7 @@ async fn main() {
                 }
             } else {
                 info!("Event stream failed, sleeping for 5 seconds to retry");
-                tokio::time::sleep(Duration::from_secs(5)).await;
+                tokio::time::sleep(Duration::from_secs(timeout)).await;
             }
         }
     });

@@ -6,8 +6,10 @@ use axum::{
     body::Full, extract::Extension, extract::Path, handler::get, http::StatusCode,
     response::IntoResponse, AddExtensionLayer, Json, Router,
 };
+
 use hyper::Response;
-use std::{future::Future, sync::Arc};
+use std::{future::Future, net::SocketAddr, sync::Arc};
+
 use uuid::Uuid;
 
 use eiffelvis_core::app::EiffelVisApp;
@@ -19,7 +21,8 @@ type CoreApp = Arc<tokio::sync::RwLock<EiffelVisApp>>;
 /// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.
 pub async fn app(
     core: CoreApp,
-    address: &str,
+    address: String,
+    port: u16,
     shutdown: impl Future<Output = ()>,
 ) -> anyhow::Result<()> {
     let service = Router::new()
@@ -28,7 +31,7 @@ pub async fn app(
         .layer(AddExtensionLayer::new(core));
     let address = address.parse()?;
 
-    let server = axum::Server::try_bind(&address)?
+    let server = axum::Server::try_bind(&SocketAddr::new(address, port))?
         .serve(service.into_make_service())
         .with_graceful_shutdown(shutdown);
 
