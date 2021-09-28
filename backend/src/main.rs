@@ -2,6 +2,27 @@ use std::{sync::Arc, time::Duration};
 
 use eiffelvis_core::app::EiffelVisApp;
 use tracing::info;
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "EiffelVis")]
+struct Cli {
+    /// HTTP host address
+    #[structopt(short, long, default_value = "127.0.0.1")]
+    address: String,
+
+    /// HTTP host port
+    #[structopt(short, long, default_value = "3001")]
+    port: u16,
+
+    /// AMQP URI
+    #[structopt(short = "r", long, default_value = "amqp://localhost:5672/%2f")]
+    rmq_uri: String,
+
+    /// AMQP reconnect timeout
+    #[structopt(short = "t", long, default_value = "3001")]
+    timeout: u64,
+}
 
 #[tokio::main]
 async fn main() {
@@ -10,18 +31,21 @@ async fn main() {
     }
     tracing_subscriber::fmt::init();
 
+    let cli = Cli::from_args();
+
     let graph = Arc::new(tokio::sync::RwLock::new(EiffelVisApp::new(10, 10)));
 
     let http_server = tokio::spawn(eiffelvis_http::app(
         graph.clone(),
-        "127.0.0.1:3001",
+        cli.address,
+        cli.port,
         shutdown_signal(),
     ));
 
     let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
-        "amqp://localhost:5672/%2f".into(),
+        cli.rmq_uri.into(),
         "hello".into(),
-        5,
+        cli.timeout,
     )
     .await
     .expect("Failed to connect to ampq server");

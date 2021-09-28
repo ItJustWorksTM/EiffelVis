@@ -6,7 +6,7 @@ use axum::{
 };
 use hyper::{header, Response};
 use serde::Serialize;
-use std::{future::Future, sync::Arc};
+use std::{future::Future, net::SocketAddr, sync::Arc};
 use uuid::Uuid;
 
 use eiffelvis_core::{app::EiffelVisApp, types::LeanEvent};
@@ -15,7 +15,8 @@ type CoreApp = Arc<tokio::sync::RwLock<EiffelVisApp>>;
 
 pub async fn app(
     core: CoreApp,
-    address: &str,
+    address: String,
+    port: u16,
     shutdown: impl Future<Output = ()>,
 ) -> anyhow::Result<()> {
     let service = Router::new()
@@ -24,7 +25,7 @@ pub async fn app(
         .layer(AddExtensionLayer::new(core));
     let address = address.parse()?;
 
-    let server = axum::Server::try_bind(&address)?
+    let server = axum::Server::try_bind(&SocketAddr::new(address, port))?
         .serve(service.into_make_service())
         .with_graceful_shutdown(shutdown);
 
