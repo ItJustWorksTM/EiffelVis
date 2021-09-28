@@ -3,30 +3,30 @@
 // Proof of concept Chunked storage as described in https://github.com/ItJustWorksTM/EiffelVis/issues/8
 
 use indexmap::IndexMap;
-use std::hash::Hash;
+use std::{hash::Hash, iter::FusedIterator};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct GraphIndex(usize, usize);
+pub struct GraphIndex(usize, usize);
 
-trait GraphKey: Hash + Eq + Copy + Clone {}
+pub trait GraphKey: Hash + Eq + Copy + Clone {}
 impl<T: Hash + Eq + Copy + Clone> GraphKey for T {}
 
 type Uuid = u8;
 type StorageIndex = usize;
 #[derive(Debug)]
-struct Edge<T> {
-    data: T,
-    target: GraphIndex,
+pub struct Edge<T> {
+    pub data: T,
+    pub target: GraphIndex,
 }
 
 #[derive(Debug)]
-struct Node<T, E> {
-    data: T,
-    edges: Vec<Edge<E>>,
+pub struct Node<T, E> {
+    pub data: T,
+    pub edges: Vec<Edge<E>>,
 }
 
 #[derive(Debug)]
-struct Graph<K: GraphKey, N, E> {
+pub struct Graph<K: GraphKey, N, E> {
     chunks: Vec<IndexMap<K, Node<N, E>>>,
     max_chunks: usize,
     chunk_size: usize,
@@ -35,7 +35,7 @@ struct Graph<K: GraphKey, N, E> {
 }
 
 impl<K: GraphKey, N, E> Graph<K, N, E> {
-    fn new(max_chunks: usize, chunk_size: usize) -> Self {
+    pub fn new(max_chunks: usize, chunk_size: usize) -> Self {
         Self {
             chunks: vec![IndexMap::with_capacity(chunk_size)],
             max_chunks,
@@ -54,7 +54,11 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
             })
     }
 
-    pub fn index(&mut self, index: GraphIndex) -> Option<&Node<N, E>> {
+    pub fn get(&self, key: K) -> Option<&Node<N, E>> {
+        self.find_index(key).and_then(|inner| self.index(inner))
+    }
+
+    pub fn index(&self, index: GraphIndex) -> Option<&Node<N, E>> {
         self.chunks
             .get(index.0)
             .and_then(|chunk| chunk.get_index(index.1))
@@ -100,7 +104,6 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
                     });
 
                     self.tail = wrap_add(self.tail, self.chunks.len());
-                    println!("tail: {}", self.head);
                 }
             }
             &mut self.chunks[self.head]
@@ -109,6 +112,10 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
         chunk.insert(key, node);
 
         Some(())
+    }
+
+    pub fn len(&self) -> usize {
+        self.chunks.iter().fold(0, |total, c| total + c.len())
     }
 
     // Returns an iterator that yields nodes in the order they have been inserted
@@ -121,7 +128,16 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
     }
 }
 
-struct GraphIterator<'a, K: GraphKey, N, E> {
+impl<'a, K: GraphKey, N, E> IntoIterator for &'a Graph<K, N, E> {
+    type IntoIter = GraphIterator<'a, K, N, E>;
+    type Item = &'a Node<N, E>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+pub struct GraphIterator<'a, K: GraphKey, N, E> {
     inner: <&'a IndexMap<K, Node<N, E>> as IntoIterator>::IntoIter,
     graph: &'a Graph<K, N, E>,
     chunk: usize,
@@ -131,18 +147,20 @@ impl<'a, K: GraphKey, N, E> Iterator for GraphIterator<'a, K, N, E> {
     type Item = &'a Node<N, E>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next = self.inner.next().map(|(_, n)| n);
+        let mut next = self.inner.next();
         if next.is_none() {
             if self.chunk == self.graph.head {
                 return None;
             }
             self.chunk = wrap_add(self.chunk, self.graph.chunks.len());
             self.inner = self.graph.chunks[self.chunk].iter();
-            next = self.inner.next().map(|(_, n)| n);
+            next = self.inner.next();
         }
-        next
+        next.map(|(_, n)| n)
     }
 }
+
+impl<K: GraphKey, N, E> FusedIterator for GraphIterator<'_, K, N, E> {}
 
 fn wrap_add(mut val: usize, max: usize) -> usize {
     val += 1;
@@ -162,6 +180,11 @@ fn test() {
         println!("{}:", i);
         g.push(i, vec![(i - 1, format!("targets {}", i))], "more data")
             .unwrap();
-        g.iter().for_each(|node| println!("{:?}", node));
+
+        for node in &g {
+            println!("{:?}", node);
+        }
     }
+
+    println!("{}", g.len());
 }
