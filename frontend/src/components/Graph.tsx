@@ -1,28 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Graphin, { Behaviors, GraphinContext } from '@antv/graphin'
+import Graphin, { Behaviors } from '@antv/graphin'
 import { MiniMap, Tooltip } from '@antv/graphin-components'
-import Card from './Card'
 import dataParser from '../helpers/dataParser'
 import G6Data from '../interfaces/G6Data'
+import CustomTooltip from './CustomTooltip'
 
 const { ZoomCanvas, ActivateRelations, Hoverable, ClickSelect } = Behaviors
 
 const link =
   'https://gist.githubusercontent.com/IdreesSamadi/6aa2e5f0f8c3828b41f1e3446d2002cd/raw/messages.json'
-
-const CustomTooltip = () => {
-  const { tooltip } = React.useContext(GraphinContext)
-  const context = tooltip.node
-  const { item } = context
-  const model = item && item.getModel()
-
-  return (
-    <div>
-      <Card id={model.id} />
-    </div>
-  )
-}
 
 const Graph: React.FC = () => {
   const [data, setData] = useState<G6Data>()
@@ -43,7 +30,7 @@ const Graph: React.FC = () => {
       fitView
       fitCenter
       theme={{ mode: 'dark' }}
-      layout={{ type: 'circular' }}
+      layout={{ type: 'dagre', rankdir: 'LR' }}
     >
       <Tooltip bindType="node" placement="right">
         <CustomTooltip />
@@ -56,7 +43,8 @@ const Graph: React.FC = () => {
         style={{
           background: '#000000',
           marginBottom: '3rem',
-          marginLeft: '0rem',
+          left: 'auto',
+          right: '0rem',
         }}
       />
       <ZoomCanvas />
