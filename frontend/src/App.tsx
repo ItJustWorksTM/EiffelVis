@@ -10,7 +10,7 @@ const App: React.FC = () => (
   <Router>
     <SideNav />
     <main className={styles.mainContainer}>
-      <Container className={styles.routeContainer}>
+      <Container fluid className={styles.routeContainer}>
         <Route path="/about" exact component={About} />
         <Route path="/" exact component={Home} />
       </Container>
