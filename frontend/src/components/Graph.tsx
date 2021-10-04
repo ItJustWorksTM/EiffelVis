@@ -13,8 +13,22 @@ const link =
 
 const Graph: React.FC = () => {
   const [data, setData] = useState<G6Data>()
-
+  const [mapStyle, setMapStyle] = useState<object>({
+    background: '#000',
+    bottom: '3rem',
+    left: 'auto',
+    right: '0',
+  })
   useEffect(() => {
+    if (window.screen.width < 1024) {
+      setMapStyle({
+        background: '#000',
+        left: 'auto',
+        right: '0',
+        top: '1rem',
+        bottom: 'unset',
+      })
+    }
     axios
       .get(link)
       .then((response) => {
@@ -23,14 +37,13 @@ const Graph: React.FC = () => {
       })
       .catch((err) => err)
   }, [])
+  // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
   return data ? (
     <Graphin
       data={data}
-      fitView
-      fitCenter
       theme={{ mode: 'dark' }}
-      layout={{ type: 'dagre', rankdir: 'LR' }}
+      layout={{ type: 'fruchterman', rankdir: 'LR', gpuEnabled: true }}
     >
       <Tooltip bindType="node" placement="right">
         <CustomTooltip />
@@ -38,15 +51,7 @@ const Graph: React.FC = () => {
       <ActivateRelations trigger="click" />
       <ClickSelect />
       <Hoverable />
-      <MiniMap
-        visible
-        style={{
-          background: '#000000',
-          marginBottom: '3rem',
-          left: 'auto',
-          right: '0rem',
-        }}
-      />
+      <MiniMap visible style={mapStyle} />
       <ZoomCanvas />
     </Graphin>
   ) : (

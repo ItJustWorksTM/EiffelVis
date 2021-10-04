@@ -5,19 +5,10 @@ export default (data: IData) => {
   const G6Data: IG6Data = { nodes: [], edges: [] }
   data.values.forEach(({ meta, links }) => {
     G6Data.nodes.push({ id: meta.id })
-    links.forEach(({ target, type }) => {
+    links.forEach(({ target }) => {
       G6Data.edges.push({
         source: meta.id,
         target,
-        style: {
-          label: {
-            value: type,
-            fontSize: 6,
-          },
-          halo: {
-            lineWidth: 5,
-          },
-        },
       })
     })
   })

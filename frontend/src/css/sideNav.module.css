@@ -1,49 +1,90 @@
 .navBar {
-  width: 4rem;
+  height: 4rem;
   position: fixed;
-  top: 0;
   bottom: 0;
   left: 0;
+  right: 0;
   background: #000;
   color: #fff;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  z-index: 1;
 }
+
 .logoContainer {
-  margin-top: 1rem;
+  margin-left: 1rem;
 }
+
 .logoContainer img {
   cursor: pointer;
 }
 
 .MenuItems {
   list-style-type: none;
-  margin: 1rem auto;
+  margin: auto 1rem;
   padding: 0;
-  justify-self: flex-start;
   flex-grow: 1;
   width: 100%;
-  align-self: center;
-  align-items: center;
+  flex-direction: row-reverse;
+  justify-content: space-around;
+  border-right: 1px solid #6969697a;
+  border-left: 1px solid #69696975;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  border-top: 1px solid #69696994;
-  border-bottom: 1px solid #69696994;
+  align-content: center;
+  height: 80%;
+  align-items: center;
 }
 
 .MenuItem {
-  margin: 2rem auto;
+  margin: 0rem auto;
   cursor: pointer;
 }
 
 .navFooter {
-  margin-bottom: 1rem;
+  margin-right: 1rem;
 }
 
 .navFooter a,
 a:hover {
   color: #fff;
+}
+
+@media screen and (min-width: 1024px) {
+  .navBar {
+    height: unset;
+    width: 4rem;
+    top: 0;
+    flex-direction: column;
+  }
+  .logoContainer {
+    margin-top: 1rem;
+    margin-left: 0;
+  }
+
+  .MenuItems {
+    margin: 1rem auto;
+    padding: 0;
+    justify-self: flex-start;
+    flex-grow: 1;
+    width: 100%;
+    align-self: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-top: 1px solid #69696994;
+    border-bottom: 1px solid #69696994;
+    border-left: unset;
+    border-right: unset;
+  }
+
+  .MenuItem {
+    margin: 2rem auto;
+  }
+
+  .navFooter {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
 }
