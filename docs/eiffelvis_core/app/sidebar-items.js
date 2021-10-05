@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["EiffelVisApp","Mainly a wrapper struct around backing event storage, aims to provide all common operations eiffelvis would need to perform."]]});

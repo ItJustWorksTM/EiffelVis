@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["ampq","Provides an event stream from an ampq connection"],["gen","Provides an event stream produced by eiffelvis_gen"]]});

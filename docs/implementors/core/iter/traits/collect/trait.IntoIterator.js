@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["eiffelvis_core"] = [{"text":"impl&lt;'a, K:&nbsp;GraphKey, N, E&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.55.0/core/iter/traits/collect/trait.IntoIterator.html\" title=\"trait core::iter::traits::collect::IntoIterator\">IntoIterator</a> for &amp;'a <a class=\"struct\" href=\"eiffelvis_core/graph_storage/struct.ChunkedGraph.html\" title=\"struct eiffelvis_core::graph_storage::ChunkedGraph\">Graph</a>&lt;K, N, E&gt;","synthetic":false,"types":["eiffelvis_core::graph_storage::chunked_storage::Graph"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
