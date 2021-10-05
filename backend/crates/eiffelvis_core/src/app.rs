@@ -1,3 +1,4 @@
+use crate::graph_storage::chunked_storage::GraphIndex;
 use crate::types::BaseEvent;
 use crate::{graph_storage::ChunkedGraph, types::LeanEvent};
 
@@ -52,5 +53,31 @@ impl EiffelVisApp {
     /// Returns all stored sevents.
     pub fn dump_events(&self) -> Vec<&BaseEvent> {
         self.graph.iter().map(|node| &node.data).collect()
+    }
+
+    fn collect_sub_graph_recursive(&self, root_id: GraphIndex) -> Vec<LeanEvent> {
+        let root = self.graph.index(root_id).unwrap();
+        let mut ret = Vec::with_capacity(root.edges.len());
+        for edge in &root.edges {
+            ret.push(
+                self.graph
+                    .index(edge.target)
+                    .map(|node| LeanEvent::from(&node.data))
+                    .unwrap(),
+            )
+        }
+
+        for edge in &root.edges {
+            ret.append(&mut self.collect_sub_graph_recursive(edge.target))
+        }
+
+        ret
+    }
+
+    pub fn get_subgraph_with_root(&self, root_id: Uuid) -> Option<Vec<LeanEvent>> {
+        let mut ret = self.collect_sub_graph_recursive(self.graph.find_index(root_id)?);
+        // include the root node as well
+        ret.push(LeanEvent::from(&self.graph.get(root_id)?.data));
+        Some(ret)
     }
 }
