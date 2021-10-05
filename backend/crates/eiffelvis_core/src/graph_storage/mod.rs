@@ -1,3 +1,3 @@
-mod chunked_storage;
+pub mod chunked_storage;
 
 pub use chunked_storage::Graph as ChunkedGraph;

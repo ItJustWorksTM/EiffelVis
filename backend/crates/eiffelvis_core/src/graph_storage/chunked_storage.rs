@@ -39,7 +39,7 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
         }
     }
 
-    fn find_index(&self, key: K) -> Option<GraphIndex> {
+    pub fn find_index(&self, key: K) -> Option<GraphIndex> {
         self.chunks
             .iter()
             .enumerate()
@@ -48,8 +48,20 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
             })
     }
 
+    #[allow(dead_code)]
+    fn find_key(&self, index: GraphIndex) -> Option<K> {
+        self.chunks
+            .get(index.0)
+            .and_then(|f| f.get_index(index.1).map(|(k, _)| *k))
+    }
+
     pub fn get(&self, key: K) -> Option<&Node<N, E>> {
         self.find_index(key).and_then(|inner| self.index(inner))
+    }
+
+    pub fn get_mut(&mut self, key: K) -> Option<&mut Node<N, E>> {
+        self.find_index(key)
+            .and_then(move |inner| self.index_mut(inner))
     }
 
     pub fn index(&self, index: GraphIndex) -> Option<&Node<N, E>> {
@@ -59,51 +71,55 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
             .map(|(_, n)| n)
     }
 
-    pub fn push(&mut self, key: K, mut edges: Vec<(K, E)>, data: N) -> Option<()> {
+    pub fn index_mut(&mut self, index: GraphIndex) -> Option<&mut Node<N, E>> {
+        self.chunks
+            .get_mut(index.0)
+            .and_then(|chunk| chunk.get_index_mut(index.1))
+            .map(|(_, n)| n)
+    }
+
+    pub fn push(&mut self, key: K, edges: Vec<(K, E)>, data: N) -> Option<()> {
         // Dont allow overwriting existing nodes
         if self.find_index(key).is_some() {
             return None;
         }
 
-        let node = Node {
-            data,
-            edges: edges
-                .drain(..)
-                // If links dont exist we simply don't store them
-                .filter_map(|(uuid, data)| {
-                    self.find_index(uuid).map(|target| Edge { data, target })
-                })
-                .collect(),
-        };
-
-        let chunk = {
-            if self.chunks[self.head].len() == self.chunk_size {
-                if self.chunks.len() != self.max_chunks {
-                    self.chunks.push(IndexMap::with_capacity(self.chunk_size));
-                }
-
-                self.head = wrap_add(self.head, self.chunks.len());
-
-                // If new head is full it means we wrapped around and we have to start dropping events
-                if self.chunks[self.head].len() == self.chunk_size {
-                    // Simply drop all events as we dont need them
-                    self.chunks[self.head].clear();
-
-                    // Iterate over all events and drop any edge that references the cleared chunk
-                    let cleared_page = self.head;
-                    self.chunks.iter_mut().for_each(|chunk| {
-                        chunk.iter_mut().for_each(|(_, node)| {
-                            node.edges.retain(|e| e.target.0 != cleared_page);
-                        });
-                    });
-
-                    self.tail = wrap_add(self.tail, self.chunks.len());
-                }
+        // make space for the new node
+        if self.chunks[self.head].len() == self.chunk_size {
+            if self.chunks.len() != self.max_chunks {
+                self.chunks.push(IndexMap::with_capacity(self.chunk_size));
             }
-            &mut self.chunks[self.head]
-        };
 
-        chunk.insert(key, node);
+            self.head = wrap_add(self.head, self.chunks.len());
+
+            // If new head is full it means we wrapped around and we have to start dropping events
+            if self.chunks[self.head].len() == self.chunk_size {
+                // Simply drop all events as we dont need them
+                self.chunks[self.head].clear();
+
+                self.tail = wrap_add(self.tail, self.chunks.len());
+            }
+        }
+
+        let new_index = GraphIndex(self.head, self.chunks[self.head].len());
+
+        // Insert new edges on nodes
+        for (edge_key, data) in edges {
+            if let Some(node) = self.get_mut(edge_key) {
+                node.edges.push(Edge {
+                    data,
+                    target: new_index,
+                });
+            }
+        }
+
+        self.chunks[self.head].insert(
+            key,
+            Node {
+                data,
+                edges: Vec::default(),
+            },
+        );
 
         Some(())
     }
@@ -169,20 +185,37 @@ fn wrap_add(mut val: usize, max: usize) -> usize {
 }
 
 #[test]
-fn test() {
+fn test_forward_link_single() {
     let mut g = Graph::new(3, 3);
 
     g.push(0, vec![], "This is the beginning!").unwrap();
 
-    for i in 1..30 {
-        println!("{}:", i);
-        g.push(i, vec![(i - 1, format!("targets {}", i))], "more data")
+    for i in 1..9 {
+        g.push(i, vec![(0, format!("targets {}", i))], "more data")
             .unwrap();
-
-        for node in &g {
-            println!("{:?}", node);
-        }
     }
 
-    println!("{}", g.len());
+    // All nodes should now have links to the first node (which are stored on the first node itself)
+    let zeroth = g.get(0).unwrap();
+    assert_eq!(zeroth.edges.len(), 8);
+}
+
+#[test]
+fn test_forward_link_many() {
+    let mut g = Graph::new(3, 3);
+
+    g.push(0, vec![], "");
+
+    for i in 1..9 {
+        g.push(i, vec![(i - 1, "")], "").unwrap();
+    }
+
+    // Now i - 1 node should store an edge to node i
+    // 0 -> 1, 1 -> 2 ...
+    for i in 1..8 {
+        assert_eq!(
+            g.find_key(g.get(i - 1).unwrap().edges[0].target).unwrap(),
+            i
+        );
+    }
 }
