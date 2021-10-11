@@ -86,6 +86,7 @@ const CustomGraph: React.FC = () => {
       })
       .catch((err) => err)
   }, [])
+  // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
   return (
     <div ref={graphContainer}>
