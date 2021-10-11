@@ -25,6 +25,7 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'no-underscore-dangle': 'off',
     'sort-imports': [
       'error',
       {
