@@ -1,44 +1,4 @@
 .cardContainer {
-  background-color: #4169e1;
-  width: 15rem;
-  padding: 0.3rem 0.3rem;
-  font-family: Helvetica, Arial, sans-serif;
-  color: #ffffff;
-  display: block;
-}
-
-.cardHeading {
-  text-align: center;
-  padding: 0.5rem;
-  border-bottom: 0.1rem #000000 solid;
-  font-size: medium;
-}
-
-.cardBody {
-  max-width: 12rem;
-  height: 4rem;
-  white-space: nowrap;
-  overflow: hidden;
-  display: block;
-  text-overflow: ellipsis;
-  margin-bottom: 1rem;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  font-size: small;
-  font-weight: bold;
-}
-
-ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-}
-
-li {
-  margin-top: 1rem;
+  width: 18rem;
+  position: absolute;
 }
