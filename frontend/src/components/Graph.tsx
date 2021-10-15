@@ -7,7 +7,14 @@ import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
-import { AsRoots, Collection, Event, Filter, Forward, Ids } from '../interfaces/ApiData'
+import {
+  AsRoots,
+  Collection,
+  Event,
+  Filter,
+  Forward,
+  Ids,
+} from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
 const CustomGraph: React.FC = () => {
@@ -56,10 +63,7 @@ const CustomGraph: React.FC = () => {
         })
       }
       graph?.layout()
-      console.log(
-        'TOTAL NODES: ',
-        (graph!.save() as GraphData)!.nodes!.length
-      )
+      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     }
   }
 
@@ -69,11 +73,14 @@ const CustomGraph: React.FC = () => {
     graph!.render()
   }
 
-  const { awaitingResponse, setFilters, setCollection, } = useEiffelNet(onMessage, onReset)
+  const { awaitingResponse, setFilters, setCollection } = useEiffelNet(
+    onMessage,
+    onReset
+  )
 
   const getNodesWithThisRoot = (id: string) => {
-    setFilters([{ type: "Ids", ids: [id] } as Ids])
-    setCollection({ type: "AsRoots" } as AsRoots)
+    setFilters([{ type: 'Ids', ids: [id] } as Ids])
+    setCollection({ type: 'AsRoots' } as AsRoots)
   }
 
   useEffect(() => {
@@ -117,7 +124,7 @@ const CustomGraph: React.FC = () => {
 
     bindEvents()
 
-    setCollection({ type: "Forward"} as Forward)
+    setCollection({ type: 'Forward' } as Forward)
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
