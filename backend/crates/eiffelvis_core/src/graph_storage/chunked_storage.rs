@@ -132,6 +132,18 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
         self.len() == 0
     }
 
+    pub fn head(&self) -> Option<(GraphIndex, &K, &Node<N, E>)> {
+        let len = self.chunks[self.head].len();
+
+        if len == 0 {
+            None
+        } else {
+            self.chunks[self.head]
+                .get_index(len - 1)
+                .map(|(k, v)| (GraphIndex(self.head, len - 1), k, v))
+        }
+    }
+
     // Returns an iterator that yields nodes in the order they have been inserted
     pub fn iter(&self) -> GraphIterator<'_, K, N, E> {
         GraphIterator {
@@ -139,6 +151,30 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
             graph: self,
             chunk: self.tail,
         }
+    }
+
+    pub fn iter_range(
+        &self,
+        begin: GraphIndex,
+        end: GraphIndex,
+    ) -> impl Iterator<Item = &'_ Node<N, E>> {
+
+        let mut iter = self.iter();
+
+        let chunk_count = |g: GraphIndex| self.chunk_size * (g.0) + g.1;
+        let begin_amount = chunk_count(begin);
+        let end_amount = chunk_count(end);
+
+        for _ in 0..begin_amount + 1 {
+            iter.next();
+        }
+
+
+        iter.take(if begin_amount > end_amount {
+            self.chunk_size * self.max_chunks - begin_amount + end_amount
+        } else {
+            end_amount - begin_amount
+        })
     }
 }
 
@@ -194,6 +230,8 @@ fn test_forward_link_single() {
         g.push(i, vec![(0, format!("targets {}", i))], "more data")
             .unwrap();
     }
+
+    assert_eq!(g.iter_range(GraphIndex(0, 0), GraphIndex(1, 2)).count(), 5);
 
     // All nodes should now have links to the first node (which are stored on the first node itself)
     let zeroth = g.get(0).unwrap();
