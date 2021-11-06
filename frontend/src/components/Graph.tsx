@@ -1,9 +1,10 @@
+/* eslint-disable */
 import React, { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
 import G6, { Graph } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
+import { GraphData } from '@antv/g6/lib/types'
 
 const link =
   'https://gist.githubusercontent.com/IdreesSamadi/6aa2e5f0f8c3828b41f1e3446d2002cd/raw/messages.json'
@@ -53,8 +54,6 @@ const CustomGraph: React.FC = () => {
         modes: {
           default: [
             'drag-canvas',
-            'drag-node',
-            'click-select',
             {
               type: 'zoom-canvas',
               enableOptimize: true,
@@ -76,15 +75,24 @@ const CustomGraph: React.FC = () => {
       })
     }
 
-    axios
-      .get(link)
-      .then((response) => {
-        const g6data = dataParser(response.data)
-        graph!.data(g6data)
+    const socket = new WebSocket('ws://localhost:3001/ws');
+
+    socket.addEventListener('message', function (event) {
+        let le = JSON.parse(event.data);
+        const g6data: any = dataParser(le);
+
+        let data = graph!.save() as GraphData;
+
+        data.nodes = [...data.nodes!, ...g6data.nodes];
+        data.edges = [...data.edges!, ...g6data.edges];
+
+        console.log("Total nodes: ", data.nodes.length);
+
+        graph!.data(data)
         graph!.render()
         bindEvents()
-      })
-      .catch((err) => err)
+    });
+
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
