@@ -20,6 +20,7 @@ const CustomGraph: React.FC = () => {
 
   const bindEvents = () => {
     if (graph) {
+      graph.data({})
       graph.on('click', () => {
         setShowNodeTooltip(false)
       })
@@ -66,7 +67,7 @@ const CustomGraph: React.FC = () => {
         },
         layout: {
           type: 'dagre',
-          workerEnabled: true,
+          workerEnabled: false,
           rankdir: 'LR',
           nodesep: 30,
           ranksep: 100,
@@ -81,15 +82,10 @@ const CustomGraph: React.FC = () => {
         let le = JSON.parse(event.data);
         const g6data: any = dataParser(le);
 
-        let data = graph!.save() as GraphData;
+        
+        g6data.nodes.forEach((node: any) => { graph!.addItem('node', { ...node, x: Math.random() * 1000, y: Math.random() * 1000 } ) })
+        g6data.edges.forEach((edge: any) => { graph!.addItem('edge', edge )})
 
-        data.nodes = [...data.nodes!, ...g6data.nodes];
-        data.edges = [...data.edges!, ...g6data.edges];
-
-        console.log("Total nodes: ", data.nodes.length);
-
-        graph!.data(data)
-        graph!.render()
         bindEvents()
     });
 
