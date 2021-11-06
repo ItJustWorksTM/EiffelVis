@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ChunkedGraph",""]]});
+initSidebarItems({"mod":[["chunked_storage",""]]});

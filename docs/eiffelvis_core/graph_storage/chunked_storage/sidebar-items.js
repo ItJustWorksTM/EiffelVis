@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Edge",""],["Graph",""],["GraphIndex",""],["GraphIterator",""],["Node",""]],"trait":[["GraphKey",""]]});
