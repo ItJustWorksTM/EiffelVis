@@ -15,11 +15,18 @@ use axum::{
 };
 
 use hyper::Response;
+use serde::{Deserialize, Serialize};
 use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::app::EiffelVisApp;
+use eiffelvis_core::{app::EiffelVisApp, types::LeanEvent};
+
+mod requests;
+
+use requests::{ClientRequest, ClientRequestHandler, EiffelClientRequest};
+
+use crate::requests::AllFunctionality;
 
 type CoreApp = Arc<tokio::sync::RwLock<EiffelVisApp>>;
 
@@ -82,31 +89,53 @@ async fn establish_websocket(
     }
 
     ws.on_upgrade(move |mut socket| async move {
-        let mut cursor = None;
-        let mut interval = tokio::time::interval(std::time::Duration::from_secs(3));
-        
+
+        let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
+
+        let mut req_handler: Option<Box<dyn ClientRequestHandler>> = None;
+
         while let Ok(()) = tokio::select! {
             usr = socket.recv() => {
                 match usr {
-                    Some(msg) => { println!("{:?}", msg); Ok(()) },
-                    None => Err(())
+                    Some(Ok(Message::Text(msg))) => match serde_json::from_str::<EiffelClientRequest>(&msg) {
+                        Ok(rq) => {
+                            println!("client request! {:?}", rq);
+                            req_handler = Some(match rq {
+                                EiffelClientRequest::All(all) => Box::new(all.into_handler()),
+                                EiffelClientRequest::Latest(latest) => Box::new(latest.into_handler()),
+
+                                _ => todo!()
+                            });
+
+                            // TODO: actually do something sensible
+                            socket.send(Message::Text(msg)).await.unwrap();
+
+                            Ok(())
+                        },
+                        err => {
+                            println!("Warning, bad message: {:?}", err);
+                            Ok(())
+                        }
+                    },
+                    _ => {
+                        Err(())}
                 }
             },
             _ = interval.tick() => {
-                if let Some((head, events)) =  {
-                    let lk = core.read().await;
-
-                    // If there is a head (implying there _are_ events)
-                    // If we have an existing cursor (implying we have send things before)
-                    // then get the range from our cursor till the end
-                    // else dump the whole history (as this is the first time we have send something)
-                    lk.head().zip(cursor.map_or_else(|| Some(lk.dump_lean_events()), |c| lk.events_starting_from(c).filter(|evs| !evs.is_empty())))
-                } {
-                    cursor = Some(head);
-                    socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
+                // TODO: cleanup
+                if let Some(th) = req_handler.as_mut() {
+                    if let Some(events) = {
+                        let lk = core.read().await;
+                        th.handle(&*lk)
+                    } {
+                        socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
+                    } else {
+                        Ok(())
+                    }
                 } else {
                     Ok(())
                 }
+
             }
         } {}
 
