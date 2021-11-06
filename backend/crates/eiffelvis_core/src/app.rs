@@ -80,4 +80,22 @@ impl EiffelVisApp {
         ret.push(LeanEvent::from(&self.graph.get(root_id)?.data));
         Some(ret)
     }
+
+    pub fn head(&self) -> Option<Uuid> {
+        self.graph.head().map(|(_, h, _)| *h)
+    }
+
+    pub fn events_starting_from(&self, id: Uuid) -> Option<Vec<LeanEvent>> {
+        let indices = self
+            .graph
+            .find_index(id)
+            .zip(self.graph.head().map(|l| l.0));
+
+        indices.map(move |(begin, end)| {
+            self.graph
+                .iter_range(begin, end)
+                .map(|node| LeanEvent::from(&node.data))
+                .collect()
+        })
+    }
 }

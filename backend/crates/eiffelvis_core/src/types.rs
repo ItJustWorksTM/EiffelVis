@@ -27,7 +27,7 @@ pub struct BaseEvent {
     pub links: Vec<BaseLink>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LeanEvent {
     pub id: Uuid,
     pub edges: Vec<Uuid>,

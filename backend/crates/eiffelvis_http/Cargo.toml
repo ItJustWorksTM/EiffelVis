@@ -7,7 +7,8 @@ edition = "2018"
 [dependencies]
 tokio = { version = "1.0", features = ["full"]}
 futures = "0.3"
-axum = "0.2.3"
+axum = { version = "0.2", features = ["ws", "headers"] }
+headers = "0.3"
 hyper = { version = "0.14", features = ["full"]}
 tower = "0.4"
 tower-http = { version = "0.1", features = ["trace"] }
