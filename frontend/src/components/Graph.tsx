@@ -6,9 +6,6 @@ import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
 import { GraphData } from '@antv/g6/lib/types'
 
-const link =
-  'https://gist.githubusercontent.com/IdreesSamadi/6aa2e5f0f8c3828b41f1e3446d2002cd/raw/messages.json'
-
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
@@ -17,6 +14,15 @@ const CustomGraph: React.FC = () => {
 
   const graphContainer = useRef<any>(null)
   let graph: Graph | null = null
+
+  const socket = new WebSocket('ws://localhost:3001/ws');
+
+  const DoClickThing = () => {
+    console.log("clicked")
+    socket.send(JSON.stringify(
+      { "type": "All" }
+    ))
+  }
 
   const bindEvents = () => {
     if (graph) {
@@ -76,17 +82,24 @@ const CustomGraph: React.FC = () => {
       })
     }
 
-    const socket = new WebSocket('ws://localhost:3001/ws');
 
     socket.addEventListener('message', function (event) {
         let le = JSON.parse(event.data);
-        const g6data: any = dataParser(le);
+        console.log(le)
+        if (le["type"] == "All") {
+          console.log("We acked ALL!")
+          graph!.data({})
+          graph!.render()
+        } else {
+          const g6data: any = dataParser(le);
+          
+          g6data.nodes.forEach((node: any) => { graph!.addItem('node', { ...node, x: Math.random() * 1000, y: Math.random() * 1000 } ) })
+          g6data.edges.forEach((edge: any) => { graph!.addItem('edge', edge )})
 
-        
-        g6data.nodes.forEach((node: any) => { graph!.addItem('node', { ...node, x: Math.random() * 1000, y: Math.random() * 1000 } ) })
-        g6data.edges.forEach((edge: any) => { graph!.addItem('edge', edge )})
+          bindEvents()
+        }
 
-        bindEvents()
+
     });
 
   }, [])
@@ -94,6 +107,7 @@ const CustomGraph: React.FC = () => {
 
   return (
     <div ref={graphContainer}>
+      <button onClick={DoClickThing} > click me! </button>
       {showNodeTooltip && (
         <TooltipCard id={nodeTooltipId} x={nodeTooltipX} y={nodeTooltipY} />
       )}
