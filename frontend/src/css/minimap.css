@@ -1,15 +1,15 @@
 .g6MiniMap {
   background: #000;
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 10px;
+  bottom: 10px;
 }
 
 @media screen and (min-width: 1024px) {
-  .g6MiniMap {
+  /* .g6MiniMap {
     background: #000;
     position: absolute;
     right: 0;
     bottom: 0;
-  }
+  } */
 }
