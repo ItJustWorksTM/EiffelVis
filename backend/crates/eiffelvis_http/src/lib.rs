@@ -2,6 +2,9 @@
 //! An HTTP frontend for eiffelvis_core
 //!
 
+mod requests;
+use requests::{ClientRequest, ClientRequestHandler, EiffelClientRequest};
+
 use axum::{
     body::Full,
     extract::{
@@ -15,35 +18,30 @@ use axum::{
 };
 
 use hyper::Response;
-use serde::{Deserialize, Serialize};
 use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::{app::EiffelVisApp, types::LeanEvent};
+use eiffelvis_core::app::EiffelVisApp;
 
-mod requests;
-
-use requests::{ClientRequest, ClientRequestHandler, EiffelClientRequest};
-
-use crate::requests::AllFunctionality;
-
-type CoreApp = Arc<tokio::sync::RwLock<EiffelVisApp>>;
+pub trait EiffelVisHttpApp: EiffelVisApp + Send + Sync + 'static {}
+impl<T> EiffelVisHttpApp for T where T: EiffelVisApp + Send + Sync + 'static {}
+type App<T> = Arc<tokio::sync::RwLock<T>>;
 
 /// Takes an eiffelvis app and binds the http server on the given address.
 /// This is likely the only function you'll ever need to call.
 /// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.
-pub async fn app(
-    core: CoreApp,
+pub async fn app<T: EiffelVisHttpApp>(
+    app: App<T>,
     address: String,
     port: u16,
     shutdown: impl Future<Output = ()>,
 ) -> anyhow::Result<()> {
     let service = Router::new()
-        .route("/", get(event_dump))
-        .route("/get_event/:id", get(get_event))
-        .route("/ws", get(establish_websocket))
-        .layer(AddExtensionLayer::new(core));
+        .route("/", get(event_dump::<T>))
+        .route("/get_event/:id", get(get_event::<T>))
+        .route("/ws", get(establish_websocket::<T>))
+        .layer(AddExtensionLayer::new(app));
     let address = address.parse()?;
 
     let server = axum::Server::try_bind(&SocketAddr::new(address, port))?
@@ -55,8 +53,8 @@ pub async fn app(
 }
 
 /// Dumps the entire event store into a json array
-async fn event_dump(Extension(core): Extension<CoreApp>) -> impl IntoResponse {
-    let lk = core.read().await;
+async fn event_dump<T: EiffelVisHttpApp>(Extension(app): Extension<App<T>>) -> impl IntoResponse {
+    let lk = app.read().await;
 
     let dump = lk.dump_events();
 
@@ -64,11 +62,11 @@ async fn event_dump(Extension(core): Extension<CoreApp>) -> impl IntoResponse {
 }
 
 /// Returns full event that belongs to given uuid
-async fn get_event(
+async fn get_event<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
-    Extension(core): Extension<CoreApp>,
+    Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
-    let lk = core.read().await;
+    let lk = app.read().await;
     if let Some(event) = lk.get_event(find_id) {
         Json(event).into_response()
     } else {
@@ -79,8 +77,8 @@ async fn get_event(
     }
 }
 
-async fn establish_websocket(
-    Extension(core): Extension<CoreApp>,
+async fn establish_websocket<T: EiffelVisHttpApp>(
+    Extension(app): Extension<App<T>>,
     ws: WebSocketUpgrade,
     user_agent: Option<TypedHeader<headers::UserAgent>>,
 ) -> impl IntoResponse {
@@ -92,7 +90,7 @@ async fn establish_websocket(
 
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
 
-        let mut req_handler: Option<Box<dyn ClientRequestHandler>> = None;
+        let mut req_handler: Option<Box<dyn ClientRequestHandler<T> + Send>> = None;
 
         while let Ok(()) = tokio::select! {
             usr = socket.recv() => {
@@ -100,10 +98,9 @@ async fn establish_websocket(
                     Some(Ok(Message::Text(msg))) => match serde_json::from_str::<EiffelClientRequest>(&msg) {
                         Ok(rq) => {
                             println!("client request! {:?}", rq);
-                            req_handler = Some(match rq {
-                                EiffelClientRequest::All(all) => Box::new(all.into_handler()),
-                                EiffelClientRequest::Latest(latest) => Box::new(latest.into_handler()),
-
+                             req_handler = Some(match rq {
+                                EiffelClientRequest::All(all) => Box::new(ClientRequest::<T>::into_handler(all)),
+                                EiffelClientRequest::Latest(latest) => Box::new(ClientRequest::<T>::into_handler(latest)),
                                 _ => todo!()
                             });
 
@@ -125,8 +122,7 @@ async fn establish_websocket(
                 // TODO: cleanup
                 if let Some(th) = req_handler.as_mut() {
                     if let Some(events) = {
-                        let lk = core.read().await;
-                        th.handle(&*lk)
+                        th.handle(&*app.read().await)
                     } {
                         socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
                     } else {
