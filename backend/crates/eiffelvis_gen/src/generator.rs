@@ -215,7 +215,8 @@ impl Iterator for Iter<'_> {
         let target_amount = self
             .rng
             .borrow_mut()
-            .gen_range(0..self.inner.max_links - generated_links.len() - 1);
+            .gen_range(0..self.inner.max_links - generated_links.len());
+
         // Randomly pick a link and select an event for it until we reach our target or we exhaust possible events
         while let Some((i, (link, _))) = {
             let ret = generatable_events
@@ -224,7 +225,7 @@ impl Iterator for Iter<'_> {
                 .choose(&mut *self.rng.borrow_mut());
             ret
         } {
-            if generated_links.len() > target_amount {
+            if generated_links.len() >= target_amount {
                 break;
             }
 
