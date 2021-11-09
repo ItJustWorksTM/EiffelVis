@@ -1,7 +1,7 @@
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use std::{hash::Hash, iter::FusedIterator};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GraphIndex(usize, usize);
 
 pub trait GraphKey: Hash + Eq + Copy + Clone {}
@@ -158,7 +158,6 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
         begin: GraphIndex,
         end: GraphIndex,
     ) -> impl Iterator<Item = &'_ Node<N, E>> {
-
         let mut iter = self.iter();
 
         let chunk_count = |g: GraphIndex| self.chunk_size * (g.0) + g.1;
@@ -169,12 +168,60 @@ impl<K: GraphKey, N, E> Graph<K, N, E> {
             iter.next();
         }
 
-
         iter.take(if begin_amount > end_amount {
             self.chunk_size * self.max_chunks - begin_amount + end_amount
         } else {
             end_amount - begin_amount
         })
+    }
+
+    fn fancy_algo(&self, root_id: GraphIndex, visited: &mut IndexSet<GraphIndex>) {
+        let root = self.index(root_id).unwrap();
+        if visited.insert(root_id) {
+            for edge in &root.edges {
+                self.fancy_algo(edge.target, visited);
+            }
+        }
+    }
+
+    pub fn collect_sub_graph_recursive(&self, root_id: GraphIndex) -> Vec<&Node<N, E>> {
+        let mut index = Default::default();
+
+        self.fancy_algo(root_id, &mut index);
+
+        index.sort_by(|lhs, rhs| {
+            // TODO: make less stupid when brain is working again
+            if lhs == rhs {
+                std::cmp::Ordering::Equal
+            } else if self.head >= self.tail {
+                if lhs.0 != rhs.0 {
+                    if lhs.0 > rhs.0 {
+                        std::cmp::Ordering::Greater
+                    } else {
+                        std::cmp::Ordering::Less
+                    }
+                } else if lhs.1 > rhs.1 {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Less
+                }
+            } else if lhs.0 != rhs.0 {
+                if lhs.0 < rhs.0 {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Less
+                }
+            } else if lhs.1 < rhs.1 {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Less
+            }
+        });
+
+        index
+            .iter()
+            .map(|&index| self.index(index).unwrap())
+            .collect()
     }
 }
 
@@ -251,6 +298,7 @@ fn test_forward_link_many() {
     // Now i - 1 node should store an edge to node i
     // 0 -> 1, 1 -> 2 ...
     for i in 1..8 {
+        println!("a");
         assert_eq!(
             g.find_key(g.get(i - 1).unwrap().edges[0].target).unwrap(),
             i
