@@ -22,7 +22,10 @@ use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::app::EiffelVisApp;
+use eiffelvis_core::{
+    app::EiffelVisApp,
+    types::{BaseEvent, LeanEvent},
+};
 
 pub trait EiffelVisHttpApp: EiffelVisApp + Send + Sync + 'static {}
 impl<T> EiffelVisHttpApp for T where T: EiffelVisApp + Send + Sync + 'static {}
@@ -40,6 +43,7 @@ pub async fn app<T: EiffelVisHttpApp>(
     let service = Router::new()
         .route("/", get(event_dump::<T>))
         .route("/get_event/:id", get(get_event::<T>))
+        .route("/events_with_root/:id", get(events_with_root::<T>))
         .route("/ws", get(establish_websocket::<T>))
         .layer(AddExtensionLayer::new(app));
     let address = address.parse()?;
@@ -56,7 +60,7 @@ pub async fn app<T: EiffelVisHttpApp>(
 async fn event_dump<T: EiffelVisHttpApp>(Extension(app): Extension<App<T>>) -> impl IntoResponse {
     let lk = app.read().await;
 
-    let dump = lk.dump_events();
+    let dump = lk.dump::<BaseEvent>();
 
     Json(&dump).into_response()
 }
@@ -68,6 +72,21 @@ async fn get_event<T: EiffelVisHttpApp>(
 ) -> impl IntoResponse {
     let lk = app.read().await;
     if let Some(event) = lk.get_event(find_id) {
+        Json(event).into_response()
+    } else {
+        Response::builder()
+            .status(StatusCode::NOT_FOUND)
+            .body(Full::default())
+            .unwrap()
+    }
+}
+
+async fn events_with_root<T: EiffelVisHttpApp>(
+    Path(find_id): Path<Uuid>,
+    Extension(app): Extension<App<T>>,
+) -> impl IntoResponse {
+    let lk = app.read().await;
+    if let Some(event) = lk.get_subgraph_with_root::<BaseEvent>(find_id) {
         Json(event).into_response()
     } else {
         Response::builder()
@@ -100,6 +119,7 @@ async fn establish_websocket<T: EiffelVisHttpApp>(
                             println!("client request! {:?}", rq);
                              req_handler = Some(match rq {
                                 EiffelClientRequest::All(all) => Box::new(ClientRequest::<T>::into_handler(all)),
+                                EiffelClientRequest::WithRoot(root) => Box::new(ClientRequest::<T>::into_handler(root)),
                                 EiffelClientRequest::Latest(latest) => Box::new(ClientRequest::<T>::into_handler(latest)),
                                 _ => todo!()
                             });

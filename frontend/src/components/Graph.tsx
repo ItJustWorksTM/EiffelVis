@@ -16,19 +16,14 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [requestData, setRequestData] = useState<any>({
-    type: 'all',
-    amount: 20,
+    type: 'All',
+    id: ''
   })
 
   const graphContainer = useRef<any>(null)
   let graph: Graph | null = null
   let pane: Pane
-  const PARAMS = {
-    type: 'all',
-    amount: 20,
-  }
 
-  const socket = new WebSocket('ws://localhost:8080')
 
   const bindEvents = () => {
     if (graph) {
@@ -53,6 +48,8 @@ const CustomGraph: React.FC = () => {
   }
 
   useEffect(() => {
+    const socket = new WebSocket('ws://localhost:3001/ws')
+
     if (!graph) {
       const miniMap = new G6.Minimap({
         container: graphContainer.current,
@@ -64,6 +61,11 @@ const CustomGraph: React.FC = () => {
         width: window.innerWidth - 73,
         height: window.innerHeight - 10,
         fitView: true,
+        defaultEdge: {
+    style:{
+        endArrow: {path: G6.Arrow.triangle(10, 20, 100),d: 0}
+    }
+},
         modes: {
           default: [
             'drag-node',
@@ -92,11 +94,11 @@ const CustomGraph: React.FC = () => {
     pane = new Pane({ title: 'Events', expanded: true })
     pane.addInput(requestData, 'type', {
       label: 'Type',
-      options: { All: 'all', Latest: 'latest', Oldest: 'oldest' },
+      options: { All: 'All', WithRoot: 'WithRoot' },
     })
     pane.addSeparator()
-    pane.addInput(requestData, 'amount', {
-      label: 'Number of Nodes',
+    pane.addInput(requestData, 'id', {
+      label: 'node id',
       step: 1,
     })
 
@@ -118,12 +120,7 @@ const CustomGraph: React.FC = () => {
       console.log('from server', event.data)
       let le = JSON.parse(event.data)
       console.log('from server', le)
-      if (le['type'] == 'All') {
-        setIsLoading(false)
-        console.log('We acked ALL!')
-        graph!.data({})
-        graph!.render()
-      } else {
+      if (Array.isArray(le)) {
         const g6data: any = dataParser(le)
         setTimeout(() => {
           setIsLoading(false)
@@ -140,7 +137,19 @@ const CustomGraph: React.FC = () => {
           graph!.addItem('edge', edge)
         })
 
+        console.log("TOTAL NODES: ", (graph!.save() as GraphData)!.nodes!.length)
+
         bindEvents()
+      } else if (le['type'] == 'All') {
+        setIsLoading(false)
+        console.log('Type ALL', le)
+        graph!.data({})
+        graph!.render()
+      } else if (le['type'] == 'WithRoot') {
+        setIsLoading(false)
+        console.log('Type WithRoot', le)
+        graph!.data({})
+        graph!.render()
       }
     })
   }, [])
