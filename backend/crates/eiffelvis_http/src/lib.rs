@@ -3,7 +3,7 @@
 //!
 
 mod requests;
-use requests::{ClientRequest, ClientRequestHandler, EiffelClientRequest};
+use requests::{ClientRequestHandler, EiffelClientRequest};
 
 use axum::{
     body::Full,
@@ -22,10 +22,9 @@ use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::{
-    app::EiffelVisApp,
-    types::{BaseEvent, LeanEvent},
-};
+use eiffelvis_core::{app::EiffelVisApp, types::BaseEvent};
+
+use crate::requests::{AllHandler, WithRootHandler};
 
 pub trait EiffelVisHttpApp: EiffelVisApp + Send + Sync + 'static {}
 impl<T> EiffelVisHttpApp for T where T: EiffelVisApp + Send + Sync + 'static {}
@@ -109,7 +108,8 @@ async fn establish_websocket<T: EiffelVisHttpApp>(
 
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
 
-        let mut req_handler: Option<Box<dyn ClientRequestHandler<T> + Send>> = None;
+        type BoxedHandler<T> = Box<dyn for<'a> ClientRequestHandler<'a, T, BaseEvent> + Send>;
+        let mut req_handler: Option<BoxedHandler<T>> = None;
 
         while let Ok(()) = tokio::select! {
             usr = socket.recv() => {
@@ -118,9 +118,8 @@ async fn establish_websocket<T: EiffelVisHttpApp>(
                         Ok(rq) => {
                             println!("client request! {:?}", rq);
                              req_handler = Some(match rq {
-                                EiffelClientRequest::All(all) => Box::new(ClientRequest::<T>::into_handler(all)),
-                                EiffelClientRequest::WithRoot(root) => Box::new(ClientRequest::<T>::into_handler(root)),
-                                EiffelClientRequest::Latest(latest) => Box::new(ClientRequest::<T>::into_handler(latest)),
+                                EiffelClientRequest::All(all) => Box::new(AllHandler::from(all)),
+                                EiffelClientRequest::WithRoot(root) => Box::new(WithRootHandler::from(root)),
                                 _ => todo!()
                             });
 
