@@ -11,6 +11,18 @@ pub struct BaseMeta {
     pub event_type: String,
     pub version: String,
     pub time: u64,
+    pub tags: Option<Vec<String>>,
+    pub source: Option<MetaSource>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct MetaSource {
+    #[serde(rename = "domainId")] // Doesn't follow convention, so rename
+    pub domain_id: Option<String>,
+    pub host: Option<String>,
+    pub name: Option<String>,
+    pub serializer: Option<String>,
+    pub uri: Option<String>,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
