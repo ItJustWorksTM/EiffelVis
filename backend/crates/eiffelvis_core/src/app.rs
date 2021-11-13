@@ -1,5 +1,5 @@
+use crate::graph_storage::ChunkedGraph;
 use crate::types::BaseEvent;
-use crate::{graph_storage::ChunkedGraph, types::LeanEvent};
 
 use uuid::Uuid;
 
@@ -14,7 +14,7 @@ pub trait EiffelVisApp {
         root_id: Uuid,
     ) -> Option<Vec<T>>;
     fn head(&self) -> Option<Uuid>;
-    fn events_starting_from(&self, id: Uuid) -> Option<Vec<LeanEvent>>;
+    fn events_starting_from<'a, T: From<&'a BaseEvent>>(&'a self, id: Uuid) -> Option<Vec<T>>;
 }
 
 impl EiffelVisApp for EiffelGraph {
@@ -59,12 +59,12 @@ impl EiffelVisApp for EiffelGraph {
         self.head().map(|(_, h, _)| *h)
     }
 
-    fn events_starting_from(&self, id: Uuid) -> Option<Vec<LeanEvent>> {
+    fn events_starting_from<'a, T: From<&'a BaseEvent>>(&'a self, id: Uuid) -> Option<Vec<T>> {
         let indices = self.find_index(id).zip(self.head().map(|l| l.0));
 
         indices.map(move |(begin, end)| {
             self.iter_range(begin, end)
-                .map(|node| LeanEvent::from(&node.data))
+                .map(|node| T::from(&node.data))
                 .collect()
         })
     }
