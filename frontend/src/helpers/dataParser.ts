@@ -1,10 +1,12 @@
+import { GraphData } from '@antv/g6/lib/types'
+
 interface IValues {
   id: string
   edges: Array<string>
 }
 
 export default (data: IValues[]) => {
-  const G6Data: any = { nodes: [], edges: [] }
+  const G6Data: GraphData = { nodes: [], edges: [] }
   data.forEach(({ id, edges }) => {
     G6Data.nodes!.push({ id })
     // console.log(id)

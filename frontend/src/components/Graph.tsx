@@ -5,9 +5,9 @@ import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
 import { GraphData } from '@antv/g6/lib/types'
-import { Pane } from 'tweakpane'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
+import useTweakPane from '../helpers/useTweakPane'
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -15,15 +15,10 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [requestData, setRequestData] = useState<any>({
-    type: 'All',
-    id: ''
-  })
+  const socket = useRef<any>(null)
 
   const graphContainer = useRef<any>(null)
   let graph: Graph | null = null
-  let pane: Pane
-
 
   const bindEvents = () => {
     if (graph) {
@@ -31,6 +26,7 @@ const CustomGraph: React.FC = () => {
       graph.on('click', () => {
         setShowNodeTooltip(false)
       })
+
       graph.on('nodeselectchange', (e: any) => {
         if (e.select) {
           const config = e.target._cfg
@@ -47,8 +43,52 @@ const CustomGraph: React.FC = () => {
     }
   }
 
+  const connect = () => {
+    socket.current = new WebSocket('ws://localhost:8080')
+  }
+
+  const onMessage = (event: any) => {
+    let le = JSON.parse(event.data)
+    console.log('from server', le)
+    if (Array.isArray(le)) {
+      const g6data: GraphData = dataParser(le)
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 700)
+      console.log('else', isLoading)
+      g6data.nodes!.forEach((node: any) => {
+        graph!.addItem('node', {
+          ...node,
+          x: Math.random() * 1000,
+          y: Math.random() * 1000,
+        })
+      })
+      if (g6data.edges) {
+        g6data.edges.forEach((edge: any) => {
+          graph!.addItem('edge', edge)
+        })
+      }
+
+      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
+    } else if (le['type'] == 'All') {
+      setIsLoading(false)
+      console.log('Type ALL', le)
+      graph!.data({})
+      graph!.render()
+    } else if (le['type'] == 'WithRoot') {
+      setIsLoading(false)
+      console.log('Type WithRoot', le)
+      graph!.data({})
+      graph!.render()
+    }
+  }
+
+  const getNodesWithThisRoot = (id: string) => {
+    socket.current.send(JSON.stringify({ type: 'WithRoot', id }))
+  }
+
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3001/ws')
+    connect()
 
     if (!graph) {
       const miniMap = new G6.Minimap({
@@ -62,10 +102,10 @@ const CustomGraph: React.FC = () => {
         height: window.innerHeight - 10,
         fitView: true,
         defaultEdge: {
-    style:{
-        endArrow: {path: G6.Arrow.triangle(10, 20, 100),d: 0}
-    }
-},
+          style: {
+            endArrow: { path: G6.Arrow.triangle(10, 20, 100), d: 0 },
+          },
+        },
         modes: {
           default: [
             'drag-node',
@@ -91,76 +131,32 @@ const CustomGraph: React.FC = () => {
         plugins: [miniMap],
       })
     }
-    pane = new Pane({ title: 'Events', expanded: true })
-    pane.addInput(requestData, 'type', {
-      label: 'Type',
-      options: { All: 'All', WithRoot: 'WithRoot' },
-    })
-    pane.addSeparator()
-    pane.addInput(requestData, 'id', {
-      label: 'node id',
-      step: 1,
-    })
 
-    pane
-      .addButton({
-        title: 'New Nodes',
-      })
-      .on('click', () => {
-        setIsLoading(true)
-        socket.send(JSON.stringify(pane.exportPreset()))
-        console.log('preset', requestData)
-      })
-    pane.on('change', () => {
-      console.log('changed', pane.exportPreset())
-      setRequestData(pane.exportPreset())
-    })
+    socket.current.onmessage = onMessage
+    bindEvents()
 
-    socket.addEventListener('message', (event) => {
-      console.log('from server', event.data)
-      let le = JSON.parse(event.data)
-      console.log('from server', le)
-      if (Array.isArray(le)) {
-        const g6data: any = dataParser(le)
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 700)
-        console.log('else', isLoading)
-        g6data.nodes.forEach((node: any) => {
-          graph!.addItem('node', {
-            ...node,
-            x: Math.random() * 1000,
-            y: Math.random() * 1000,
-          })
-        })
-        g6data.edges.forEach((edge: any) => {
-          graph!.addItem('edge', edge)
-        })
-
-        console.log("TOTAL NODES: ", (graph!.save() as GraphData)!.nodes!.length)
-
-        bindEvents()
-      } else if (le['type'] == 'All') {
-        setIsLoading(false)
-        console.log('Type ALL', le)
-        graph!.data({})
-        graph!.render()
-      } else if (le['type'] == 'WithRoot') {
-        setIsLoading(false)
-        console.log('Type WithRoot', le)
-        graph!.data({})
-        graph!.render()
-      }
-    })
+    return () => {
+      socket.current.close()
+    }
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
+
+  useTweakPane((data: any) => {
+    socket.current.send(JSON.stringify(data))
+    console.log('preset', data)
+  })
   const loader = isLoading && <Loader />
   return (
     <div>
       {loader}
       <div className={styles.graphContainer} ref={graphContainer}>
         {showNodeTooltip && (
-          <TooltipCard id={nodeTooltipId} x={nodeTooltipX} y={nodeTooltipY} />
+          <TooltipCard
+            id={nodeTooltipId}
+            x={nodeTooltipX}
+            y={nodeTooltipY}
+            getNodesWithRoot={getNodesWithThisRoot}
+          />
         )}
       </div>
     </div>
