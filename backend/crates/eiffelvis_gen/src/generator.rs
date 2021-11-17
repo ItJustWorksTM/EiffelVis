@@ -91,6 +91,7 @@ pub struct Iter<'a> {
     inner: &'a Inner,
     rng: RefCell<Pcg64>,
     history: VecDeque<BaseEvent>,
+    time: u64,
 }
 
 impl<'a> Iter<'a> {
@@ -99,6 +100,10 @@ impl<'a> Iter<'a> {
             inner,
             rng: RefCell::new(rng),
             history: VecDeque::new(),
+            time: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
         }
     }
 }
@@ -245,10 +250,10 @@ impl Iterator for Iter<'_> {
         event.meta.id = Uuid::from_bytes(self.rng.get_mut().gen());
 
         // TODO: allow specifying a starting time and a time delay between events
-        event.meta.time = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
+
+        self.time += self.rng.get_mut().gen_bool(1.0 / 3.0) as u64;
+        println!("time: {}", self.time);
+        event.meta.time = self.time;
 
         event.links = generated_links;
 
