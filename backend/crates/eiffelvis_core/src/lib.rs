@@ -12,3 +12,9 @@ pub mod graph_storage;
 
 /// eiffelvis shared types, e.g. events
 pub mod types;
+
+/// Graph traits
+pub mod graph;
+
+/// Graph traversal algorithms
+pub mod algorithms;
