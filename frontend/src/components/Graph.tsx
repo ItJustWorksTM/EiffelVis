@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph } from '@antv/g6'
+import { Graph } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
@@ -8,6 +8,8 @@ import { GraphData } from '@antv/g6/lib/types'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
+import G6 from '../helpers/timeLayout'
+import { ChevronDoubleLeft } from 'react-bootstrap-icons'
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -57,18 +59,14 @@ const CustomGraph: React.FC = () => {
       }, 700)
       console.log('else', isLoading)
       g6data.nodes!.forEach((node: any) => {
-        graph!.addItem('node', {
-          ...node,
-          x: Math.random() * 1000,
-          y: Math.random() * 1000,
-        })
+        graph!.addItem('node', node)
       })
       if (g6data.edges) {
         g6data.edges.forEach((edge: any) => {
           graph!.addItem('edge', edge)
         })
       }
-
+      graph?.layout()
       console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     } else if (le['type'] == 'All') {
       setIsLoading(false)
@@ -122,11 +120,7 @@ const CustomGraph: React.FC = () => {
           ],
         },
         layout: {
-          type: 'dagre',
-          workerEnabled: false,
-          rankdir: 'LR',
-          nodesep: 30,
-          ranksep: 100,
+          type: 'timeLayout'
         },
         plugins: [miniMap],
       })
