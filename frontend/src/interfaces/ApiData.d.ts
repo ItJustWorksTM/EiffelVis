@@ -5,5 +5,5 @@ interface IValues {
 }
 
 export default interface IData {
-  values: IValues[]
+  events: IValues[]
 }

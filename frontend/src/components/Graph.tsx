@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import G6, { Graph } from '@antv/g6'
+import { Graph } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
+import G6 from '../helpers/timeLayout'
 
 const link =
-  'https://gist.githubusercontent.com/IdreesSamadi/6aa2e5f0f8c3828b41f1e3446d2002cd/raw/messages.json'
+  'https://gist.githubusercontent.com/SyncInProgress/f8c2d9cafb8f030cb4ae3768c67185a7/raw/01cb8329fff7179df1e14deabadea36766aeabd8/lower_max_history'
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -50,6 +51,7 @@ const CustomGraph: React.FC = () => {
         width: window.innerWidth - 20,
         height: window.innerHeight - 10,
         fitView: true,
+        linkCenter: true,
         modes: {
           default: [
             'drag-canvas',
@@ -66,11 +68,26 @@ const CustomGraph: React.FC = () => {
           ],
         },
         layout: {
-          type: 'dagre',
-          workerEnabled: true,
-          rankdir: 'LR',
-          nodesep: 30,
-          ranksep: 100,
+          type: 'time-layout',
+          controlPoints: false,
+        },
+        defaultNode: {
+          labelCfg: {
+            style: {
+              opacity: 0
+            },
+          },
+          size: 10,
+        },
+        defaultEdge: {
+          style: {
+            endArrow: {
+              path: G6.Arrow.triangle(5, 10, 11), // Using the built-in edges for the path, parameters are the width, length, offset (0 by default, corresponds to d), respectively
+              d: 15,
+              fill: "#ffffff"
+            },
+          },
+          type: 'line',
         },
         plugins: [miniMap],
       })
