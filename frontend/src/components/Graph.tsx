@@ -44,7 +44,7 @@ const CustomGraph: React.FC = () => {
   }
 
   const connect = () => {
-    socket.current = new WebSocket('ws://localhost:8080')
+    socket.current = new WebSocket('ws://localhost:3001/ws')
   }
 
   const onMessage = (event: any) => {
@@ -84,7 +84,7 @@ const CustomGraph: React.FC = () => {
   }
 
   const getNodesWithThisRoot = (id: string) => {
-    socket.current.send(JSON.stringify({ type: 'WithRoot', id }))
+    socket.current.send(JSON.stringify({ type: 'WithRoot', ids: [id] }))
   }
 
   useEffect(() => {
@@ -141,9 +141,10 @@ const CustomGraph: React.FC = () => {
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
-  useTweakPane((data: any) => {
-    socket.current.send(JSON.stringify(data))
-    console.log('preset', data)
+  useTweakPane(({ id, type }: any) => {
+    const ret = { type, ids: [id, 'b84c321a-08c1-2d3e-74ba-dc9729cd1aab']}
+    socket.current.send(JSON.stringify(ret))
+    console.log('preset', ret)
   })
   const loader = isLoading && <Loader />
   return (

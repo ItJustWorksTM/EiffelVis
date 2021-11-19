@@ -22,7 +22,10 @@ use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::{app::EiffelVisApp, types::BaseEvent};
+use eiffelvis_core::{
+    app::EiffelVisApp,
+    types::{BaseEvent, LeanEvent},
+};
 
 use crate::requests::{AllHandler, WithRootHandler};
 
@@ -85,7 +88,7 @@ async fn events_with_root<T: EiffelVisHttpApp>(
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
     let lk = app.read().await;
-    if let Some(event) = lk.get_subgraph_with_root::<BaseEvent>(find_id) {
+    if let Some(event) = lk.get_subgraph_with_roots::<BaseEvent>(&[find_id]) {
         Json(event).into_response()
     } else {
         Response::builder()
@@ -108,13 +111,13 @@ async fn establish_websocket<T: EiffelVisHttpApp>(
 
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
 
-        type BoxedHandler<T> = Box<dyn for<'a> ClientRequestHandler<'a, T, BaseEvent> + Send>;
+        type BoxedHandler<T> = Box<dyn for<'a> ClientRequestHandler<'a, T, LeanEvent> + Send>;
         let mut req_handler: Option<BoxedHandler<T>> = None;
 
         while let Ok(()) = tokio::select! {
             usr = socket.recv() => {
                 match usr {
-                    Some(Ok(Message::Text(msg))) => match serde_json::from_str::<EiffelClientRequest>(&msg) {
+                    Some(Ok(Message::Text(ref msg))) => match serde_json::from_str::<EiffelClientRequest>(&msg) {
                         Ok(rq) => {
                             println!("client request! {:?}", rq);
                              req_handler = Some(match rq {
@@ -124,12 +127,12 @@ async fn establish_websocket<T: EiffelVisHttpApp>(
                             });
 
                             // TODO: actually do something sensible
-                            socket.send(Message::Text(msg)).await.unwrap();
+                            socket.send(Message::Text(msg.clone())).await.unwrap();
 
                             Ok(())
                         },
                         err => {
-                            println!("Warning, bad message: {:?}", err);
+                            println!("Warning, bad message: {:?} \n {:?}", err, usr);
                             Ok(())
                         }
                     },

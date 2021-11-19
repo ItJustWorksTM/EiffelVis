@@ -1,5 +1,5 @@
-use crate::algorithms::depth_first;
 use crate::graph_storage::ChunkedGraph;
+use crate::{algorithms::depth_first, graph_storage::chunked_storage::ChunkedIndex};
 use crate::{graph::*, types::BaseEvent};
 use std::ops::ControlFlow;
 
@@ -13,9 +13,9 @@ pub trait EiffelVisApp {
     fn push(&mut self, event: BaseEvent);
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent>;
     fn dump<'a, T: From<&'a BaseEvent>>(&'a self) -> Vec<T>;
-    fn get_subgraph_with_root<'a, T: From<&'a BaseEvent>>(
+    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(
         &'a self,
-        root_id: Uuid,
+        roots: &[Uuid],
     ) -> Option<Vec<T>>;
     fn head(&self) -> Option<Uuid>;
     fn events_starting_from<'a, T: From<&'a BaseEvent>>(&'a self, id: Uuid) -> Option<Vec<T>>;
@@ -44,19 +44,21 @@ impl EiffelVisApp for EiffelGraph {
         self.nodes().map(|(_, node)| T::from(node.data())).collect()
     }
 
-    fn get_subgraph_with_root<'a, T: From<&'a BaseEvent>>(
+    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(
         &'a self,
-        root_id: Uuid,
+        roots: &[Uuid],
     ) -> Option<Vec<T>> {
         let mut index = IndexSet::<_>::default();
 
-        depth_first(self, self.to_index(root_id).unwrap(), &mut |i| {
-            if index.insert(i) {
-                ControlFlow::Continue(())
-            } else {
-                ControlFlow::Break(())
-            }
-        });
+        for root_id in roots {
+            depth_first(self, self.to_index(*root_id).unwrap(), &mut |i| {
+                if index.insert(i) {
+                    ControlFlow::Continue(())
+                } else {
+                    ControlFlow::Break(())
+                }
+            });
+        }
 
         index.sort_by(|&lhs, &rhs| self.cmp_index(lhs, rhs));
 
@@ -75,12 +77,8 @@ impl EiffelVisApp for EiffelGraph {
     fn events_starting_from<'a, T: From<&'a BaseEvent>>(&'a self, id: Uuid) -> Option<Vec<T>> {
         self.to_index(id)
             .zip(self.last())
-            .filter(|(begin, end)| {
-                println!("{:?}", (begin, end));
-                begin != end
-            })
+            .filter(|(begin, end)| begin != end)
             .map(|(begin, _)| {
-                println!("hello!");
                 let mut iter = self.nodes();
                 iter.by_ref().take_while(|(i, _)| *i != begin).count();
                 iter.map(|(_, node)| T::from(node.data()))
