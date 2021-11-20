@@ -65,7 +65,7 @@ impl<I> TrackedQuery<I> {
     pub fn handle<'a, R, G>(&'a mut self, graph: G) -> Vec<R>
     where
         G: Ref<'a>,
-        G::Meta: Meta<Data = BaseEvent, Idx = I> + 'a,
+        G::Meta: Meta<Data = BaseEvent, Idx = I, Key = Uuid> + 'a,
         R: From<&'a BaseEvent> + 'static,
         I: Idx,
     {
@@ -80,7 +80,10 @@ impl<I> TrackedQuery<I> {
                         && end.map(|end| node.data().meta.time <= end).unwrap_or(true)
                 }
                 Filter::Type { ref name } => &node.data().meta.event_type == name,
-                _ => false, // TODO!
+                Filter::Ids { ref ids } => ids
+                    .iter()
+                    .map(|i| graph.index(*i))
+                    .any(|i| i.id() == node.id()),
             })
         });
 
