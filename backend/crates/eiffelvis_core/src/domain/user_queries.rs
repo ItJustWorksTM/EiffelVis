@@ -71,7 +71,7 @@ impl<I> TrackedQuery<I> {
     {
         let fresh = self.inner.handle(graph);
         let iter = fresh.filter(|node| {
-            self.filters.iter().any(|filter| match filter {
+            self.filters.iter().all(|filter| match filter {
                 Filter::None => true,
                 Filter::Time { begin, end } => {
                     begin
