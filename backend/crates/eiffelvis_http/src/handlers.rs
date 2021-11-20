@@ -72,7 +72,7 @@ where
                 match usr {
                     Some(Ok(Message::Text(ref msg))) => match serde_json::from_str::<Query>(msg) {
                         Ok(rq) => {
-
+                            println!("New Request: {:#?}", rq);
                             req_handler = Some(TrackedQuery::new(rq));
 
                             match socket.send(Message::Text(msg.clone())).await {

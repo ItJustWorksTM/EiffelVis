@@ -7,8 +7,8 @@ use std::iter::repeat;
 /// these act as a proxy for the real [Event] and [Link] types with the benefit of [EventBorrow::links()] and [LinkBorrow::targets()] returning the same Borrow types compared to just string names.
 #[derive(Default, Debug)]
 pub struct EventSet {
-    links: HashMap<String, Link>,
     events: HashMap<String, Event>,
+    links: HashMap<String, Link>,
 }
 
 impl EventSet {

@@ -131,8 +131,7 @@ const CustomGraph: React.FC = () => {
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
   useTweakPane(({ id, type }: any) => {
-    const ret: any = { filters: [ { type: "Type", "name": "Unique" } ], collection: { type: "AsRoots"} }
-    // ret.filters.push({ type: "None" })
+    const ret: any = { filters: [{ type: "None" }], collection: { type: "Forward" } }
 
     socket.current.send(JSON.stringify(ret))
     console.log('preset', ret)

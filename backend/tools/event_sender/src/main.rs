@@ -62,17 +62,26 @@ async fn app() -> anyhow::Result<()> {
 
     println!("Connected to broker.");
 
+    let event_set = EventSet::build()
+        .add_link(Link::new("Link0", true).with_target("Unique"))
+        .add_link(Link::new("Link1", true).with_target("NotUnique"))
+        .add_event(Event::new("Unique", "1.0.0"))
+        .add_event(
+            Event::new("NotUnique", "1.0.0")
+                .with_link("Link1")
+                .with_link("Link0"),
+        )
+        .add_event(Event::new("EventLOL", "1.0.0").with_req_link("Link0"))
+        .build()
+        .expect("This should work");
+
+    println!("{:#?}", event_set);
+
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
         4,
         8,
-        EventSet::build()
-            .add_link(Link::new("Link0", true).with_target("Unique"))
-            .add_event(Event::new("Unique", "1.0.0"))
-            .add_event(Event::new("NotUnique", "1.0.0"))
-            .add_event(Event::new("EventLOL", "1.0.0").with_req_link("Link0"))
-            .build()
-            .expect("This should work"),
+        event_set,
     );
 
     let target = cli.count * cli.burst;
