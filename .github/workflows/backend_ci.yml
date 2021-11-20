@@ -37,6 +37,14 @@ jobs:
         if: runner.os == 'linux'
       - name: Test
         run: cargo test --workspace
+      - name: Package
+        run: |
+          mkdir dist
+          cargo install --path . --bins --root dist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: bins
+          path: dist/**
   dockerfile:
     name: Docker image
     runs-on: ubuntu-latest
