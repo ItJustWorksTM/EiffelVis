@@ -1,4 +1,4 @@
-use crate::graph::{self, Item, ItemEdge};
+use crate::graph;
 use indexmap::IndexMap;
 use std::{hash::Hash, ops::IndexMut};
 
@@ -258,51 +258,56 @@ impl<'a, E> Iterator for EdgeIter<'a, E> {
     }
 }
 
-use crate::graph::Mut;
-use crate::graph::ValueIndex;
+#[cfg(test)]
+mod test {
 
-#[test]
-fn test_forward_link_single() {
-    impl graph::Key for i32 {}
-    let mut g = ChunkedGraph::new(3, 3);
+    use super::*;
+    use crate::graph::{Item, Mut};
+    use crate::graph::{ItemEdge, ValueIndex};
 
-    g.add_node(0, "This is the beginning!");
+    #[test]
+    fn test_forward_link_single() {
+        impl graph::Key for i32 {}
+        let mut g = ChunkedGraph::new(3, 3);
 
-    for i in 1..9 {
-        g.add_node_with_edges(
-            i,
-            "more data",
-            vec![(0, format!("targets {}", i))].into_iter(),
-        );
+        g.add_node(0, "This is the beginning!");
+
+        for i in 1..9 {
+            g.add_node_with_edges(
+                i,
+                "more data",
+                vec![(0, format!("targets {}", i))].into_iter(),
+            );
+        }
+
+        // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
+
+        // All nodes should now have links to the first node (which are stored on the first node itself)
+        let zeroth = g.index(0).edges().count();
+        assert_eq!(zeroth, 8);
     }
 
-    // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
+    #[test]
+    fn test_forward_link_many() {
+        let mut g = ChunkedGraph::new(3, 3);
 
-    // All nodes should now have links to the first node (which are stored on the first node itself)
-    let zeroth = g.index(0).edges().count();
-    assert_eq!(zeroth, 8);
-}
+        g.add_node(0, String::from("0"));
 
-#[test]
-fn test_forward_link_many() {
-    let mut g = ChunkedGraph::new(3, 3);
+        for i in 1..9 {
+            g.add_node_with_edges(i, format!("{}", i), std::iter::once((i - 1, "")));
+        }
 
-    g.add_node(0, String::from("0"));
-
-    for i in 1..9 {
-        g.add_node_with_edges(i, format!("{}", i), std::iter::once((i - 1, "")));
-    }
-
-    // Now i - 1 node should store an edge to node i
-    // 0 -> 1, 1 -> 2 ...
-    for i in 1..8 {
-        assert_eq!(
-            g.index(i - 1)
-                .edges()
-                .next()
-                .and_then(|i| g.from_index(i.target())),
-            Some(i)
-        );
+        // Now i - 1 node should store an edge to node i
+        // 0 -> 1, 1 -> 2 ...
+        for i in 1..8 {
+            assert_eq!(
+                g.index(i - 1)
+                    .edges()
+                    .next()
+                    .and_then(|i| g.from_index(i.target())),
+                Some(i)
+            );
+        }
     }
 }
 
