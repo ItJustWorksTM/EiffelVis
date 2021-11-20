@@ -45,7 +45,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: bins
-          path: dist/bin/**
+          path: dist/bin/*
   dockerfile:
     name: Docker image
     runs-on: ubuntu-latest
