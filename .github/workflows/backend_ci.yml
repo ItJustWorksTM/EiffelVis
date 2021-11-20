@@ -44,14 +44,9 @@ jobs:
           cargo install --path ./tools/event_sender --bins --root dist
       - uses: actions/upload-artifact@v2
         with:
-          name: bins
+          name: bins-${{ matrix.os }}
           path: |
-            dist/bin/eiffelvis
-            dist/bin/event_sender
-            dist/bin/eiffelvis.exe
-            dist/bin/event_sender.exe
             backend/dist/bin/*
-            backend/dist/bin/
 
             
   dockerfile:
