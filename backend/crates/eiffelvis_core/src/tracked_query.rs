@@ -1,5 +1,7 @@
 use crate::{graph::*, query::GraphQuery};
 
+// TODO: return iterators instead of Vec to avoid allocating..
+
 pub struct TrackedNodes<I> {
     cursor: Option<I>,
 }
