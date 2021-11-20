@@ -1,8 +1,8 @@
 import { Pane } from 'tweakpane'
 import { useEffect, useState } from 'react'
+import { TweakCb } from './types'
 
-// eslint-disable-next-line no-unused-vars
-const useTweakPane = (cb: (data: any) => void): void => {
+const useTweakPane = (cb: TweakCb): void => {
   const [paneData, setPaneData] = useState<any>({
     type: 'All',
     id: '',
