@@ -1,6 +1,6 @@
 use crate::{
-    graph::{Graph, GraphMeta, Index, Node},
-    query::GraphQuery,
+    graph::*,
+    query::{GraphQuery, SubGraphs},
 };
 
 pub struct TrackedNodes<I> {
@@ -12,26 +12,51 @@ impl<I> TrackedNodes<I> {
         Self { cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> impl Iterator<Item = G::Node> + 'a
+    pub fn handle<'a, G>(&'a mut self, graph: G) -> TrackedNodesIter<'a, I, G>
     where
-        G: Graph<I = I> + 'a,
-        I: Index<G> + PartialEq + Eq,
+        G: Ref<'a>,
+        G::Meta: Meta<Idx = I> + 'a,
+        I: Idx,
     {
         // TODO: reverse NodeIterator?
-        let mut iter = graph.nodes();
+        let mut iter = graph.items();
 
         // TODO: consider building this into the Graph trait..
         if let Some(cursor) = self.cursor {
             iter.by_ref().take_while(|el| el.id() != cursor).count();
         }
 
-        iter.inspect(|v| self.cursor = Some(v.id()))
+        TrackedNodesIter {
+            owner: self,
+            inner: iter,
+        }
     }
 }
 
 impl<I> Default for TrackedNodes<I> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+pub struct TrackedNodesIter<'a, I, G: Ref<'a>> {
+    owner: &'a mut TrackedNodes<I>,
+    inner: G::ItemIterator,
+}
+
+impl<'a, I, G: Ref<'a>> Iterator for TrackedNodesIter<'a, I, G>
+where
+    G::Meta: Meta<Idx = I> + 'a,
+    I: Idx,
+{
+    type Item = G::Item;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.inner.next();
+        if let Some(item) = &ret {
+            self.owner.cursor = Some(item.id());
+        }
+        ret
     }
 }
 
@@ -45,10 +70,11 @@ impl<I> TrackedSubGraphs<I> {
         Self { ids, cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> impl Iterator<Item = G::Node> + 'a
+    pub fn handle<'a, G>(&'a mut self, graph: G) -> TrackedSubGraphsIter<'a, I, G>
     where
-        G: Graph<I = I> + GraphMeta<NodeIndex = I> + 'a,
-        I: Index<G> + PartialEq + Eq + 'static,
+        G: Ref<'a>,
+        G::Meta: Meta<Idx = I> + 'a,
+        I: Idx,
     {
         let mut iter = self
             .ids
@@ -60,7 +86,10 @@ impl<I> TrackedSubGraphs<I> {
             iter.by_ref().take_while(|el| el.id() != cursor).count();
         }
 
-        iter.inspect(|v| self.cursor = Some(v.id()))
+        TrackedSubGraphsIter {
+            owner: self,
+            inner: iter,
+        }
     }
 
     /// Note only events that are newer than the current state are brought along
@@ -70,5 +99,26 @@ impl<I> TrackedSubGraphs<I> {
 
     pub fn ids(&self) -> &Vec<I> {
         &self.ids
+    }
+}
+
+pub struct TrackedSubGraphsIter<'a, I, G: Ref<'a>> {
+    owner: &'a mut TrackedSubGraphs<I>,
+    inner: SubGraphs<'a, G>,
+}
+
+impl<'a, I, G: Ref<'a>> Iterator for TrackedSubGraphsIter<'a, I, G>
+where
+    G::Meta: Meta<Idx = I> + 'a,
+    I: Idx,
+{
+    type Item = G::Item;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.inner.next();
+        if let Some(item) = &ret {
+            self.owner.cursor = Some(item.id());
+        }
+        ret
     }
 }

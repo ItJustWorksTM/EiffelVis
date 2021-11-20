@@ -56,8 +56,7 @@ pub async fn establish_websocket<T: EiffelVisHttpApp>(
     user_agent: Option<TypedHeader<headers::UserAgent>>,
 ) -> impl IntoResponse
 where
-    for<'a> &'a T: Graph<I = T::NodeIndex, K = T::NodeKey> + EiffelGraph + Send,
-    for<'a> T::NodeIndex: graph::Index<&'a T>,
+    for<'a> &'a T: Ref<'a, Meta = T> + Send,
 {
     if let Some(TypedHeader(user_agent)) = user_agent {
         println!("`{}` connected to websocket", user_agent.as_str());
@@ -73,7 +72,7 @@ where
                 match usr {
                     Some(Ok(Message::Text(ref msg))) => match serde_json::from_str::<Query>(msg) {
                         Ok(rq) => {
-
+                            println!("New Request: {:#?}", rq);
                             req_handler = Some(TrackedQuery::new(rq));
 
                             match socket.send(Message::Text(msg.clone())).await {

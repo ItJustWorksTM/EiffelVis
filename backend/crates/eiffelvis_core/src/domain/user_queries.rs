@@ -1,6 +1,6 @@
 use crate::{
     domain::types::BaseEvent,
-    graph::{Graph, GraphMeta, Index, Node},
+    graph::*,
     tracked_query::{TrackedNodes, TrackedSubGraphs},
 };
 use serde::{Deserialize, Serialize};
@@ -64,12 +64,14 @@ impl<I> TrackedQuery<I> {
 
     pub fn handle<'a, R, G>(&'a mut self, graph: G) -> Vec<R>
     where
-        G: Graph<I = I> + GraphMeta<NodeIndex = I, NodeData = BaseEvent> + 'a,
-        I: Index<G> + PartialEq + Eq + 'static,
-        for<'z> R: From<&'z BaseEvent>, // Uuid: Index<G>,
+        G: Ref<'a>,
+        G::Meta: Meta<Data = BaseEvent, Idx = I, Key = Uuid> + 'a,
+        R: From<&'a BaseEvent> + 'static,
+        I: Idx,
     {
-        let iter = self.inner.handle(graph).filter(|node| {
-            self.filters.iter().any(|filter| match filter {
+        let fresh = self.inner.handle(graph);
+        let iter = fresh.filter(|node| {
+            self.filters.iter().all(|filter| match filter {
                 Filter::None => true,
                 Filter::Time { begin, end } => {
                     begin
@@ -78,7 +80,10 @@ impl<I> TrackedQuery<I> {
                         && end.map(|end| node.data().meta.time <= end).unwrap_or(true)
                 }
                 Filter::Type { ref name } => &node.data().meta.event_type == name,
-                _ => false, // TODO!
+                Filter::Ids { ref ids } => ids
+                    .iter()
+                    .filter_map(|i| graph.try_index(*i))
+                    .any(|i| i.id() == node.id()),
             })
         });
 
@@ -86,7 +91,7 @@ impl<I> TrackedQuery<I> {
             Collector::Forward => iter.map(|v| R::from(&*v.data())).collect(),
             Collector::SubGraph(ref mut sub) => {
                 iter.for_each(|v| sub.add_id(v.id()));
-                sub.handle(graph).map(|v| R::from(&*v.data())).collect()
+                sub.handle(graph).map(|v| R::from(v.data())).collect()
             }
         }
     }
