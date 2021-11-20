@@ -202,7 +202,7 @@ impl<'a, K: graph::Key, N, E> graph::ValueIndex<ChunkedIndex> for &'a ChunkedGra
     fn try_index(self, index: ChunkedIndex) -> Option<Self::Output> {
         self.store
             .get(index.0)
-            .and_then(|m| m.get_index(index.0))
+            .and_then(|m| m.get_index(index.1))
             .map(|el| (index, el.1))
     }
 }
@@ -262,8 +262,9 @@ impl<'a, E> Iterator for EdgeIter<'a, E> {
 mod test {
 
     use super::*;
-    use crate::graph::{Item, Mut};
-    use crate::graph::{ItemEdge, ValueIndex};
+    use crate::graph::*;
+
+    use std::iter::once;
 
     #[test]
     fn test_forward_link_single() {
@@ -273,11 +274,7 @@ mod test {
         g.add_node(0, "This is the beginning!");
 
         for i in 1..9 {
-            g.add_node_with_edges(
-                i,
-                "more data",
-                vec![(0, format!("targets {}", i))].into_iter(),
-            );
+            g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))));
         }
 
         // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
@@ -291,21 +288,26 @@ mod test {
     fn test_forward_link_many() {
         let mut g = ChunkedGraph::new(3, 3);
 
-        g.add_node(0, String::from("0"));
+        g.add_node(0, String::from("the first node"));
 
         for i in 1..9 {
-            g.add_node_with_edges(i, format!("{}", i), std::iter::once((i - 1, "")));
+            g.add_node_with_edges(i, format!("boy {}", i), once((i - 1, "")))
+                .expect("This is valid");
+        }
+
+        for (i, item) in g.items().enumerate() {
+            let it = g.index(i as i32);
+            assert_eq!(it.data(), item.data());
         }
 
         // Now i - 1 node should store an edge to node i
         // 0 -> 1, 1 -> 2 ...
-        for i in 1..8 {
+        for i in 1..8i32 {
             assert_eq!(
-                g.index(i - 1)
+                g.index((i - 1) as i32)
                     .edges()
-                    .next()
-                    .and_then(|i| g.from_index(i.target())),
-                Some(i)
+                    .find_map(|i| g.from_index(i.target())),
+                Some(i as i32)
             );
         }
     }

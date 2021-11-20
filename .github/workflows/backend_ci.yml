@@ -41,6 +41,7 @@ jobs:
         run: |
           mkdir dist
           cargo install --path . --bins --root dist
+          cargo install --path ./tools/event_sender --bins --root dist
       - uses: actions/upload-artifact@v2
         with:
           name: bins
