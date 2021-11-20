@@ -199,16 +199,19 @@ impl<K: graph::Key, N, E> graph::Mut for ChunkedGraph<K, N, E> {
 
 impl<'a, K: graph::Key, N, E> graph::ValueIndex<ChunkedIndex> for &'a ChunkedGraph<K, N, E> {
     type Output = (ChunkedIndex, &'a Element<N, E>);
-    fn index(self, index: ChunkedIndex) -> Self::Output {
-        (index, &self.store[index.0][index.1])
+    fn try_index(self, index: ChunkedIndex) -> Option<Self::Output> {
+        self.store
+            .get(index.0)
+            .and_then(|m| m.get_index(index.0))
+            .map(|el| (index, el.1))
     }
 }
 
 impl<'a, K: graph::Key, N, E> graph::ValueIndex<K> for &'a ChunkedGraph<K, N, E> {
     type Output = (ChunkedIndex, &'a Element<N, E>);
 
-    fn index(self, index: K) -> Self::Output {
-        self.index(self.to_index(index).unwrap())
+    fn try_index(self, index: K) -> Option<Self::Output> {
+        self.to_index(index).map(|i| self.index(i))
     }
 }
 

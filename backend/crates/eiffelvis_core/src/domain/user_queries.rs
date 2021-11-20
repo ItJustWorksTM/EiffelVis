@@ -70,7 +70,7 @@ impl<I> TrackedQuery<I> {
         I: Idx,
     {
         let fresh = self.inner.handle(graph);
-        let iter = fresh.iter().filter(|node| {
+        let iter = fresh.filter(|node| {
             self.filters.iter().any(|filter| match filter {
                 Filter::None => true,
                 Filter::Time { begin, end } => {
@@ -82,7 +82,7 @@ impl<I> TrackedQuery<I> {
                 Filter::Type { ref name } => &node.data().meta.event_type == name,
                 Filter::Ids { ref ids } => ids
                     .iter()
-                    .map(|i| graph.index(*i))
+                    .filter_map(|i| graph.try_index(*i))
                     .any(|i| i.id() == node.id()),
             })
         });
@@ -91,10 +91,7 @@ impl<I> TrackedQuery<I> {
             Collector::Forward => iter.map(|v| R::from(&*v.data())).collect(),
             Collector::SubGraph(ref mut sub) => {
                 iter.for_each(|v| sub.add_id(v.id()));
-                sub.handle(graph)
-                    .iter()
-                    .map(|v| R::from(v.data()))
-                    .collect()
+                sub.handle(graph).map(|v| R::from(v.data())).collect()
             }
         }
     }

@@ -4,10 +4,14 @@ pub trait Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash
 pub trait Idx: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 impl<T> Idx for T where T: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 
-pub trait ValueIndex<Idx> {
+pub trait ValueIndex<Idx>: Sized {
     type Output;
 
-    fn index(self, idx: Idx) -> Self::Output;
+    fn index(self, idx: Idx) -> Self::Output {
+        self.try_index(idx).unwrap()
+    }
+
+    fn try_index(self, idx: Idx) -> Option<Self::Output>;
 }
 
 pub trait Meta {
