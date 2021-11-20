@@ -6,7 +6,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use eiffelvis_core::app::{EiffelGraph, EiffelVisApp};
+use eiffelvis_core::domain::app::{EiffelGraph, EiffelVisApp};
 use structopt::StructOpt;
 use tracing::info;
 

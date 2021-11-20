@@ -249,10 +249,7 @@ impl Iterator for Iter<'_> {
         event.meta.event_type = meta_event.name().to_string();
         event.meta.id = Uuid::from_bytes(self.rng.get_mut().gen());
 
-        // TODO: allow specifying a starting time and a time delay between events
-
         self.time += self.rng.get_mut().gen_bool(1.0 / 3.0) as u64;
-        println!("time: {}", self.time);
         event.meta.time = self.time;
 
         event.links = generated_links;

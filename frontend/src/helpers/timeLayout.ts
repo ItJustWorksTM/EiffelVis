@@ -22,14 +22,17 @@ G6.registerLayout('timeLayout', {
       let posx = 0
       let posy = 0
       let log = 1
+      let flag = 0
+      console.log("calculating new values for nodes: ", nodes?.length)
+      // TODO: this runs for the whole graph everytime
       nodes?.forEach((node:any ) => {
         const temp = node
         const tempTime:number = temp.time
         if (tempTime === time) {
-          temp.x = posx
+          temp.x = posx + flag
           if (posy < 0) {
             temp.y = posy
-            posy = (posy * -1) + (100 * (0.99**log))
+            posy = (posy * 1) + (100 * (0.99**log))
             log += 1
           } else {
             temp.y = posy
@@ -37,6 +40,7 @@ G6.registerLayout('timeLayout', {
               posy *= -1
             } 
           }
+          flag += 10
         } else if (tempTime > time){
           posx += 100
           temp.x = posx
@@ -45,8 +49,8 @@ G6.registerLayout('timeLayout', {
           temp.y = posy
           posy += 100
           time = tempTime
+          flag = 0
         }
-        console.log(posx, posy)
       })
     },
   

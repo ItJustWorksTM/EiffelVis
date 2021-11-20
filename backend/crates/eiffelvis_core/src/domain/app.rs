@@ -1,9 +1,6 @@
-use crate::graph_storage::ChunkedGraph;
-use crate::{algorithms::depth_first, graph_storage::chunked_storage::ChunkedIndex};
-use crate::{graph::*, types::BaseEvent};
-use std::ops::ControlFlow;
+use crate::{domain::types::BaseEvent, graph::*};
+use crate::{graph_storage::ChunkedGraph, query::GraphQuery};
 
-use indexmap::IndexSet;
 use uuid::Uuid;
 impl GraphKey for Uuid {}
 
@@ -11,12 +8,12 @@ pub type EiffelGraph = ChunkedGraph<Uuid, BaseEvent, String>;
 
 pub trait EiffelVisApp {
     fn push(&mut self, event: BaseEvent);
+    fn graph(&self) -> &Self {
+        self
+    }
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent>;
     fn dump<'a, T: From<&'a BaseEvent>>(&'a self) -> Vec<T>;
-    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(
-        &'a self,
-        roots: &[Uuid],
-    ) -> Option<Vec<T>>;
+    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(&'a self, roots: &[Uuid]) -> Vec<T>;
     fn head(&self) -> Option<Uuid>;
     fn events_starting_from<'a, T: From<&'a BaseEvent>>(&'a self, id: Uuid) -> Option<Vec<T>>;
 }
@@ -41,33 +38,16 @@ impl EiffelVisApp for EiffelGraph {
 
     /// Returns all current stored events
     fn dump<'a, T: From<&'a BaseEvent>>(&'a self) -> Vec<T> {
-        self.nodes().map(|(_, node)| T::from(node.data())).collect()
+        self.nodes().map(|node| T::from(node.data())).collect()
     }
 
-    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(
-        &'a self,
-        roots: &[Uuid],
-    ) -> Option<Vec<T>> {
-        let mut index = IndexSet::<_>::default();
-
-        for root_id in roots {
-            depth_first(self, self.to_index(*root_id).unwrap(), &mut |i| {
-                if index.insert(i) {
-                    ControlFlow::Continue(())
-                } else {
-                    ControlFlow::Break(())
-                }
-            });
-        }
-
-        index.sort_by(|&lhs, &rhs| self.cmp_index(lhs, rhs));
-
-        Some(
-            index
-                .drain(..)
-                .map(|index| T::from(self.index(index).data()))
-                .collect(),
-        )
+    fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(&'a self, roots: &[Uuid]) -> Vec<T> {
+        roots
+            .iter()
+            .map(|i| self.index(*i))
+            .roots_for_graph(self)
+            .map(|node| T::from(node.data()))
+            .collect()
     }
 
     fn head(&self) -> Option<Uuid> {
@@ -81,8 +61,7 @@ impl EiffelVisApp for EiffelGraph {
             .map(|(begin, _)| {
                 let mut iter = self.nodes();
                 iter.by_ref().take_while(|(i, _)| *i != begin).count();
-                iter.map(|(_, node)| T::from(node.data()))
-                    .collect::<Vec<_>>()
+                iter.map(|node| T::from(node.data())).collect::<Vec<_>>()
             })
             .filter(|v| !v.is_empty())
     }

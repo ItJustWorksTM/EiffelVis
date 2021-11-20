@@ -1,7 +1,10 @@
-pub trait GraphKey: std::hash::Hash + Eq + Copy + Clone {}
+use std::{cmp::Ordering, ops::Deref};
+
+pub trait GraphKey: std::hash::Hash + Eq + Copy + Clone + Send + Sync + 'static {}
+pub trait GraphIndex: std::hash::Hash + Eq + Copy + Clone + Send + Sync + 'static {}
 
 pub trait GraphMeta {
-    type NodeIndex: Copy;
+    type NodeIndex: GraphIndex;
     type NodeKey: GraphKey;
 
     type NodeData;
@@ -19,21 +22,28 @@ pub trait Graph:
     GraphMeta<NodeIndex = <Self as Graph>::I, NodeKey = <Self as Graph>::K> + Sized + Copy
 {
     // TODO: Find a way to not have this
-    type I: Index<Self>;
-    type K: Index<Self>;
+    type I: Index<Self> + GraphIndex;
+    type K: Index<Self> + GraphKey;
+
+    type D: Deref<Target = Self::NodeData>;
 
     type Edge: Edge<NodeIndex = Self::NodeIndex>;
-    type Node: Node<Edge = Self::Edge>;
+    type Node: Node<Id = Self::NodeIndex, Data = Self::D, Edge = Self::Edge>;
 
     fn index(self, index: impl Index<Self>) -> Self::Node {
         index.index(self)
     }
 
-    type NodeIterator: Iterator<Item = (Self::NodeIndex, Self::Node)>;
+    fn cmp_index(self, lhs: Self::NodeIndex, rhs: Self::NodeIndex) -> Ordering;
+
+    type NodeIterator: Iterator<Item = Self::Node>;
     fn nodes(self) -> Self::NodeIterator;
 }
 
 pub trait Node: Copy {
+    type Id;
+    fn id(self) -> Self::Id;
+
     type Data;
     fn data(self) -> Self::Data;
 

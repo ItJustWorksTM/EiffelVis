@@ -36,6 +36,7 @@ impl From<&BaseEvent> for BaseEvent {
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LeanEvent {
     pub id: Uuid,
+    pub time: u64,
     pub edges: Vec<Uuid>,
 }
 
@@ -43,6 +44,7 @@ impl From<&BaseEvent> for LeanEvent {
     fn from(ev: &BaseEvent) -> Self {
         Self {
             id: ev.meta.id,
+            time: ev.meta.time,
             edges: ev.links.iter().map(|link| link.target).collect(),
         }
     }

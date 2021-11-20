@@ -4,17 +4,18 @@
 //! Aims to provide a common interface that "frontends" such as eiffelvis_http don't have manage eiffel events.
 //!
 
-/// eiffelvis core api
-pub mod app;
+/// eiffelvis domains specicifc api
+pub mod domain;
 
 /// DAG storage implementations
 pub mod graph_storage;
-
-/// eiffelvis shared types, e.g. events
-pub mod types;
 
 /// Graph traits
 pub mod graph;
 
 /// Graph traversal algorithms
 pub mod algorithms;
+
+pub mod query;
+
+pub mod tracked_query;

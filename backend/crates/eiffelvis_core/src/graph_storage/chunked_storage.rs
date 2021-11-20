@@ -5,6 +5,8 @@ use std::{hash::Hash, ops::IndexMut};
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct ChunkedIndex(usize, usize);
 
+impl GraphIndex for ChunkedIndex {}
+
 #[derive(Debug)]
 pub struct ChunkedGraph<K: GraphKey, N, E> {
     store: Vec<IndexMap<K, Element<N, E>>>,
@@ -123,17 +125,22 @@ impl<K: GraphKey, N, E> ChunkedGraph<K, N, E> {
     }
 }
 
-impl<'a, N, E> Node for &'a Element<N, E> {
+impl<'a, N, E> Node for (ChunkedIndex, &'a Element<N, E>) {
+    type Id = ChunkedIndex;
+    fn id(self) -> Self::Id {
+        self.0
+    }
+
     type Data = &'a N;
     fn data(self) -> Self::Data {
-        &self.0.data
+        &self.1 .0.data
     }
 
     type Edge = &'a EdgeData<E>;
     type EdgeIterator = EdgeIter<'a, E>;
     fn edges(self) -> Self::EdgeIterator {
         EdgeIter {
-            inner: self.1.iter(),
+            inner: self.1 .1.iter(),
         }
     }
 }
@@ -161,8 +168,9 @@ impl<K: GraphKey, N, E> GraphMeta for ChunkedGraph<K, N, E> {
 impl<'a, K: GraphKey, N, E> Graph for &'a ChunkedGraph<K, N, E> {
     type K = K;
     type I = ChunkedIndex;
+    type D = &'a N;
 
-    type Node = &'a Element<N, E>;
+    type Node = (Self::I, &'a Element<N, E>);
     type Edge = &'a EdgeData<E>;
 
     type NodeIterator = NodeIter<'a, K, N, E>;
@@ -174,6 +182,10 @@ impl<'a, K: GraphKey, N, E> Graph for &'a ChunkedGraph<K, N, E> {
             graph: self,
             item: 0,
         }
+    }
+
+    fn cmp_index(self, lhs: Self::NodeIndex, rhs: Self::NodeIndex) -> std::cmp::Ordering {
+        self.cmp_index(lhs, rhs)
     }
 }
 
@@ -188,13 +200,13 @@ impl<K: GraphKey, N, E> GraphMut for ChunkedGraph<K, N, E> {
 }
 
 impl<'a, K: GraphKey, N, E> Index<&'a ChunkedGraph<K, N, E>> for ChunkedIndex {
-    fn index(self, graph: &'a ChunkedGraph<K, N, E>) -> &'a Element<N, E> {
-        &graph.store[self.0][self.1]
+    fn index(self, graph: &'a ChunkedGraph<K, N, E>) -> (ChunkedIndex, &'a Element<N, E>) {
+        (self, &graph.store[self.0][self.1])
     }
 }
 
 impl<'a, K: GraphKey, N, E> Index<&'a ChunkedGraph<K, N, E>> for K {
-    fn index(self, graph: &'a ChunkedGraph<K, N, E>) -> &'a Element<N, E> {
+    fn index(self, graph: &'a ChunkedGraph<K, N, E>) -> (ChunkedIndex, &'a Element<N, E>) {
         Index::index(graph.to_index(self).unwrap(), graph)
     }
 }
@@ -239,14 +251,6 @@ impl<'a, E> Iterator for EdgeIter<'a, E> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.inner.next()
-    }
-}
-
-impl<K: GraphKey, N, E> std::ops::Index<ChunkedIndex> for ChunkedGraph<K, N, E> {
-    type Output = Element<N, E>;
-
-    fn index(&self, index: ChunkedIndex) -> &Self::Output {
-        todo!()
     }
 }
 

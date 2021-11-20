@@ -67,24 +67,26 @@ async fn app() -> anyhow::Result<()> {
         4,
         8,
         EventSet::build()
-            .add_link(Link::new("Link0", true))
-            .add_link(Link::new("Link1", true))
-            .add_event(
-                Event::new("Event", "1.0.0")
-                    .with_link("Link0")
-                    .with_link("Link1"),
-            )
+            .add_link(Link::new("Link0", true).with_target("Unique"))
+            .add_event(Event::new("Unique", "1.0.0"))
+            .add_event(Event::new("NotUnique", "1.0.0"))
+            .add_event(Event::new("EventLOL", "1.0.0").with_req_link("Link0"))
             .build()
             .expect("This should work"),
     );
 
-    println!("Sending out {} events..", cli.count * cli.burst);
-
+    let target = cli.count * cli.burst;
     let sleep_duration = Duration::from_millis(cli.latency as u64);
-    let mut iter = gen.iter();
 
-    for _ in 0..(cli.count) {
-        for ev in (&mut iter).take(thread_rng().gen_range(0..cli.burst)) {
+    println!(
+        "Sending out ~{} events, 0..={} events every {}ms interval",
+        target, cli.burst, cli.latency
+    );
+
+    let mut iter = gen.iter();
+    let mut sent = 0;
+    while sent < target {
+        for ev in (&mut iter).take(thread_rng().gen_range(0..cli.burst + 1)) {
             let _ = channel_a
                 .basic_publish(
                     cli.exchange.as_str(),
@@ -95,13 +97,14 @@ async fn app() -> anyhow::Result<()> {
                 )
                 .await?
                 .await?;
+            sent += 1;
         }
         if sleep_duration.as_millis() > 0 {
             tokio::time::sleep(sleep_duration).await;
         }
     }
 
-    println!("Done.");
+    println!("Done, sent {} events", sent);
 
     Ok(())
 }
