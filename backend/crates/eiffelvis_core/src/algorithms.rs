@@ -1,12 +1,11 @@
 use std::ops::ControlFlow;
 
-use crate::graph::{Edge, Graph, Index, Node};
+use crate::graph::*;
 
-pub fn depth_first<G, I, F>(graph: G, index: I, callback: &mut F)
+pub fn depth_first<'a, G, F>(graph: G, index: <G::Meta as Meta>::Idx, callback: &mut F)
 where
-    G: Graph<I = I>,
-    I: Index<G>,
-    F: FnMut(G::NodeIndex) -> ControlFlow<()>,
+    G: Ref<'a>,
+    F: FnMut(<G::Meta as Meta>::Idx) -> ControlFlow<()>,
 {
     let node = graph.index(index);
 

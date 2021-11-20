@@ -1,7 +1,4 @@
-use crate::{
-    graph::{Graph, GraphMeta, Index, Node},
-    query::GraphQuery,
-};
+use crate::{graph::*, query::GraphQuery};
 
 pub struct TrackedNodes<I> {
     cursor: Option<I>,
@@ -12,20 +9,21 @@ impl<I> TrackedNodes<I> {
         Self { cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> impl Iterator<Item = G::Node> + 'a
+    pub fn handle<'a, G>(&'a mut self, graph: G) -> Vec<G::Item>
     where
-        G: Graph<I = I> + 'a,
-        I: Index<G> + PartialEq + Eq,
+        G: Ref<'a>,
+        G::Meta: Meta<Idx = I> + 'a,
+        I: Idx,
     {
         // TODO: reverse NodeIterator?
-        let mut iter = graph.nodes();
+        let mut iter = graph.items();
 
         // TODO: consider building this into the Graph trait..
         if let Some(cursor) = self.cursor {
             iter.by_ref().take_while(|el| el.id() != cursor).count();
         }
 
-        iter.inspect(|v| self.cursor = Some(v.id()))
+        iter.inspect(|v| self.cursor = Some(v.id())).collect()
     }
 }
 
@@ -45,10 +43,11 @@ impl<I> TrackedSubGraphs<I> {
         Self { ids, cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> impl Iterator<Item = G::Node> + 'a
+    pub fn handle<'a, G>(&'a mut self, graph: G) -> Vec<G::Item>
     where
-        G: Graph<I = I> + GraphMeta<NodeIndex = I> + 'a,
-        I: Index<G> + PartialEq + Eq + 'static,
+        G: Ref<'a>,
+        G::Meta: Meta<Idx = I> + 'a,
+        I: Idx,
     {
         let mut iter = self
             .ids
@@ -60,7 +59,7 @@ impl<I> TrackedSubGraphs<I> {
             iter.by_ref().take_while(|el| el.id() != cursor).count();
         }
 
-        iter.inspect(|v| self.cursor = Some(v.id()))
+        iter.inspect(|v| self.cursor = Some(v.id())).collect()
     }
 
     /// Note only events that are newer than the current state are brought along

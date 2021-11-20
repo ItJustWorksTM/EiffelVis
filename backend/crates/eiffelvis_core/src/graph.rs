@@ -1,116 +1,104 @@
-use std::{cmp::Ordering, ops::Deref};
+use std::cmp::Ordering;
 
-pub trait GraphKey: std::hash::Hash + Eq + Copy + Clone + Send + Sync + 'static {}
-pub trait GraphIndex: std::hash::Hash + Eq + Copy + Clone + Send + Sync + 'static {}
+pub trait Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
+pub trait Idx: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
+impl<T> Idx for T where T: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 
-pub trait GraphMeta {
-    type NodeIndex: GraphIndex;
-    type NodeKey: GraphKey;
+pub trait ValueIndex<Idx> {
+    type Output;
 
-    type NodeData;
+    fn index(self, idx: Idx) -> Self::Output;
+}
+
+pub trait Meta {
+    type Data;
     type EdgeData;
+    type Idx: Idx;
+    type Key: Key;
 }
 
-pub trait Index<G>: Copy
+pub trait Ref<'a>:
+    Copy
+    + ValueIndex<<Self::Meta as Meta>::Idx, Output = Self::Item>
+    + ValueIndex<<Self::Meta as Meta>::Key, Output = Self::Item>
 where
-    G: Graph,
+    Self::Meta: 'a,
 {
-    fn index(self, graph: G) -> G::Node;
+    type Meta: Meta;
+
+    fn cmp_index(self, lhs: <Self::Meta as Meta>::Idx, rhs: <Self::Meta as Meta>::Idx) -> Ordering;
+
+    type Item: Item<
+        'a,
+        Idx = <Self::Meta as Meta>::Idx,
+        Data = <Self::Meta as Meta>::Data,
+        EdgeData = <Self::Meta as Meta>::EdgeData,
+    >;
+    type ItemIterator: Iterator<Item = Self::Item>;
+    fn items(self) -> Self::ItemIterator;
 }
 
-pub trait Graph:
-    GraphMeta<NodeIndex = <Self as Graph>::I, NodeKey = <Self as Graph>::K> + Sized + Copy
-{
-    // TODO: Find a way to not have this
-    type I: Index<Self> + GraphIndex;
-    type K: Index<Self> + GraphKey;
+pub trait Mut {
+    type Meta: Meta;
 
-    type D: Deref<Target = Self::NodeData>;
+    fn add_node(
+        &mut self,
+        key: <Self::Meta as Meta>::Key,
+        data: <Self::Meta as Meta>::Data,
+    ) -> Option<<Self::Meta as Meta>::Idx>;
 
-    type Edge: Edge<NodeIndex = Self::NodeIndex>;
-    type Node: Node<Id = Self::NodeIndex, Data = Self::D, Edge = Self::Edge>;
+    fn add_edge(
+        &mut self,
+        a: <Self::Meta as Meta>::Key,
+        b: <Self::Meta as Meta>::Key,
+        data: <Self::Meta as Meta>::EdgeData,
+    );
 
-    fn index(self, index: impl Index<Self>) -> Self::Node {
-        index.index(self)
-    }
-
-    fn cmp_index(self, lhs: Self::NodeIndex, rhs: Self::NodeIndex) -> Ordering;
-
-    type NodeIterator: Iterator<Item = Self::Node>;
-    fn nodes(self) -> Self::NodeIterator;
-}
-
-pub trait Node: Copy {
-    type Id;
-    fn id(self) -> Self::Id;
-
-    type Data;
-    fn data(self) -> Self::Data;
-
-    type Edge: Edge;
-    type EdgeIterator: Iterator<Item = Self::Edge>;
-    fn edges(self) -> Self::EdgeIterator;
-}
-
-pub trait Edge: Copy {
-    type Data;
-    type NodeIndex;
-
-    fn data(self) -> Self::Data;
-    fn target(self) -> Self::NodeIndex;
-}
-
-pub trait GraphMut: GraphMeta {
     fn add_node_with_edges<I>(
         &mut self,
-        key: Self::NodeKey,
-        data: Self::NodeData,
+        key: <Self::Meta as Meta>::Key,
+        data: <Self::Meta as Meta>::Data,
         edges: I,
-    ) -> Self::NodeIndex
+    ) -> Option<<Self::Meta as Meta>::Idx>
     where
-        I: Iterator<Item = (Self::NodeKey, Self::EdgeData)>,
+        I: Iterator<Item = (<Self::Meta as Meta>::Key, <Self::Meta as Meta>::EdgeData)>,
     {
         let id = self.add_node(key, data);
-        for (target, data) in edges {
-            self.add_edge(key, target, data);
+        if id.is_some() {
+            for (target, data) in edges {
+                self.add_edge(key, target, data);
+            }
         }
         id
     }
-
-    fn add_node(&mut self, key: Self::NodeKey, data: Self::NodeData) -> Self::NodeIndex;
-    fn add_edge(&mut self, a: Self::NodeKey, b: Self::NodeKey, data: Self::EdgeData);
 }
 
-/// Blanket impls
-impl<'a, G> GraphMeta for &'a G
+pub trait Item<'a>
 where
-    G: GraphMeta,
+    Self::Data: 'a,
+    Self::EdgeData: 'a,
 {
-    type NodeIndex = G::NodeIndex;
-    type NodeKey = G::NodeKey;
-    type NodeData = G::NodeData;
-    type EdgeData = G::EdgeData;
+    type Data;
+    type EdgeData;
+    type Idx;
+
+    fn data(&self) -> &'a Self::Data;
+
+    fn id(&self) -> Self::Idx;
+
+    type EdgeItem: ItemEdge<'a, EdgeData = Self::EdgeData, Idx = Self::Idx>;
+    type EdgeIterator: Iterator<Item = Self::EdgeItem>;
+
+    fn edges(&self) -> Self::EdgeIterator;
 }
 
-impl<G> GraphMeta for &mut G
+pub trait ItemEdge<'a>
 where
-    G: GraphMeta,
+    Self::EdgeData: 'a,
 {
-    type NodeIndex = G::NodeIndex;
-    type NodeKey = G::NodeKey;
-    type NodeData = G::NodeData;
-    type EdgeData = G::EdgeData;
-}
+    type EdgeData;
+    type Idx;
 
-impl<G> GraphMut for &mut G
-where
-    G: GraphMut,
-{
-    fn add_node(&mut self, key: Self::NodeKey, data: Self::NodeData) -> Self::NodeIndex {
-        GraphMut::add_node(*self, key, data)
-    }
-
-    fn add_edge(&mut self, a: Self::NodeKey, b: Self::NodeKey, data: Self::EdgeData) {
-        GraphMut::add_edge(*self, a, b, data)
-    }
+    fn data(&self) -> &'a Self::EdgeData;
+    fn target(&self) -> Self::Idx;
 }

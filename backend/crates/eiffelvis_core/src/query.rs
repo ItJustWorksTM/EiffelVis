@@ -1,27 +1,24 @@
 use std::ops::ControlFlow;
 
-use crate::{
-    algorithms::depth_first,
-    graph::{Graph, Node},
-};
+use crate::{algorithms::depth_first, graph::*};
 
 use indexmap::IndexSet;
 
 /// An iterator that takes graph nodes and yields the subgraph
 /// with given nodes as root.
-pub struct SubGraphs<G>
+pub struct SubGraphs<'a, G>
 where
-    G: Graph,
+    G: Ref<'a>,
 {
     graph: G,
-    index: <IndexSet<G::I> as IntoIterator>::IntoIter,
+    index: <IndexSet<<G::Meta as Meta>::Idx> as IntoIterator>::IntoIter,
 }
 
-impl<G> Iterator for SubGraphs<G>
+impl<'a, G> Iterator for SubGraphs<'a, G>
 where
-    G: Graph,
+    G: Ref<'a>,
 {
-    type Item = G::Node;
+    type Item = G::Item;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.index.next().map(|i| self.graph.index(i))
@@ -29,10 +26,10 @@ where
 }
 
 pub trait GraphQuery: Iterator {
-    fn roots_for_graph<G>(self, graph: G) -> SubGraphs<G>
+    fn roots_for_graph<'a, G>(self, graph: G) -> SubGraphs<'a, G>
     where
-        Self: Iterator<Item = G::Node> + Sized,
-        G: Graph,
+        G: Ref<'a>,
+        Self: Iterator<Item = G::Item> + Sized,
     {
         let mut index = IndexSet::new();
         for node in self {

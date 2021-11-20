@@ -14,22 +14,21 @@ use uuid::Uuid;
 
 use eiffelvis_core::{
     domain::{app::EiffelVisApp, types::BaseEvent},
-    graph::{self, Graph, GraphMeta},
+    graph::*,
 };
 
-pub trait EiffelGraph: GraphMeta<NodeData = BaseEvent, NodeKey = Uuid> {}
-impl<T> EiffelGraph for T where T: GraphMeta<NodeData = BaseEvent, NodeKey = Uuid> {}
+pub trait EiffelGraph: Meta<Data = BaseEvent, Key = Uuid> {}
+impl<T> EiffelGraph for T where T: Meta<Data = BaseEvent, Key = Uuid> {}
+
 pub trait EiffelVisHttpApp: EiffelGraph + EiffelVisApp + Send + Sync + 'static
 where
-    for<'a> &'a Self: Graph<I = Self::NodeIndex, K = Self::NodeKey> + EiffelGraph + Send,
-    for<'a> Self::NodeIndex: graph::Index<&'a Self>,
+    for<'a> &'a Self: Ref<'a, Meta = Self>,
 {
 }
 impl<T> EiffelVisHttpApp for T
 where
     T: EiffelGraph + Send + Sync + EiffelVisApp + 'static,
-    for<'a> &'a T: Graph<I = T::NodeIndex, K = T::NodeKey> + EiffelGraph + Send,
-    for<'a> T::NodeIndex: graph::Index<&'a T>,
+    for<'a> &'a T: Ref<'a, Meta = T>,
 {
 }
 
@@ -45,8 +44,7 @@ pub async fn app<T: EiffelVisHttpApp>(
     shutdown: impl Future<Output = ()>,
 ) -> anyhow::Result<()>
 where
-    for<'a> &'a T: Graph<I = T::NodeIndex, K = T::NodeKey> + GraphMeta<NodeData = BaseEvent> + Send,
-    for<'a> T::NodeIndex: eiffelvis_core::graph::Index<&'a T>,
+    for<'a> &'a T: Ref<'a, Meta = T>,
 {
     let service = Router::new()
         .route("/", get(event_dump::<T>))
