@@ -37,6 +37,18 @@ jobs:
         if: runner.os == 'linux'
       - name: Test
         run: cargo test --workspace
+      - name: Package
+        run: |
+          mkdir dist
+          cargo install --path . --bins --root dist
+          cargo install --path ./tools/event_sender --bins --root dist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: bins-${{ matrix.os }}
+          path: |
+            backend/dist/bin/*
+
+            
   dockerfile:
     name: Docker image
     runs-on: ubuntu-latest
