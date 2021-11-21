@@ -6,7 +6,7 @@ mod handlers;
 
 use handlers::*;
 
-use axum::{handler::get, AddExtensionLayer, Router};
+use axum::{routing::get, AddExtensionLayer, Router};
 
 use std::{future::Future, net::SocketAddr, sync::Arc};
 
