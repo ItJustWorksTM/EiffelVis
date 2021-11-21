@@ -6,7 +6,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use eiffelvis_core::app::EiffelVisApp;
+use eiffelvis_core::domain::app::{EiffelGraph, EiffelVisApp};
 use structopt::StructOpt;
 use tracing::info;
 
@@ -53,7 +53,7 @@ async fn main() {
 
     let cli = Cli::from_args();
 
-    let graph = Arc::new(tokio::sync::RwLock::new(EiffelVisApp::new(
+    let graph = Arc::new(tokio::sync::RwLock::new(EiffelGraph::new(
         cli.max_chunks,
         cli.chunk_size,
     )));
@@ -78,7 +78,7 @@ async fn main() {
         loop {
             if let Some(bytes) = event_parser.next().await {
                 if let Ok(des) = serde_json::from_slice(&bytes) {
-                    graph.write().await.push(des);
+                    EiffelVisApp::push(&mut *graph.write().await, des);
                 } else {
                     info!("Received new message but failed to deserialize");
                 }

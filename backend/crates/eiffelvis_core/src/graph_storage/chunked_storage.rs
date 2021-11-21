@@ -1,221 +1,327 @@
+use crate::graph;
 use indexmap::IndexMap;
-use std::{hash::Hash, iter::FusedIterator};
+use std::{hash::Hash, ops::IndexMut};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct GraphIndex(usize, usize);
-
-pub trait GraphKey: Hash + Eq + Copy + Clone {}
-impl<T: Hash + Eq + Copy + Clone> GraphKey for T {}
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+pub struct ChunkedIndex(usize, usize);
 
 #[derive(Debug)]
-pub struct Edge<T> {
-    pub data: T,
-    pub target: GraphIndex,
-}
-
-#[derive(Debug)]
-pub struct Node<T, E> {
-    pub data: T,
-    pub edges: Vec<Edge<E>>,
-}
-
-#[derive(Debug)]
-pub struct Graph<K: GraphKey, N, E> {
-    chunks: Vec<IndexMap<K, Node<N, E>>>,
+pub struct ChunkedGraph<K: graph::Key, N, E> {
+    store: Vec<IndexMap<K, Element<N, E>>>,
     max_chunks: usize,
-    chunk_size: usize,
-    head: usize,
+    max_elements: usize,
     tail: usize,
 }
 
-impl<K: GraphKey, N, E> Graph<K, N, E> {
+#[derive(Debug)]
+pub struct Element<N, E>(NodeData<N>, Vec<EdgeData<E>>);
+
+#[derive(Debug)]
+pub struct NodeData<N> {
+    pub data: N,
+}
+
+#[derive(Debug)]
+pub struct EdgeData<E> {
+    pub data: E,
+    pub target: ChunkedIndex,
+}
+
+impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     pub fn new(max_chunks: usize, chunk_size: usize) -> Self {
         Self {
-            chunks: vec![IndexMap::with_capacity(chunk_size)],
+            store: vec![IndexMap::with_capacity(chunk_size)],
             max_chunks,
-            chunk_size,
-            head: 0,
+            max_elements: chunk_size,
             tail: 0,
         }
     }
 
-    pub fn find_index(&self, key: K) -> Option<GraphIndex> {
-        self.chunks
+    fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
+        if self.store[self.head_chunk()].len() >= self.max_elements {
+            if self.chunks() < self.max_chunks {
+                self.store.push(IndexMap::with_capacity(self.max_elements));
+            } else {
+                self.tail = (self.tail + 1) % self.store.len();
+                self.store.index_mut(self.head_chunk()).clear();
+            }
+        }
+
+        let head_chunk = self.head_chunk();
+
+        self.store[head_chunk].insert(key, Element(NodeData { data }, Vec::default()));
+
+        ChunkedIndex(head_chunk, self.store[head_chunk].len() - 1)
+    }
+
+    fn add_edge(&mut self, a: K, b: K, data: E) {
+        let new_index = self.to_index(a).unwrap();
+
+        if let Some(node_edges) = self
+            .to_index(b)
+            .and_then(|index| self.store.get_mut(index.0).map(|a| &mut a[index.1].1))
+        {
+            node_edges.push(EdgeData {
+                data,
+                target: new_index,
+            });
+        }
+    }
+
+    pub fn to_index(&self, key: K) -> Option<ChunkedIndex> {
+        self.store
             .iter()
             .enumerate()
             .find_map(|(chunk_index, chunk)| {
-                chunk.get_index_of(&key).map(|i| GraphIndex(chunk_index, i))
+                chunk
+                    .get_index_of(&key)
+                    .map(|i| ChunkedIndex(chunk_index, i))
             })
     }
 
-    #[allow(dead_code)]
-    fn find_key(&self, index: GraphIndex) -> Option<K> {
-        self.chunks
-            .get(index.0)
-            .and_then(|f| f.get_index(index.1).map(|(k, _)| *k))
+    pub fn from_index(&self, index: ChunkedIndex) -> Option<K> {
+        Some(*self.store.get(index.0)?.get_index(index.1)?.0)
     }
 
-    pub fn get(&self, key: K) -> Option<&Node<N, E>> {
-        self.find_index(key).and_then(|inner| self.index(inner))
+    fn to_relative(&self, index: usize) -> ChunkedIndex {
+        let a = index % self.max_elements;
+        let b = (index - a) / self.chunks();
+        let b = (self.tail + b) % self.chunks();
+        ChunkedIndex(b, a)
     }
 
-    pub fn get_mut(&mut self, key: K) -> Option<&mut Node<N, E>> {
-        self.find_index(key)
-            .and_then(move |inner| self.index_mut(inner))
+    fn to_absolute(&self, index: ChunkedIndex) -> usize {
+        (index.0 * self.max_elements) + index.1 - self.tail * self.max_elements
     }
 
-    pub fn index(&self, index: GraphIndex) -> Option<&Node<N, E>> {
-        self.chunks
-            .get(index.0)
-            .and_then(|chunk| chunk.get_index(index.1))
-            .map(|(_, n)| n)
+    pub fn chunks(&self) -> usize {
+        self.store.len()
     }
 
-    pub fn index_mut(&mut self, index: GraphIndex) -> Option<&mut Node<N, E>> {
-        self.chunks
-            .get_mut(index.0)
-            .and_then(|chunk| chunk.get_index_mut(index.1))
-            .map(|(_, n)| n)
-    }
-
-    pub fn push(&mut self, key: K, edges: Vec<(K, E)>, data: N) -> Option<()> {
-        // Dont allow overwriting existing nodes
-        if self.find_index(key).is_some() {
-            return None;
+    pub fn last(&self) -> Option<ChunkedIndex> {
+        let head = self.head_chunk();
+        let len = self.store[head].len();
+        if len > 0 {
+            Some(ChunkedIndex(head, len - 1))
+        } else {
+            None
         }
+    }
 
-        // make space for the new node
-        if self.chunks[self.head].len() == self.chunk_size {
-            if self.chunks.len() != self.max_chunks {
-                self.chunks.push(IndexMap::with_capacity(self.chunk_size));
-            }
+    pub fn head_chunk(&self) -> usize {
+        (self.tail + self.chunks() - 1) % self.chunks()
+    }
 
-            self.head = wrap_add(self.head, self.chunks.len());
+    pub fn node_count(&self) -> usize {
+        (self.chunks() - 1) * self.max_elements + self.store[self.head_chunk()].len()
+    }
 
-            // If new head is full it means we wrapped around and we have to start dropping events
-            if self.chunks[self.head].len() == self.chunk_size {
-                // Simply drop all events as we dont need them
-                self.chunks[self.head].clear();
+    pub fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
+        let lhs = self.to_absolute(lhs);
+        let rhs = self.to_absolute(rhs);
+        lhs.cmp(&rhs)
+    }
+}
 
-                self.tail = wrap_add(self.tail, self.chunks.len());
-            }
+impl<'a, N, E> graph::Item<'a> for (ChunkedIndex, &'a Element<N, E>) {
+    type Data = N;
+    type EdgeData = E;
+    type Idx = ChunkedIndex;
+
+    fn id(&self) -> ChunkedIndex {
+        self.0
+    }
+
+    fn data(&self) -> &'a N {
+        &self.1 .0.data
+    }
+
+    type EdgeItem = &'a EdgeData<E>;
+    type EdgeIterator = EdgeIter<'a, E>;
+    fn edges(&self) -> Self::EdgeIterator {
+        EdgeIter {
+            inner: self.1 .1.iter(),
         }
+    }
+}
 
-        let new_index = GraphIndex(self.head, self.chunks[self.head].len());
+impl<'a, E> graph::ItemEdge<'a> for &'a EdgeData<E> {
+    type EdgeData = E;
+    type Idx = ChunkedIndex;
 
-        // Insert new edges on nodes
-        for (edge_key, data) in edges {
-            if let Some(node) = self.get_mut(edge_key) {
-                node.edges.push(Edge {
-                    data,
-                    target: new_index,
-                });
-            }
-        }
-
-        self.chunks[self.head].insert(
-            key,
-            Node {
-                data,
-                edges: Vec::default(),
-            },
-        );
-
-        Some(())
+    fn target(&self) -> ChunkedIndex {
+        self.target
     }
 
-    pub fn len(&self) -> usize {
-        self.chunks.iter().fold(0, |total, c| total + c.len())
+    fn data(&self) -> &'a E {
+        &self.data
     }
+}
 
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
+impl<K: graph::Key, N, E> graph::Meta for ChunkedGraph<K, N, E> {
+    type Idx = ChunkedIndex;
+    type Key = K;
+    type Data = N;
+    type EdgeData = E;
+}
 
-    // Returns an iterator that yields nodes in the order they have been inserted
-    pub fn iter(&self) -> GraphIterator<'_, K, N, E> {
-        GraphIterator {
-            inner: self.chunks[self.tail].iter(),
-            graph: self,
+impl<'a, K: graph::Key, N, E> graph::Ref<'a> for &'a ChunkedGraph<K, N, E> {
+    type Meta = ChunkedGraph<K, N, E>;
+
+    type Item = (ChunkedIndex, &'a Element<N, E>);
+    type ItemIterator = NodeIter<'a, K, N, E>;
+
+    fn items(self) -> Self::ItemIterator {
+        NodeIter {
+            inner: self.store[self.tail].iter(),
             chunk: self.tail,
+            graph: self,
+            item: 0,
         }
     }
-}
 
-impl<'a, K: GraphKey, N, E> IntoIterator for &'a Graph<K, N, E> {
-    type IntoIter = GraphIterator<'a, K, N, E>;
-    type Item = &'a Node<N, E>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
+    fn cmp_index(self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
+        self.cmp_index(lhs, rhs)
     }
 }
 
-pub struct GraphIterator<'a, K: GraphKey, N, E> {
-    inner: <&'a IndexMap<K, Node<N, E>> as IntoIterator>::IntoIter,
-    graph: &'a Graph<K, N, E>,
-    chunk: usize,
+impl<K: graph::Key, N, E> graph::Mut for ChunkedGraph<K, N, E> {
+    type Meta = ChunkedGraph<K, N, E>;
+
+    fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
+        Some(self.add_node(key, data))
+    }
+
+    fn add_edge(&mut self, a: K, b: K, data: E) {
+        self.add_edge(a, b, data)
+    }
 }
 
-impl<'a, K: GraphKey, N, E> Iterator for GraphIterator<'a, K, N, E> {
-    type Item = &'a Node<N, E>;
+impl<'a, K: graph::Key, N, E> graph::ValueIndex<ChunkedIndex> for &'a ChunkedGraph<K, N, E> {
+    type Output = (ChunkedIndex, &'a Element<N, E>);
+    fn try_index(self, index: ChunkedIndex) -> Option<Self::Output> {
+        self.store
+            .get(index.0)
+            .and_then(|m| m.get_index(index.1))
+            .map(|el| (index, el.1))
+    }
+}
+
+impl<'a, K: graph::Key, N, E> graph::ValueIndex<K> for &'a ChunkedGraph<K, N, E> {
+    type Output = (ChunkedIndex, &'a Element<N, E>);
+
+    fn try_index(self, index: K) -> Option<Self::Output> {
+        self.to_index(index).map(|i| self.index(i))
+    }
+}
+
+pub struct NodeIter<'a, K: graph::Key, N, E> {
+    inner: <&'a IndexMap<K, Element<N, E>> as IntoIterator>::IntoIter,
+    graph: &'a ChunkedGraph<K, N, E>,
+    chunk: usize,
+    item: usize,
+}
+
+impl<'a, K: graph::Key, N, E> Iterator for NodeIter<'a, K, N, E> {
+    type Item = (ChunkedIndex, &'a Element<N, E>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next = self.inner.next();
-        if next.is_none() {
-            if self.chunk == self.graph.head {
-                return None;
-            }
-            self.chunk = wrap_add(self.chunk, self.graph.chunks.len());
-            self.inner = self.graph.chunks[self.chunk].iter();
-            next = self.inner.next();
+        self.inner
+            .next()
+            .or_else(|| {
+                if self.chunk != self.graph.head_chunk() {
+                    self.chunk = (self.chunk + 1) % self.graph.chunks();
+                    self.item = 0;
+                    self.inner = self.graph.store[self.chunk].iter();
+                    self.inner.next()
+                } else {
+                    None
+                }
+            })
+            .map(|(_, n)| {
+                let ret = (ChunkedIndex(self.chunk, self.item), n);
+                self.item += 1;
+                ret
+            })
+    }
+}
+
+pub struct EdgeIter<'a, E> {
+    inner: <&'a Vec<EdgeData<E>> as IntoIterator>::IntoIter,
+}
+
+impl<'a, E> Iterator for EdgeIter<'a, E> {
+    type Item = &'a EdgeData<E>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next()
+    }
+}
+
+#[cfg(test)]
+mod test {
+
+    use super::*;
+    use crate::graph::*;
+
+    use std::iter::once;
+
+    #[test]
+    fn test_forward_link_single() {
+        impl graph::Key for i32 {}
+        let mut g = ChunkedGraph::new(3, 3);
+
+        g.add_node(0, "This is the beginning!");
+
+        for i in 1..9 {
+            g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))));
         }
-        next.map(|(_, n)| n)
+
+        // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
+
+        // All nodes should now have links to the first node (which are stored on the first node itself)
+        let zeroth = g.index(0).edges().count();
+        assert_eq!(zeroth, 8);
+    }
+
+    #[test]
+    fn test_forward_link_many() {
+        let mut g = ChunkedGraph::new(3, 3);
+
+        g.add_node(0, String::from("the first node"));
+
+        for i in 1..9 {
+            g.add_node_with_edges(i, format!("boy {}", i), once((i - 1, "")))
+                .expect("This is valid");
+        }
+
+        for (i, item) in g.items().enumerate() {
+            let it = g.index(i as i32);
+            assert_eq!(it.data(), item.data());
+        }
+
+        // Now i - 1 node should store an edge to node i
+        // 0 -> 1, 1 -> 2 ...
+        for i in 1..8i32 {
+            assert_eq!(
+                g.index((i - 1) as i32)
+                    .edges()
+                    .find_map(|i| g.from_index(i.target())),
+                Some(i as i32)
+            );
+        }
     }
 }
 
-impl<K: GraphKey, N, E> FusedIterator for GraphIterator<'_, K, N, E> {}
-
-fn wrap_add(mut val: usize, max: usize) -> usize {
-    val += 1;
-    if val == max {
-        val = 0;
-    }
-    val
+pub struct NodeIndexIter<'a, K: graph::Key, N, E> {
+    inner: <std::ops::Range<usize> as IntoIterator>::IntoIter,
+    graph: &'a ChunkedGraph<K, N, E>,
 }
 
-#[test]
-fn test_forward_link_single() {
-    let mut g = Graph::new(3, 3);
+impl<'a, K: graph::Key, N, E> Iterator for NodeIndexIter<'a, K, N, E> {
+    type Item = ChunkedIndex;
 
-    g.push(0, vec![], "This is the beginning!").unwrap();
-
-    for i in 1..9 {
-        g.push(i, vec![(0, format!("targets {}", i))], "more data")
-            .unwrap();
-    }
-
-    // All nodes should now have links to the first node (which are stored on the first node itself)
-    let zeroth = g.get(0).unwrap();
-    assert_eq!(zeroth.edges.len(), 8);
-}
-
-#[test]
-fn test_forward_link_many() {
-    let mut g = Graph::new(3, 3);
-
-    g.push(0, vec![], "");
-
-    for i in 1..9 {
-        g.push(i, vec![(i - 1, "")], "").unwrap();
-    }
-
-    // Now i - 1 node should store an edge to node i
-    // 0 -> 1, 1 -> 2 ...
-    for i in 1..8 {
-        assert_eq!(
-            g.find_key(g.get(i - 1).unwrap().edges[0].target).unwrap(),
-            i
-        );
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next().map(|i| self.graph.to_relative(i))
     }
 }
