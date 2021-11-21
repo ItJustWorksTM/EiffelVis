@@ -2,33 +2,56 @@
 //! An HTTP frontend for eiffelvis_core
 //!
 
-use axum::{
-    body::Full, extract::Extension, extract::Path, handler::get, http::StatusCode,
-    response::IntoResponse, AddExtensionLayer, Json, Router,
-};
+mod handlers;
 
-use hyper::Response;
+use handlers::*;
+
+use axum::{handler::get, AddExtensionLayer, Router};
+
 use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::app::EiffelVisApp;
+use eiffelvis_core::{
+    domain::{app::EiffelVisApp, types::BaseEvent},
+    graph::*,
+};
 
-type CoreApp = Arc<tokio::sync::RwLock<EiffelVisApp>>;
+pub trait EiffelGraph: Meta<Data = BaseEvent, Key = Uuid> {}
+impl<T> EiffelGraph for T where T: Meta<Data = BaseEvent, Key = Uuid> {}
+
+pub trait EiffelVisHttpApp: EiffelGraph + EiffelVisApp + Send + Sync + 'static
+where
+    for<'a> &'a Self: Ref<'a, Meta = Self>,
+{
+}
+impl<T> EiffelVisHttpApp for T
+where
+    T: EiffelGraph + Send + Sync + EiffelVisApp + 'static,
+    for<'a> &'a T: Ref<'a, Meta = T>,
+{
+}
+
+type App<T> = Arc<tokio::sync::RwLock<T>>;
 
 /// Takes an eiffelvis app and binds the http server on the given address.
 /// This is likely the only function you'll ever need to call.
 /// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.
-pub async fn app(
-    core: CoreApp,
+pub async fn app<T: EiffelVisHttpApp>(
+    app: App<T>,
     address: String,
     port: u16,
     shutdown: impl Future<Output = ()>,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<()>
+where
+    for<'a> &'a T: Ref<'a, Meta = T>,
+{
     let service = Router::new()
-        .route("/", get(event_dump))
-        .route("/get_event/:id", get(get_event))
-        .layer(AddExtensionLayer::new(core));
+        .route("/", get(event_dump::<T>))
+        .route("/get_event/:id", get(get_event::<T>))
+        .route("/events_with_root/:id", get(events_with_root::<T>))
+        .route("/ws", get(establish_websocket::<T>))
+        .layer(AddExtensionLayer::new(app));
     let address = address.parse()?;
 
     let server = axum::Server::try_bind(&SocketAddr::new(address, port))?
@@ -36,31 +59,5 @@ pub async fn app(
         .with_graceful_shutdown(shutdown);
 
     server.await.unwrap();
-
     Ok(())
-}
-
-/// Dumps the entire event store into a json array
-async fn event_dump(Extension(core): Extension<CoreApp>) -> impl IntoResponse {
-    let lk = core.read().await;
-
-    let dump = lk.dump_lean_events();
-
-    Json(&dump).into_response()
-}
-
-/// Returns full event that belongs to given uuid
-async fn get_event(
-    Path(find_id): Path<Uuid>,
-    Extension(core): Extension<CoreApp>,
-) -> impl IntoResponse {
-    let lk = core.read().await;
-    if let Some(event) = lk.get_event(find_id) {
-        Json(event).into_response()
-    } else {
-        Response::builder()
-            .status(StatusCode::NOT_FOUND)
-            .body(Full::default())
-            .unwrap()
-    }
 }
