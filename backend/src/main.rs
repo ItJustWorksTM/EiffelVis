@@ -26,6 +26,10 @@ struct Cli {
     #[structopt(short = "r", long, default_value = "amqp://localhost:5672/%2f")]
     rmq_uri: String,
 
+    /// AMQP queue
+    #[structopt(short = "q", long, default_value = "hello")]
+    rmq_queue: String,
+
     /// AMQP reconnect timeout
     #[structopt(short = "t", long, default_value = "3001")]
     timeout: u64,
@@ -43,7 +47,7 @@ struct Cli {
 #[tokio::main]
 async fn main() {
     if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "debug");
+        std::env::set_var("RUST_LOG", "info");
     }
     tracing_subscriber::fmt::init();
 
@@ -63,7 +67,7 @@ async fn main() {
 
     let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
         cli.rmq_uri.into(),
-        "hello".into(),
+        cli.rmq_queue.into(),
         "eiffelvis".into(),
     )
     .await
