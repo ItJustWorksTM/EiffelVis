@@ -20,17 +20,20 @@ where
 {
     type Item = NodeType<'a, G>;
 
+    /// Yields the next node, guarentees nodes are yielded in order as defined by [crate::graph::Graph::cmp_index]
     fn next(&mut self) -> Option<Self::Item> {
         self.index.next().map(|i| self.graph.index(i))
     }
 }
 
 pub trait GraphQuery: Iterator {
+    /// Consumes the iterator, used up nodes will be treated a root nodes in givent graph
     fn roots_for_graph<'a, G>(self, graph: &'a G) -> SubGraphs<'a, G>
     where
         G: Graph,
         Self: Iterator<Item = NodeType<'a, G>> + Sized,
     {
+        // Simple visit map, all nodes will be only visited once
         let mut index = IndexSet::new();
         for node in self {
             depth_first(graph, node.id(), &mut |i| {
@@ -42,6 +45,7 @@ pub trait GraphQuery: Iterator {
             });
         }
 
+        // Sort the visit map, as depth_first does not preserve insertion order
         index.sort_by(|&lhs, &rhs| graph.cmp_index(lhs, rhs));
 
         SubGraphs {

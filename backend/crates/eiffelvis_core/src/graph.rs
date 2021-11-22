@@ -2,6 +2,7 @@ pub trait Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash
 pub trait Idx: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 impl<T> Idx for T where T: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 
+/// Meta graph trait, defines the base types of a graph such as key and data types
 pub trait Meta {
     type Idx: Idx;
     type Key: Key;
@@ -9,17 +10,23 @@ pub trait Meta {
     type EdgeData;
 }
 
+/// Main graph trait
 pub trait Graph:
     Meta + ItemIter + Indexable<<Self as Meta>::Idx> + Indexable<<Self as Meta>::Key>
 {
+    /// Compares 2 indicies, this is not [Ord] as ordering may depend on graph internal state
     fn cmp_index(&self, lhs: Self::Idx, rhs: Self::Idx) -> std::cmp::Ordering;
 
+    /// Returns the total amount of nodes this graph holds
     fn node_count(&self) -> usize;
 
+    /// Creates a new edge with given data without any edges
     fn add_node(&mut self, key: Self::Key, data: Self::Data) -> Option<Self::Idx>;
 
+    /// Creates a new edge between a and b with given edge data
     fn add_edge(&mut self, a: Self::Key, b: Self::Key, data: Self::EdgeData);
 
+    /// Convience function, implemented in terms of [Graph::add_node] and [Graph::add_edge]
     fn add_node_with_edges<I>(
         &mut self,
         key: Self::Key,
@@ -58,13 +65,16 @@ where
     type EdgeData;
     type Idx;
 
+    /// Returns the data associated with this node
     fn data(&self) -> &'a Self::Data;
 
+    /// Returns the id associated with this node
     fn id(&self) -> Self::Idx;
 
     type EdgeItem: ItemEdge<'a, EdgeData = Self::EdgeData, Idx = Self::Idx>;
     type EdgeIterator: Iterator<Item = Self::EdgeItem>;
 
+    /// Returns an iterator over the edges this node has
     fn edges(&self) -> Self::EdgeIterator;
 }
 
@@ -75,7 +85,10 @@ where
     type EdgeData;
     type Idx;
 
+    /// Returns the data associated with this edge
     fn data(&self) -> &'a Self::EdgeData;
+
+    /// Returns the index of the node this edge targets
     fn target(&self) -> Self::Idx;
 }
 

@@ -3,6 +3,7 @@ use crate::{
     query::{GraphQuery, SubGraphs},
 };
 
+/// Yields only the nodes that have been added to graph since the last call to `handle`
 pub struct TrackedNodes<I> {
     cursor: Option<I>,
 }
@@ -12,6 +13,8 @@ impl<I> TrackedNodes<I> {
         Self { cursor: None }
     }
 
+    /// Returns an iterator over the newly added nodes since the last call.
+    /// Note: internal cursor is updated on calls to [Iterator::next]
     pub fn handle<'a, G>(&'a mut self, graph: &'a G) -> TrackedNodesIter<'a, I, G>
     where
         G: Graph<Idx = I>,
@@ -59,6 +62,7 @@ where
     }
 }
 
+/// Tracked version of [crate::query::SubGraphs], behaves in the same manner as [TrackedNodes].
 pub struct TrackedSubGraphs<I> {
     ids: Vec<I>,
     cursor: Option<I>,
@@ -69,6 +73,8 @@ impl<I> TrackedSubGraphs<I> {
         Self { ids, cursor: None }
     }
 
+    /// Returns an iterator over the newly added nodes since the last call.
+    /// Note: internal cursor is updated on calls to [Iterator::next]
     pub fn handle<'a, G>(&'a mut self, graph: &'a G) -> TrackedSubGraphsIter<'a, I, G>
     where
         G: Graph<Idx = I>,

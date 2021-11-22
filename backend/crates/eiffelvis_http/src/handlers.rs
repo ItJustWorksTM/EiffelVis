@@ -44,6 +44,7 @@ pub async fn get_event<T: EiffelVisHttpApp>(
     }
 }
 
+/// Returns the sub-graph for given id
 pub async fn events_with_root<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
     Extension(app): Extension<App<T>>,
@@ -52,6 +53,9 @@ pub async fn events_with_root<T: EiffelVisHttpApp>(
     Json(lk.get_subgraph_with_roots::<BaseEvent>(&[find_id])).into_response()
 }
 
+/// Establishes a websocket with the client,
+/// [Query] in json format is expected to be send by the client
+/// Backend will then use a [TrackedQuery] to gradually send results.
 pub async fn establish_websocket<T: EiffelVisHttpApp>(
     Extension(app): Extension<App<T>>,
     ws: WebSocketUpgrade,
