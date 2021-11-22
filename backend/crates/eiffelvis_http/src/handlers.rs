@@ -1,4 +1,5 @@
 use crate::*;
+use serde::Serialize;
 
 use axum::{
     body::Full,
@@ -53,6 +54,12 @@ pub async fn events_with_root<T: EiffelVisHttpApp>(
     Json(lk.get_subgraph_with_roots::<BaseEvent>(&[find_id])).into_response()
 }
 
+#[derive(Debug, Clone, Serialize)]
+struct QueryRes {
+    repr: String,
+    error: Option<String>,
+}
+
 /// Establishes a websocket with the client,
 /// [Query] in json format is expected to be send by the client
 /// Backend will then use a [TrackedQuery] to gradually send results.
@@ -73,42 +80,31 @@ pub async fn establish_websocket<T: EiffelVisHttpApp>(
         while let Ok(()) = tokio::select! {
             usr = socket.recv() => {
                 match usr {
-                    Some(Ok(Message::Text(ref msg))) => match serde_json::from_str::<Query>(msg) {
-                        Ok(rq) => {
-                            println!("New Request: {:#?}", rq);
-                            req_handler = Some(TrackedQuery::new(rq));
-
-                            match socket.send(Message::Text(msg.clone())).await {
-                                Ok(_) => Ok(()),
-                                Err(_) => {
-                                    println!("Failed to send message");
-                                    Err(())
-                                },
-                            }
-                        },
-                        err => {
-                            println!("Warning, bad message: {:?} \n {:?}", err, usr);
-                            Ok(())
-                        }
+                    Some(Ok(Message::Text(ref msg))) => {
+                        let res = match serde_json::from_str::<Query>(msg) {
+                            Ok(rq) => {
+                                req_handler = Some(TrackedQuery::new(rq));
+                                None
+                            },
+                            Err(err) => Some(format!("{}", err))
+                        };
+                        let res = QueryRes { repr: msg.clone(), error: res };
+                        println!("Request {:?}", res);
+                        socket.send(Message::Text(serde_json::to_string(&res).unwrap())).await.map_err(|_| ())
                     },
-                    _ => {
-                        Err(())}
+                    _ => Err(())
                 }
             },
             _ = interval.tick() => {
                 if let Some(handler) = req_handler.as_mut() {
                     let events: Vec<LeanEvent> = handler.handle(&*app.read().await);
                     if !events.is_empty() {
-                        match socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await {
-                            Ok(_) => Ok(()),
-                            Err(_) => Err(())
-                        }
+                        socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
                     } else {
                         Ok(())
                     }
                 } else {
                     Ok(())
-
                 }
             }
         } {}
