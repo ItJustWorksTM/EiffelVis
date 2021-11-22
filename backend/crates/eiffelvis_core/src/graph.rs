@@ -26,7 +26,7 @@ pub trait Graph:
     /// Creates a new edge between a and b with given edge data
     fn add_edge(&mut self, a: Self::Key, b: Self::Key, data: Self::EdgeData);
 
-    /// Convience function, implemented in terms of [Graph::add_node] and [Graph::add_edge]
+    /// Convenience function, implemented in terms of [Graph::add_node] and [Graph::add_edge]
     fn add_node_with_edges<I>(
         &mut self,
         key: Self::Key,

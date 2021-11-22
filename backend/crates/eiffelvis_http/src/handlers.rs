@@ -24,7 +24,7 @@ pub async fn event_dump<T: EiffelVisHttpApp>(
 ) -> impl IntoResponse {
     let lk = app.read().await;
 
-    let dump = lk.dump::<BaseEvent>();
+    let dump = lk.dump::<&BaseEvent>();
 
     Json(&dump).into_response()
 }
@@ -51,7 +51,7 @@ pub async fn events_with_root<T: EiffelVisHttpApp>(
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
     let lk = app.read().await;
-    Json(lk.get_subgraph_with_roots::<BaseEvent>(&[find_id])).into_response()
+    Json(lk.get_subgraph_with_roots::<&BaseEvent>(&[find_id])).into_response()
 }
 
 #[derive(Debug, Clone, Serialize)]

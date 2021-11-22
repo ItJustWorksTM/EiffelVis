@@ -27,12 +27,6 @@ pub struct BaseEvent {
     pub links: Vec<BaseLink>,
 }
 
-impl From<&BaseEvent> for BaseEvent {
-    fn from(ev: &BaseEvent) -> Self {
-        ev.clone()
-    }
-}
-
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LeanEvent {
     pub id: Uuid,

@@ -68,7 +68,7 @@ impl<I> TrackedQuery<I> {
         }
     }
 
-    /// Collects the new nodes since the last time this method was called that match the query.
+    /// Collects new nodes that match the query since the last time this method was called
     /// If it was not called before it behaves as the non-tracked version.
     pub fn handle<'a, R, G>(&'a mut self, graph: &'a G) -> Vec<R>
     where

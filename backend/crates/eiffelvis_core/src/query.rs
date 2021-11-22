@@ -20,14 +20,14 @@ where
 {
     type Item = NodeType<'a, G>;
 
-    /// Yields the next node, guarentees nodes are yielded in order as defined by [crate::graph::Graph::cmp_index]
+    /// Yields the next node, guarantees nodes are yielded in order as defined by [crate::graph::Graph::cmp_index]
     fn next(&mut self) -> Option<Self::Item> {
         self.index.next().map(|i| self.graph.index(i))
     }
 }
 
 pub trait GraphQuery: Iterator {
-    /// Consumes the iterator, used up nodes will be treated a root nodes in givent graph
+    /// Consumes the iterator, used up nodes will be treated as root nodes in given graph
     fn roots_for_graph<'a, G>(self, graph: &'a G) -> SubGraphs<'a, G>
     where
         G: Graph,
