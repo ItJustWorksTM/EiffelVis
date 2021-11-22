@@ -165,13 +165,18 @@ impl<K: graph::Key, N, E> graph::Meta for ChunkedGraph<K, N, E> {
     type EdgeData = E;
 }
 
-impl<'a, K: graph::Key, N, E> graph::Ref<'a> for &'a ChunkedGraph<K, N, E> {
-    type Meta = ChunkedGraph<K, N, E>;
+impl<'a, K: graph::Key, N, E> graph::HasNode<'a> for ChunkedGraph<K, N, E> {
+    type NodeType = (ChunkedIndex, &'a Element<N, E>);
+}
 
-    type Item = (ChunkedIndex, &'a Element<N, E>);
-    type ItemIterator = NodeIter<'a, K, N, E>;
+impl<'a, K: graph::Key, N, E> graph::HasNodeIter<'a, (ChunkedIndex, &'a Element<N, E>)>
+    for ChunkedGraph<K, N, E>
+{
+    type NodeIterType = NodeIter<'a, K, N, E>;
+}
 
-    fn items(self) -> Self::ItemIterator {
+impl<'a, K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
+    fn items(&self) -> graph::NodeIterType<'_, Self> {
         NodeIter {
             inner: self.store[self.tail].iter(),
             chunk: self.tail,
@@ -179,14 +184,12 @@ impl<'a, K: graph::Key, N, E> graph::Ref<'a> for &'a ChunkedGraph<K, N, E> {
             item: 0,
         }
     }
-
-    fn cmp_index(self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
-        self.cmp_index(lhs, rhs)
-    }
 }
 
-impl<K: graph::Key, N, E> graph::Mut for ChunkedGraph<K, N, E> {
-    type Meta = ChunkedGraph<K, N, E>;
+impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
+    fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
+        ChunkedGraph::cmp_index(self, lhs, rhs)
+    }
 
     fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
         Some(self.add_node(key, data))
@@ -195,11 +198,14 @@ impl<K: graph::Key, N, E> graph::Mut for ChunkedGraph<K, N, E> {
     fn add_edge(&mut self, a: K, b: K, data: E) {
         self.add_edge(a, b, data)
     }
+
+    fn node_count(&self) -> usize {
+        ChunkedGraph::node_count(self)
+    }
 }
 
-impl<'a, K: graph::Key, N, E> graph::ValueIndex<ChunkedIndex> for &'a ChunkedGraph<K, N, E> {
-    type Output = (ChunkedIndex, &'a Element<N, E>);
-    fn try_index(self, index: ChunkedIndex) -> Option<Self::Output> {
+impl<'a, K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K, N, E> {
+    fn get(&self, index: ChunkedIndex) -> Option<graph::NodeType<'_, Self>> {
         self.store
             .get(index.0)
             .and_then(|m| m.get_index(index.1))
@@ -207,10 +213,8 @@ impl<'a, K: graph::Key, N, E> graph::ValueIndex<ChunkedIndex> for &'a ChunkedGra
     }
 }
 
-impl<'a, K: graph::Key, N, E> graph::ValueIndex<K> for &'a ChunkedGraph<K, N, E> {
-    type Output = (ChunkedIndex, &'a Element<N, E>);
-
-    fn try_index(self, index: K) -> Option<Self::Output> {
+impl<'a, K: graph::Key, N, E> graph::Indexable<K> for ChunkedGraph<K, N, E> {
+    fn get(&self, index: K) -> Option<graph::NodeType<'_, Self>> {
         self.to_index(index).map(|i| self.index(i))
     }
 }

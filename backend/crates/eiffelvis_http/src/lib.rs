@@ -12,25 +12,10 @@ use std::{future::Future, net::SocketAddr, sync::Arc};
 
 use uuid::Uuid;
 
-use eiffelvis_core::{
-    domain::{app::EiffelVisApp, types::BaseEvent},
-    graph::*,
-};
+use eiffelvis_core::domain::{app::EiffelVisApp, types::BaseEvent};
 
-pub trait EiffelGraph: Meta<Data = BaseEvent, Key = Uuid> {}
-impl<T> EiffelGraph for T where T: Meta<Data = BaseEvent, Key = Uuid> {}
-
-pub trait EiffelVisHttpApp: EiffelGraph + EiffelVisApp + Send + Sync + 'static
-where
-    for<'a> &'a Self: Ref<'a, Meta = Self>,
-{
-}
-impl<T> EiffelVisHttpApp for T
-where
-    T: EiffelGraph + Send + Sync + EiffelVisApp + 'static,
-    for<'a> &'a T: Ref<'a, Meta = T>,
-{
-}
+pub trait EiffelVisHttpApp: EiffelVisApp + Send + Sync + 'static {}
+impl<T> EiffelVisHttpApp for T where T: EiffelVisApp + Send + Sync + 'static {}
 
 type App<T> = Arc<tokio::sync::RwLock<T>>;
 
@@ -42,10 +27,7 @@ pub async fn app<T: EiffelVisHttpApp>(
     address: String,
     port: u16,
     shutdown: impl Future<Output = ()>,
-) -> anyhow::Result<()>
-where
-    for<'a> &'a T: Ref<'a, Meta = T>,
-{
+) -> anyhow::Result<()> {
     let service = Router::new()
         .route("/", get(event_dump::<T>))
         .route("/get_event/:id", get(get_event::<T>))
