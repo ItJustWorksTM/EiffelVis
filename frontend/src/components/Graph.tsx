@@ -7,8 +7,8 @@ import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
-import useWebsocket from '../helpers/useWebSocket'
-import IEvent from '../interfaces/ApiData'
+import { AsRoots, Collection, Event, Filter, Forward, Ids } from '../interfaces/ApiData'
+import useEiffelNet from '../helpers/useEiffelNet'
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -42,37 +42,38 @@ const CustomGraph: React.FC = () => {
     }
   }
 
-  const onMessage = (event: IEvent[]) => {
+  const onMessage = (event: Event[]) => {
     const graph = graphRef.current
 
-    console.log('from server', event)
-    if (Array.isArray(event)) {
-      const g6data: GraphData = dataParser(event)
-      if (graph) {
-        g6data.nodes!.forEach((node) => {
-          graph!.addItem('node', node)
+    const g6data: GraphData = dataParser(event)
+    if (graph) {
+      g6data.nodes!.forEach((node) => {
+        graph!.addItem('node', node)
+      })
+      if (g6data.edges) {
+        g6data.edges.forEach((edge) => {
+          graph!.addItem('edge', edge)
         })
-        if (g6data.edges) {
-          g6data.edges.forEach((edge) => {
-            graph!.addItem('edge', edge)
-          })
-        }
-        graph?.layout()
-        console.log(
-          'TOTAL NODES: ',
-          (graph!.save() as GraphData)!.nodes!.length
-        )
       }
-    } else {
-      graph!.data({})
-      graph!.render()
+      graph?.layout()
+      console.log(
+        'TOTAL NODES: ',
+        (graph!.save() as GraphData)!.nodes!.length
+      )
     }
   }
 
-  const { reconnecting, sendMessage } = useWebsocket(onMessage)
+  const onReset = () => {
+    const graph = graphRef.current
+    graph!.data({})
+    graph!.render()
+  }
+
+  const { awaitingResponse, setFilters, setCollection, } = useEiffelNet(onMessage, onReset)
 
   const getNodesWithThisRoot = (id: string) => {
-    sendMessage({ type: 'WithRoot', ids: [id] })
+    setFilters([{ type: "Ids", ids: [id] } as Ids])
+    setCollection({ type: "AsRoots" } as AsRoots)
   }
 
   useEffect(() => {
@@ -108,26 +109,27 @@ const CustomGraph: React.FC = () => {
           ],
         },
         layout: {
-          type: 'circle',
+          type: 'dagre',
         },
         plugins: [miniMap],
       })
     }
 
     bindEvents()
+
+    setCollection({ type: "Forward"} as Forward)
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
-  useTweakPane(() => {
-    const ret = {
-      filters: [{ type: 'Type', name: 'Unique' }],
-      collection: { type: 'AsRoots' },
-    }
-    // ret.filters.push({ type: "None" })
-    sendMessage(ret)
+  useTweakPane((obj) => {
+    const collection = { type: obj.collection_type } as Collection
+    const filter = { type: obj.filter_type, ...obj, ids: [obj.id] } as Filter
+
+    setCollection(collection)
+    setFilters([filter])
   })
 
-  const loader = reconnecting && <Loader />
+  const loader = awaitingResponse && <Loader />
   return (
     <div>
       {loader}
