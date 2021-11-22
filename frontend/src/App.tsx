@@ -5,6 +5,8 @@ import About from './pages/About'
 import Home from './pages/Home'
 import SideNav from './components/SideNav'
 import styles from './css/app.module.css'
+import './css/controlPanel.css'
+import './css/global.css'
 
 const App: React.FC = () => (
   <Router>
