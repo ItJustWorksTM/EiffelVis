@@ -9,17 +9,20 @@ impl<T> EiffelGraph for T where T: Graph<Key = Uuid, Data = BaseEvent, EdgeData 
 impl Key for Uuid {}
 
 pub trait EiffelVisApp: EiffelGraph {
+    /// Inserts a new eiffel event into storage
     fn push(&mut self, event: BaseEvent);
-    fn graph(&self) -> &Self {
-        self
-    }
+
+    /// Looks up the event of given id
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent>;
+
+    /// Returns all current stored events
     fn dump<'a, T: From<&'a BaseEvent>>(&'a self) -> Vec<T>;
+
+    /// Collects sub-graph('s) for given root nodes
     fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(&'a self, roots: &[Uuid]) -> Vec<T>;
 }
 
 impl<G: EiffelGraph> EiffelVisApp for G {
-    /// Inserts a new eiffel event into storage
     fn push(&mut self, event: BaseEvent) {
         let links = event.links.clone();
         self.add_node_with_edges(
@@ -31,12 +34,10 @@ impl<G: EiffelGraph> EiffelVisApp for G {
         println!("Graph size: {}", self.node_count());
     }
 
-    /// Looks up the event of given id
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent> {
         Some(self.get(id)?.data())
     }
 
-    /// Returns all current stored events
     fn dump<'a, T: From<&'a BaseEvent>>(&'a self) -> Vec<T> {
         self.items().map(|node| T::from(node.data())).collect()
     }

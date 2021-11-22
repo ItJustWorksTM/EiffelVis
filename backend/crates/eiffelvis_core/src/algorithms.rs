@@ -2,6 +2,9 @@ use std::ops::ControlFlow;
 
 use crate::graph::*;
 
+/// A recursive depth first traversal implementation,
+/// if user provided closure returns [ControlFlow::Break] that particular node's edges will not be visitted,
+/// but will not stop the whole traversal.
 pub fn depth_first<G, F>(graph: &G, index: G::Idx, callback: &mut F)
 where
     G: Graph,

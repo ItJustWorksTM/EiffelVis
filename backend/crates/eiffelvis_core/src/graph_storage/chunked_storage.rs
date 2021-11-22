@@ -68,6 +68,8 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         }
     }
 
+    /// Translates given key to internal index.
+    /// This is generally an relatively expensive operation, avoid frequent translations.
     pub fn to_index(&self, key: K) -> Option<ChunkedIndex> {
         self.store
             .iter()
@@ -79,10 +81,13 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
             })
     }
 
+    /// Translates given internal index to key
     pub fn from_index(&self, index: ChunkedIndex) -> Option<K> {
         Some(*self.store.get(index.0)?.get_index(index.1)?.0)
     }
 
+    /// Translates absolute index to internal index,
+    /// if index > self.node_count() return index is undefined.
     fn to_relative(&self, index: usize) -> ChunkedIndex {
         let a = index % self.max_elements;
         let b = (index - a) / self.chunks();
@@ -90,6 +95,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         ChunkedIndex(b, a)
     }
 
+    /// Translates relative index (starting from tail) to absolute
     fn to_absolute(&self, index: ChunkedIndex) -> usize {
         (index.0 * self.max_elements) + index.1 - self.tail * self.max_elements
     }
@@ -98,6 +104,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         self.store.len()
     }
 
+    /// Returns the index of the most recent added node
     pub fn last(&self) -> Option<ChunkedIndex> {
         let head = self.head_chunk();
         let len = self.store[head].len();
@@ -108,7 +115,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         }
     }
 
-    pub fn head_chunk(&self) -> usize {
+    fn head_chunk(&self) -> usize {
         (self.tail + self.chunks() - 1) % self.chunks()
     }
 
@@ -269,6 +276,8 @@ mod test {
     use crate::graph::*;
 
     use std::iter::once;
+
+    // TODO: Add more correctness tests, like cmp_index, especially in cases where we have wrapped around.
 
     #[test]
     fn test_forward_link_single() {

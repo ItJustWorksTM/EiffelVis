@@ -6,6 +6,8 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// Describes a query to collect nodes from an eiffel graph,
+/// to match an event **all** filters need to match.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Query {
     /// Will return a given node if any of the filters match
@@ -30,6 +32,9 @@ pub enum Filter {
     Ids { ids: Vec<Uuid> },
 }
 
+/// Used collection method,
+/// selected variant is run **after** filtering has been done,
+/// this means you can get nodes back that may not filfull the filter requirements.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Collection {
@@ -39,6 +44,7 @@ pub enum Collection {
     AsRoots,
 }
 
+/// A tracked query, only returns new matches.
 pub struct TrackedQuery<I> {
     filters: Vec<Filter>,
     collector: Collector<I>,
@@ -62,6 +68,8 @@ impl<I> TrackedQuery<I> {
         }
     }
 
+    /// Collects the new nodes since the last time this method was called that match the query.
+    /// If it was not called before it behaves as the non-tracked version.
     pub fn handle<'a, R, G>(&'a mut self, graph: &'a G) -> Vec<R>
     where
         G: Graph<Data = BaseEvent, Idx = I, Key = Uuid>,

@@ -16,6 +16,8 @@ pub mod graph;
 /// Graph traversal algorithms
 pub mod algorithms;
 
+/// Generic graph query functionality
 pub mod query;
 
+/// Generic tracked graph query functionality
 pub mod tracked_query;
