@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import IEvent from './ApiData'
+import Event, { ServerMessage } from './ApiData'
 
-export type TweakCb = (obj: object) => void
-export type OnMessage = (obj: IEvent[]) => void
+export type TweakCb = (obj: any) => void
+export type OnMessage = (obj: ServerMessage) => void
 export type OnConnect = () => void
 export type SendMessage = (obj: object) => void
 export type getNodesWithRootFun = (id: string) => void
