@@ -1,71 +1,33 @@
-use std::cmp::Ordering;
-
 pub trait Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 pub trait Idx: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 impl<T> Idx for T where T: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
 
-pub trait ValueIndex<Idx>: Sized {
-    type Output;
-
-    fn index(self, idx: Idx) -> Self::Output {
-        self.try_index(idx).unwrap()
-    }
-
-    fn try_index(self, idx: Idx) -> Option<Self::Output>;
-}
-
 pub trait Meta {
-    type Data;
-    type EdgeData;
     type Idx: Idx;
     type Key: Key;
+    type Data;
+    type EdgeData;
 }
 
-pub trait Ref<'a>:
-    Copy
-    + ValueIndex<<Self::Meta as Meta>::Idx, Output = Self::Item>
-    + ValueIndex<<Self::Meta as Meta>::Key, Output = Self::Item>
-where
-    Self::Meta: 'a,
+pub trait Graph:
+    Meta + ItemIter + Indexable<<Self as Meta>::Idx> + Indexable<<Self as Meta>::Key>
 {
-    type Meta: Meta;
+    fn cmp_index(&self, lhs: Self::Idx, rhs: Self::Idx) -> std::cmp::Ordering;
 
-    fn cmp_index(self, lhs: <Self::Meta as Meta>::Idx, rhs: <Self::Meta as Meta>::Idx) -> Ordering;
+    fn node_count(&self) -> usize;
 
-    type Item: Item<
-        'a,
-        Idx = <Self::Meta as Meta>::Idx,
-        Data = <Self::Meta as Meta>::Data,
-        EdgeData = <Self::Meta as Meta>::EdgeData,
-    >;
-    type ItemIterator: Iterator<Item = Self::Item>;
-    fn items(self) -> Self::ItemIterator;
-}
+    fn add_node(&mut self, key: Self::Key, data: Self::Data) -> Option<Self::Idx>;
 
-pub trait Mut {
-    type Meta: Meta;
-
-    fn add_node(
-        &mut self,
-        key: <Self::Meta as Meta>::Key,
-        data: <Self::Meta as Meta>::Data,
-    ) -> Option<<Self::Meta as Meta>::Idx>;
-
-    fn add_edge(
-        &mut self,
-        a: <Self::Meta as Meta>::Key,
-        b: <Self::Meta as Meta>::Key,
-        data: <Self::Meta as Meta>::EdgeData,
-    );
+    fn add_edge(&mut self, a: Self::Key, b: Self::Key, data: Self::EdgeData);
 
     fn add_node_with_edges<I>(
         &mut self,
-        key: <Self::Meta as Meta>::Key,
-        data: <Self::Meta as Meta>::Data,
+        key: Self::Key,
+        data: Self::Data,
         edges: I,
-    ) -> Option<<Self::Meta as Meta>::Idx>
+    ) -> Option<Self::Idx>
     where
-        I: Iterator<Item = (<Self::Meta as Meta>::Key, <Self::Meta as Meta>::EdgeData)>,
+        I: Iterator<Item = (Self::Key, Self::EdgeData)>,
     {
         let id = self.add_node(key, data);
         if id.is_some() {
@@ -76,6 +38,16 @@ pub trait Mut {
         id
     }
 }
+
+pub trait HasNode<'a, _Outlives = &'a Self>: Meta {
+    type NodeType: Item<
+        'a,
+        Data = <Self as Meta>::Data,
+        EdgeData = <Self as Meta>::EdgeData,
+        Idx = <Self as Meta>::Idx,
+    >;
+}
+pub type NodeType<'a, This> = <This as HasNode<'a>>::NodeType;
 
 pub trait Item<'a>
 where
@@ -105,4 +77,21 @@ where
 
     fn data(&self) -> &'a Self::EdgeData;
     fn target(&self) -> Self::Idx;
+}
+
+// TODO: slightly cursed
+pub trait HasNodeIter<'a, T, _Outlives = &'a Self> {
+    type NodeIterType: Iterator<Item = T>;
+}
+pub type NodeIterType<'a, This> = <This as HasNodeIter<'a, NodeType<'a, This>>>::NodeIterType;
+
+pub trait ItemIter: for<'a> HasNodeIter<'a, NodeType<'a, Self>> + for<'a> HasNode<'a> {
+    fn items(&self) -> NodeIterType<'_, Self>;
+}
+
+pub trait Indexable<T>: for<'a> HasNode<'a> {
+    fn get(&self, id: T) -> Option<NodeType<'_, Self>>;
+    fn index(&self, id: T) -> NodeType<'_, Self> {
+        self.get(id).unwrap()
+    }
 }

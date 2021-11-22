@@ -1,13 +1,14 @@
+use crate::query::GraphQuery;
 use crate::{domain::types::BaseEvent, graph::*};
-use crate::{graph_storage::ChunkedGraph, query::GraphQuery};
 
 use uuid::Uuid;
 
-pub type EiffelGraph = ChunkedGraph<Uuid, BaseEvent, String>;
+pub trait EiffelGraph: Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> {}
+impl<T> EiffelGraph for T where T: Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> {}
 
 impl Key for Uuid {}
 
-pub trait EiffelVisApp {
+pub trait EiffelVisApp: EiffelGraph {
     fn push(&mut self, event: BaseEvent);
     fn graph(&self) -> &Self {
         self
@@ -17,7 +18,7 @@ pub trait EiffelVisApp {
     fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(&'a self, roots: &[Uuid]) -> Vec<T>;
 }
 
-impl EiffelVisApp for EiffelGraph {
+impl<G: EiffelGraph> EiffelVisApp for G {
     /// Inserts a new eiffel event into storage
     fn push(&mut self, event: BaseEvent) {
         let links = event.links.clone();
@@ -32,7 +33,7 @@ impl EiffelVisApp for EiffelGraph {
 
     /// Looks up the event of given id
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent> {
-        Some(self.try_index(id)?.data())
+        Some(self.get(id)?.data())
     }
 
     /// Returns all current stored events
@@ -43,7 +44,7 @@ impl EiffelVisApp for EiffelGraph {
     fn get_subgraph_with_roots<'a, T: From<&'a BaseEvent>>(&'a self, roots: &[Uuid]) -> Vec<T> {
         roots
             .iter()
-            .filter_map(|i| self.try_index(*i))
+            .filter_map(|i| self.get(*i))
             .roots_for_graph(self)
             .map(|node| T::from(node.data()))
             .collect()

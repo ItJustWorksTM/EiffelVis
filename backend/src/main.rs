@@ -6,7 +6,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use eiffelvis_core::domain::app::{EiffelGraph, EiffelVisApp};
+use eiffelvis_core::{domain::app::EiffelVisApp, graph_storage::ChunkedGraph};
 use structopt::StructOpt;
 use tracing::info;
 
@@ -53,7 +53,7 @@ async fn main() {
 
     let cli = Cli::from_args();
 
-    let graph = Arc::new(tokio::sync::RwLock::new(EiffelGraph::new(
+    let graph = Arc::new(tokio::sync::RwLock::new(ChunkedGraph::new(
         cli.max_chunks,
         cli.chunk_size,
     )));

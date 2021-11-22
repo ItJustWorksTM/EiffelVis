@@ -12,10 +12,9 @@ impl<I> TrackedNodes<I> {
         Self { cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> TrackedNodesIter<'a, I, G>
+    pub fn handle<'a, G>(&'a mut self, graph: &'a G) -> TrackedNodesIter<'a, I, G>
     where
-        G: Ref<'a>,
-        G::Meta: Meta<Idx = I> + 'a,
+        G: Graph<Idx = I>,
         I: Idx,
     {
         // TODO: reverse NodeIterator?
@@ -39,17 +38,17 @@ impl<I> Default for TrackedNodes<I> {
     }
 }
 
-pub struct TrackedNodesIter<'a, I, G: Ref<'a>> {
+pub struct TrackedNodesIter<'a, I, G: ItemIter> {
     owner: &'a mut TrackedNodes<I>,
-    inner: G::ItemIterator,
+    inner: NodeIterType<'a, G>,
 }
 
-impl<'a, I, G: Ref<'a>> Iterator for TrackedNodesIter<'a, I, G>
+impl<'a, I, G> Iterator for TrackedNodesIter<'a, I, G>
 where
-    G::Meta: Meta<Idx = I> + 'a,
+    G: Graph<Idx = I>,
     I: Idx,
 {
-    type Item = G::Item;
+    type Item = NodeType<'a, G>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let ret = self.inner.next();
@@ -70,10 +69,9 @@ impl<I> TrackedSubGraphs<I> {
         Self { ids, cursor: None }
     }
 
-    pub fn handle<'a, G>(&'a mut self, graph: G) -> TrackedSubGraphsIter<'a, I, G>
+    pub fn handle<'a, G>(&'a mut self, graph: &'a G) -> TrackedSubGraphsIter<'a, I, G>
     where
-        G: Ref<'a>,
-        G::Meta: Meta<Idx = I> + 'a,
+        G: Graph<Idx = I>,
         I: Idx,
     {
         let mut iter = self
@@ -102,17 +100,17 @@ impl<I> TrackedSubGraphs<I> {
     }
 }
 
-pub struct TrackedSubGraphsIter<'a, I, G: Ref<'a>> {
+pub struct TrackedSubGraphsIter<'a, I, G: Graph> {
     owner: &'a mut TrackedSubGraphs<I>,
     inner: SubGraphs<'a, G>,
 }
 
-impl<'a, I, G: Ref<'a>> Iterator for TrackedSubGraphsIter<'a, I, G>
+impl<'a, I, G> Iterator for TrackedSubGraphsIter<'a, I, G>
 where
-    G::Meta: Meta<Idx = I> + 'a,
+    G: Graph<Idx = I>,
     I: Idx,
 {
-    type Item = G::Item;
+    type Item = NodeType<'a, G>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let ret = self.inner.next();

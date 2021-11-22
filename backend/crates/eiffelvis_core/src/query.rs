@@ -8,17 +8,17 @@ use indexmap::IndexSet;
 /// with given nodes as root.
 pub struct SubGraphs<'a, G>
 where
-    G: Ref<'a>,
+    G: Graph,
 {
-    graph: G,
-    index: <IndexSet<<G::Meta as Meta>::Idx> as IntoIterator>::IntoIter,
+    graph: &'a G,
+    index: <IndexSet<G::Idx> as IntoIterator>::IntoIter,
 }
 
 impl<'a, G> Iterator for SubGraphs<'a, G>
 where
-    G: Ref<'a>,
+    G: Graph,
 {
-    type Item = G::Item;
+    type Item = NodeType<'a, G>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.index.next().map(|i| self.graph.index(i))
@@ -26,10 +26,10 @@ where
 }
 
 pub trait GraphQuery: Iterator {
-    fn roots_for_graph<'a, G>(self, graph: G) -> SubGraphs<'a, G>
+    fn roots_for_graph<'a, G>(self, graph: &'a G) -> SubGraphs<'a, G>
     where
-        G: Ref<'a>,
-        Self: Iterator<Item = G::Item> + Sized,
+        G: Graph,
+        Self: Iterator<Item = NodeType<'a, G>> + Sized,
     {
         let mut index = IndexSet::new();
         for node in self {

@@ -18,7 +18,9 @@ use eiffelvis_core::domain::{
 use hyper::Response;
 
 /// Dumps the entire event store into a json array
-pub async fn event_dump<T: EiffelVisApp>(Extension(app): Extension<App<T>>) -> impl IntoResponse {
+pub async fn event_dump<T: EiffelVisHttpApp>(
+    Extension(app): Extension<App<T>>,
+) -> impl IntoResponse {
     let lk = app.read().await;
 
     let dump = lk.dump::<BaseEvent>();
@@ -27,7 +29,7 @@ pub async fn event_dump<T: EiffelVisApp>(Extension(app): Extension<App<T>>) -> i
 }
 
 /// Returns full event that belongs to given uuid
-pub async fn get_event<T: EiffelVisApp>(
+pub async fn get_event<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
@@ -42,7 +44,7 @@ pub async fn get_event<T: EiffelVisApp>(
     }
 }
 
-pub async fn events_with_root<T: EiffelVisApp>(
+pub async fn events_with_root<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
@@ -54,10 +56,7 @@ pub async fn establish_websocket<T: EiffelVisHttpApp>(
     Extension(app): Extension<App<T>>,
     ws: WebSocketUpgrade,
     user_agent: Option<TypedHeader<headers::UserAgent>>,
-) -> impl IntoResponse
-where
-    for<'a> &'a T: Ref<'a, Meta = T> + Send,
-{
+) -> impl IntoResponse {
     if let Some(TypedHeader(user_agent)) = user_agent {
         println!("`{}` connected to websocket", user_agent.as_str());
     }
