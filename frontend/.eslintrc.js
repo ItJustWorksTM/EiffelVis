@@ -1,3 +1,5 @@
+const { env } = require('process')
+
 module.exports = {
   env: {
     browser: true,
@@ -36,6 +38,9 @@ module.exports = {
         allowSeparatedGroups: true,
       },
     ],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    'no-console': env !== 'production' ? 'off' : 'warn',
   },
   settings: {
     'import/resolver': {

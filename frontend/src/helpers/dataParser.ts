@@ -1,13 +1,18 @@
 import { GraphData } from '@antv/g6/lib/types'
-import IData from '../interfaces/ApiData'
+import IEvent from '../interfaces/ApiData'
 
-export default (data: IData) => {
+export default (data: IEvent[]) => {
   const G6Data: GraphData = { nodes: [], edges: [] }
-  data.values.forEach(({ meta, links }) => {
-    G6Data.nodes!.push({ id: meta.id })
-    links.forEach(({ target }) => {
+  data.forEach(({ id, time, edges }) => {
+    G6Data.nodes!.push({
+      id,
+      time,
+      // the style should be base on something, not random
+      style: { fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)` },
+    })
+    edges.forEach((target: string) => {
       G6Data.edges!.push({
-        source: meta.id,
+        source: id,
         target,
       })
     })
