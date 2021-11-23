@@ -1,8 +1,7 @@
-import { GraphData } from '@antv/g6/lib/types'
 import { Event } from '../interfaces/ApiData'
 
 export default (data: Event[]) => {
-  const G6Data: GraphData = { nodes: [], edges: [] }
+  const G6Data: any = { nodes: [], edges: [] }
   data.forEach(({ id, time, edges }) => {
     G6Data.nodes!.push({
       id,

@@ -17,6 +17,11 @@ import {
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
+let time = 0
+let posx = 0
+let posy = 0
+let log = 1
+
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
@@ -51,10 +56,32 @@ const CustomGraph: React.FC = () => {
 
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
-
     const g6data: GraphData = dataParser(event)
     if (graph) {
-      g6data.nodes!.forEach((node) => {
+      g6data.nodes!.forEach((node: any) => {
+        const temp = node
+        const tempTime: number = temp.time
+        if (tempTime === time) {
+          temp.x = posx
+          if (posy < 0) {
+            temp.y = posy
+            posy = posy * -1 + 100 * 0.99 ** log
+            log += 1
+          } else {
+            temp.y = posy
+            if (posy !== 0) {
+              posy *= -1
+            }
+          }
+        } else if (tempTime > time) {
+          posx += 100
+          temp.x = posx
+          posy = 0
+          log = 1
+          temp.y = posy
+          posy += 100
+          time = tempTime
+        }
         graph!.addItem('node', node)
       })
       if (g6data.edges) {
@@ -62,7 +89,6 @@ const CustomGraph: React.FC = () => {
           graph!.addItem('edge', edge)
         })
       }
-      graph?.layout()
       console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     }
   }
@@ -71,6 +97,10 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph!.data({})
     graph!.render()
+    time = 0
+    posx = 0
+    posy = 0
+    log = 1
   }
 
   const { awaitingResponse, setFilters, setCollection } = useEiffelNet(
@@ -115,9 +145,7 @@ const CustomGraph: React.FC = () => {
             },
           ],
         },
-        layout: {
-          type: 'dagre',
-        },
+        layout: {},
         plugins: [miniMap],
       })
     }
