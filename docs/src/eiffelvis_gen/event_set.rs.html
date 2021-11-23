@@ -363,8 +363,8 @@
 <span class="doccomment">/// these act as a proxy for the real [Event] and [Link] types with the benefit of [EventBorrow::links()] and [LinkBorrow::targets()] returning the same Borrow types compared to just string names.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EventSet</span> {
-    <span class="ident">links</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Link</span><span class="op">&gt;</span>,
     <span class="ident">events</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Event</span><span class="op">&gt;</span>,
+    <span class="ident">links</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Link</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">EventSet</span> {

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["chunked_storage",""]]});
+initSidebarItems({"mod":[["chunked_storage","A storage type that employs the chunked fixed-size ringbuffer strategy"]]});

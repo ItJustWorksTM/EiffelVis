@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Edge",""],["Graph",""],["GraphIndex",""],["GraphIterator",""],["Node",""]],"trait":[["GraphKey",""]]});
+initSidebarItems({"struct":[["ChunkedGraph",""],["ChunkedIndex",""],["EdgeData",""],["EdgeIter",""],["Element",""],["NodeData",""],["NodeIndexIter",""],["NodeIter",""]]});

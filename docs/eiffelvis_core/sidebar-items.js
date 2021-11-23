@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["app","eiffelvis core api"],["graph_storage","DAG storage implementations"],["types","eiffelvis shared types, e.g. events"]]});
+initSidebarItems({"mod":[["algorithms","Graph traversal algorithms"],["domain","eiffelvis domains specicifc api"],["graph","Graph traits"],["graph_storage","DAG storage implementations"],["query","Generic graph query functionality"],["tracked_query","Generic tracked graph query functionality"]]});

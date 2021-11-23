@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["depth_first","A recursive depth first traversal implementation, if user provided closure returns [ControlFlow::Break] that particular node’s edges will not be visited, but will not stop the whole traversal."]]});
