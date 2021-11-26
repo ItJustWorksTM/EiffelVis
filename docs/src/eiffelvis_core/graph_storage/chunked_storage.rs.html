@@ -437,7 +437,7 @@
 
     <span class="doccomment">/// Translates relative index (starting from tail) to absolute</span>
     <span class="kw">fn</span> <span class="ident">to_absolute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">ChunkedIndex</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        (<span class="ident">index</span>.<span class="number">0</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">max_elements</span>) <span class="op">+</span> <span class="ident">index</span>.<span class="number">1</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">tail</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">max_elements</span>
+        (<span class="ident">index</span>.<span class="number">0</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">max_elements</span>) <span class="op">+</span> <span class="ident">index</span>.<span class="number">1</span> <span class="op">-</span> (<span class="self">self</span>.<span class="ident">tail</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">max_elements</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">chunks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {

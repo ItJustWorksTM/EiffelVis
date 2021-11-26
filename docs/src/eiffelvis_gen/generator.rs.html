@@ -262,7 +262,6 @@
 <span id="262">262</span>
 <span id="263">263</span>
 <span id="264">264</span>
-<span id="265">265</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">cell::RefCell</span>,
     <span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">VecDeque</span>},
@@ -509,11 +508,10 @@
         <span class="ident">event</span>.<span class="ident">meta</span>.<span class="ident">event_type</span> <span class="op">=</span> <span class="ident">meta_event</span>.<span class="ident">name</span>().<span class="ident">to_string</span>();
         <span class="ident">event</span>.<span class="ident">meta</span>.<span class="ident">id</span> <span class="op">=</span> <span class="ident">Uuid::from_bytes</span>(<span class="self">self</span>.<span class="ident">rng</span>.<span class="ident">get_mut</span>().<span class="ident">gen</span>());
 
-        <span class="comment">// TODO: allow specifying a starting time and a time delay between events</span>
         <span class="ident">event</span>.<span class="ident">meta</span>.<span class="ident">time</span> <span class="op">=</span> <span class="ident">SystemTime::now</span>()
             .<span class="ident">duration_since</span>(<span class="ident">UNIX_EPOCH</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">as_secs</span>();
+            .<span class="ident">as_millis</span>();
 
         <span class="ident">event</span>.<span class="ident">links</span> <span class="op">=</span> <span class="ident">generated_links</span>;
 
