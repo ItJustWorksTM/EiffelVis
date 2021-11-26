@@ -10,7 +10,7 @@ pub struct BaseMeta {
     #[serde(rename = "type")]
     pub event_type: String,
     pub version: String,
-    pub time: u128,
+    pub time: u64,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
@@ -30,7 +30,7 @@ pub struct BaseEvent {
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LeanEvent {
     pub id: Uuid,
-    pub time: String,
+    pub time: u64,
     pub edges: Vec<Uuid>,
 }
 
@@ -38,7 +38,7 @@ impl From<&BaseEvent> for LeanEvent {
     fn from(ev: &BaseEvent) -> Self {
         Self {
             id: ev.meta.id,
-            time: format!("{}", ev.meta.time),
+            time: ev.meta.time,
             edges: ev.links.iter().map(|link| link.target).collect(),
         }
     }

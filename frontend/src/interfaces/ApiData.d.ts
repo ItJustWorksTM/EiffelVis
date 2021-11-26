@@ -5,7 +5,7 @@ export type Uuid = string
 
 export interface Event {
   id: Uuid
-  time: bigint
+  time: number
   edges: Array<Uuid>
 }
 

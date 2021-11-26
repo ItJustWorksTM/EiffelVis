@@ -23,8 +23,8 @@ pub enum Filter {
     None,
     /// Open ended range of time
     Time {
-        begin: Option<u128>,
-        end: Option<u128>,
+        begin: Option<u64>,
+        end: Option<u64>,
     },
     /// Event Type
     Type { name: String },

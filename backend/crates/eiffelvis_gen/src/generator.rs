@@ -247,7 +247,7 @@ impl Iterator for Iter<'_> {
         event.meta.time = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_millis();
+            .as_millis() as u64;
 
         event.links = generated_links;
 

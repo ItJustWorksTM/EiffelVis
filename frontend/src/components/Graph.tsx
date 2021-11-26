@@ -17,7 +17,7 @@ import {
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
-let timee = BigInt(0)
+let timee = 0
 let posx = 0
 let posy = 0
 let log = 1
@@ -26,7 +26,7 @@ const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
   const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
-  const [nodeTooltipTime, setNodeToolTipTime] = useState<bigint>(BigInt(0))
+  const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
@@ -58,8 +58,8 @@ const CustomGraph: React.FC = () => {
 
   const layout = (node: any) => {
     const temp = node
-    const tempTime: bigint = temp.time
-    if (tempTime <= timee + BigInt(1000)) {
+    const tempTime: number = temp.time
+    if (tempTime <= timee + 1000) {
       temp.x = posx
       if (posy < 0) {
         temp.y = posy
@@ -110,7 +110,7 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph!.data({})
     graph!.render()
-    timee = BigInt(0)
+    timee = 0
     posx = 0
     posy = 0
     log = 1
