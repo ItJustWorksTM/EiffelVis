@@ -1,4 +1,8 @@
-use std::time::Duration;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    time::Duration,
+};
 
 use eiffelvis_gen::{
     event_set::{Event, EventSet, Link},
@@ -43,6 +47,9 @@ struct Cli {
     /// Amount of events to send before introducing another delay (defined with the latency option)
     #[structopt(default_value = "1", short, long)]
     burst: usize,
+
+    #[structopt(long)]
+    replay: Option<String>,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -64,8 +71,8 @@ async fn app() -> anyhow::Result<()> {
 
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        5,
-        100,
+        4,
+        8,
         EventSet::build()
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
@@ -78,12 +85,28 @@ async fn app() -> anyhow::Result<()> {
             .expect("This should work"),
     );
 
-    println!("Sending out {} events..", cli.count * cli.burst);
+    let mut iter: Box<dyn Iterator<Item = Vec<u8>>> = if let Some(replay_path) = cli.replay.as_ref()
+    {
+        println!("replaying file \"{}\"", replay_path);
+        let file = File::open(replay_path)?;
+        let reader = BufReader::new(file);
 
+        Box::new(reader.lines().map(|err| err.unwrap().as_bytes().to_owned()))
+    } else {
+        Box::new(gen.iter())
+    };
+
+    let target = cli.count * cli.burst;
     let sleep_duration = Duration::from_millis(cli.latency as u64);
-    let mut iter = gen.iter();
 
-    for _ in 0..(cli.count) {
+    println!(
+        "Sending out ~{} events, {} events every {}ms interval",
+        target, cli.burst, cli.latency
+    );
+
+    let mut sent = 0;
+    for _ in 0..(target) {
+        let mut taken = 0;
         for ev in (&mut iter).take(cli.burst) {
             let _ = channel_a
                 .basic_publish(
@@ -95,13 +118,19 @@ async fn app() -> anyhow::Result<()> {
                 )
                 .await?
                 .await?;
+            taken += 1;
         }
+        if cli.burst > taken {
+            println!("Exhausted source, stopping early!");
+            break;
+        }
+        sent += taken;
         if sleep_duration.as_millis() > 0 {
             tokio::time::sleep(sleep_duration).await;
         }
     }
 
-    println!("Done.");
+    println!("Done, sent {} events", sent);
 
     Ok(())
 }
