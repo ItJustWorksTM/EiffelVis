@@ -12,7 +12,7 @@ const useWebsocket = (onMsg: OnMessage, onConnect?: OnConnect) => {
       if (onConnect) onConnect()
     }
 
-    socket.current.onmessage = (e) => onMsg(JSON.parse(e.data))
+    socket.current.onmessage = (e) => onMsg(e.data)
 
     socket.current.onclose = () => {
       if (socket.current) {
@@ -28,10 +28,10 @@ const useWebsocket = (onMsg: OnMessage, onConnect?: OnConnect) => {
     }
   }, [reconnecting])
 
-  const sendMessage = (obj: object) => {
+  const sendMessage = (obj: string) => {
     if (socket.current) {
       if (socket.current!.readyState === 1) {
-        socket.current.send(JSON.stringify(obj))
+        socket.current.send(obj)
         return true
       }
     }

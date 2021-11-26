@@ -17,7 +17,7 @@ import {
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
-let time = 0
+let timee = BigInt(0)
 let posx = 0
 let posy = 0
 let log = 1
@@ -26,6 +26,7 @@ const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
   const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
+  const [nodeTooltipTime, setNodeToolTipTime] = useState<bigint>(BigInt(0))
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
@@ -42,11 +43,12 @@ const CustomGraph: React.FC = () => {
         if (e.select) {
           const config = e.target._cfg
           const {
-            model: { id, x, y },
+            model: { id, time, x, y },
           } = config
           const point = graph!.getCanvasByPoint(x, y)
           setNodeToolTipX(point.x - 75)
           setNodeToolTipY(point.y + 15)
+          setNodeToolTipTime(time)
           setNodeToolTipId(id)
           setShowNodeTooltip(true)
         }
@@ -56,8 +58,8 @@ const CustomGraph: React.FC = () => {
 
   const layout = (node: any) => {
     const temp = node
-    const tempTime: number = temp.time
-    if (tempTime === time) {
+    const tempTime: bigint = temp.time
+    if (tempTime <= timee + BigInt(1000)) {
       temp.x = posx
       if (posy < 0) {
         temp.y = posy
@@ -69,14 +71,14 @@ const CustomGraph: React.FC = () => {
           posy *= -1
         }
       }
-    } else if (tempTime > time) {
+    } else if (tempTime > timee) {
       posx += 100
       temp.x = posx
       posy = 0
       log = 1
       temp.y = posy
       posy += 100
-      time = tempTime
+      timee = tempTime
     }
   }
 
@@ -84,10 +86,17 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     const g6data: GraphData = dataParser(event)
     if (graph) {
+      const track = ""
       g6data.nodes!.forEach((node: any) => {
         layout(node)
         graph!.addItem('node', node)
       })
+      if (track !== "") {
+        graph!.focusItem(track, true, {
+          easing: 'easeCubic',
+          duration: 400,
+        });
+      }
       if (g6data.edges) {
         g6data.edges.forEach((edge) => {
           graph!.addItem('edge', edge)
@@ -101,10 +110,11 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph!.data({})
     graph!.render()
-    time = 0
+    timee = BigInt(0)
     posx = 0
     posy = 0
     log = 1
+    setShowNodeTooltip(false)
   }
 
   const { awaitingResponse, setFilters, setCollection } = useEiffelNet(
@@ -115,6 +125,7 @@ const CustomGraph: React.FC = () => {
   const getNodesWithThisRoot = (id: string) => {
     setFilters([{ type: 'Ids', ids: [id] } as Ids])
     setCollection({ type: 'AsRoots' } as AsRoots)
+    setShowNodeTooltip(false)
   }
 
   useEffect(() => {
@@ -136,19 +147,15 @@ const CustomGraph: React.FC = () => {
         },
         modes: {
           default: [
-            'drag-node',
             'click-select',
             'drag-canvas',
             {
               type: 'zoom-canvas',
               enableOptimize: true,
             },
-            {
-              type: 'activate-relations',
-              trigger: 'click',
-            },
           ],
         },
+
         layout: {},
         plugins: [miniMap],
       })
@@ -162,7 +169,7 @@ const CustomGraph: React.FC = () => {
 
   useTweakPane((obj) => {
     const collection = { type: obj.collection_type } as Collection
-    const filter = { type: obj.filter_type, ...obj, ids: [obj.id] } as Filter
+    const filter = { type: obj.filter_type, ...obj, ids: [obj.id], begin: obj.begin >= 0 ? obj.begin : null, end: obj.end >= 0 ? obj.end : null } as Filter
 
     setCollection(collection)
     setFilters([filter])
@@ -176,6 +183,7 @@ const CustomGraph: React.FC = () => {
         {showNodeTooltip && (
           <TooltipCard
             id={nodeTooltipId}
+            time={nodeTooltipTime}
             x={nodeTooltipX}
             y={nodeTooltipY}
             getNodesWithRoot={getNodesWithThisRoot}

@@ -8,14 +8,20 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
 
   const [isConnected, setIsConnected] = useState<Boolean>(false)
 
-  const [messageQueue, setMessageQueue] = useState<ServerMessage[]>([])
+  const [messageQueue, setMessageQueue] = useState<string[]>([])
 
-  const onMessage = (event: ServerMessage) => {
+  const onMessage = (event: string) => {
     setMessageQueue([...messageQueue, event])
   }
 
   useEffect(() => {
-    messageQueue.forEach((event: ServerMessage) => {
+    messageQueue.forEach((eventBuf: string) => {
+      const event = JSON.parse(eventBuf, (key, value) => {
+        if (key === "time") {
+          return BigInt(value)
+        } 
+        return value
+      }) as ServerMessage
       console.log('event ', event)
       if (Array.isArray(event)) {
         onEvents(event)
@@ -62,7 +68,7 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
     } else {
       const msg = <Query>{ filters, collection }
       console.log('sending out new query ', msg)
-      if (sendMessage(msg)) {
+      if (sendMessage(JSON.stringify(msg))) {
         setAwaitingResponseCount(awaitingResponseCount + 1)
       } else {
         console.log('failed to send message, bad things may happen')
