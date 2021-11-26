@@ -97,7 +97,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
 
     /// Translates relative index (starting from tail) to absolute
     fn to_absolute(&self, index: ChunkedIndex) -> usize {
-        (index.0 * self.max_elements) + index.1 - self.tail * self.max_elements
+        (index.0 * self.max_elements) + index.1 - (self.tail * self.max_elements)
     }
 
     pub fn chunks(&self) -> usize {
