@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import Event, { ServerMessage } from './ApiData'
 
 export type TweakCb = (obj: any) => void
 export type OnMessage = (obj: string) => void

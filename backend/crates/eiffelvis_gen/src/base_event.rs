@@ -10,7 +10,7 @@ pub struct BaseMeta {
     #[serde(rename = "type")]
     pub event_type: String,
     pub version: String,
-    pub time: u128,
+    pub time: u64,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]

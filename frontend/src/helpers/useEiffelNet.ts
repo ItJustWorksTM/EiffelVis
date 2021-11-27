@@ -16,12 +16,7 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
 
   useEffect(() => {
     messageQueue.forEach((eventBuf: string) => {
-      const event = JSON.parse(eventBuf, (key, value) => {
-        if (key === "time") {
-          return BigInt(value)
-        } 
-        return value
-      }) as ServerMessage
+      const event = JSON.parse(eventBuf) as ServerMessage
       console.log('event ', event)
       if (Array.isArray(event)) {
         onEvents(event)
