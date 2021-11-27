@@ -511,7 +511,7 @@
         <span class="ident">event</span>.<span class="ident">meta</span>.<span class="ident">time</span> <span class="op">=</span> <span class="ident">SystemTime::now</span>()
             .<span class="ident">duration_since</span>(<span class="ident">UNIX_EPOCH</span>)
             .<span class="ident">unwrap</span>()
-            .<span class="ident">as_millis</span>();
+            .<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>;
 
         <span class="ident">event</span>.<span class="ident">links</span> <span class="op">=</span> <span class="ident">generated_links</span>;
 
