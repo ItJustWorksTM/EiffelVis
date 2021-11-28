@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "ahash"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
+dependencies = [
+ "getrandom",
+ "once_cell",
+ "version_check",
+]
+
+[[package]]
 name = "amq-protocol"
 version = "6.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -296,6 +307,7 @@ dependencies = [
 name = "eiffelvis_core"
 version = "0.1.0"
 dependencies = [
+ "ahash",
  "indexmap",
  "serde",
  "uuid",

@@ -1,13 +1,14 @@
 use crate::graph;
+use ahash::RandomState;
 use indexmap::IndexMap;
-use std::{hash::Hash, ops::IndexMut};
+use std::{default::Default, hash::Hash, ops::IndexMut};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct ChunkedIndex(usize, usize);
 
 #[derive(Debug)]
 pub struct ChunkedGraph<K: graph::Key, N, E> {
-    store: Vec<IndexMap<K, Element<N, E>>>,
+    store: Vec<IndexMap<K, Element<N, E>, RandomState>>,
     max_chunks: usize,
     max_elements: usize,
     tail: usize,
@@ -30,7 +31,10 @@ pub struct EdgeData<E> {
 impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     pub fn new(max_chunks: usize, chunk_size: usize) -> Self {
         Self {
-            store: vec![IndexMap::with_capacity(chunk_size)],
+            store: vec![IndexMap::with_capacity_and_hasher(
+                chunk_size,
+                Default::default(),
+            )],
             max_chunks,
             max_elements: chunk_size,
             tail: 0,
@@ -40,7 +44,10 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
         if self.store[self.head_chunk()].len() >= self.max_elements {
             if self.chunks() < self.max_chunks {
-                self.store.push(IndexMap::with_capacity(self.max_elements));
+                self.store.push(IndexMap::with_capacity_and_hasher(
+                    self.max_elements,
+                    Default::default(),
+                ));
             } else {
                 self.tail = (self.tail + 1) % self.store.len();
                 self.store.index_mut(self.head_chunk()).clear();
