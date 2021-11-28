@@ -6,9 +6,10 @@ import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
-import useTweakPane from '../helpers/useTweakPane'
+// import useTweakPane from '../helpers/useTweakPane'
 import { AsRoots, Collection, Event, Filter, Forward, Ids } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
+import Menu from './Menu'
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -17,7 +18,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
-
+  
   const bindEvents = () => {
     const graph = graphRef.current
     if (graph) {
@@ -68,6 +69,7 @@ const CustomGraph: React.FC = () => {
     graph!.data({})
     graph!.render()
   }
+  
 
   const { awaitingResponse, setFilters, setCollection, } = useEiffelNet(onMessage, onReset)
 
@@ -75,7 +77,6 @@ const CustomGraph: React.FC = () => {
     setFilters([{ type: "Ids", ids: [id] } as Ids])
     setCollection({ type: "AsRoots" } as AsRoots)
   }
-
   useEffect(() => {
     if (!graphRef.current) {
       const miniMap = new G6.Minimap({
@@ -121,14 +122,28 @@ const CustomGraph: React.FC = () => {
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
-  useTweakPane((obj) => {
-    const collection = { type: obj.collection_type } as Collection
-    const filter = { type: obj.filter_type, ...obj, ids: [obj.id] } as Filter
+  // useTweakPane((obj) => {
+  //   const collection = { type: obj.collection_type } as Collection
+  //   const filter = { type: obj.filter_type, ...obj, ids: [obj.id] } as Filter
 
-    setCollection(collection)
-    setFilters([filter])
-  })
+  //   setCollection(collection)
+  //   setFilters([filter])
+  // })
+  const handleFilterSubmit = (collection: string, filter: string, begin: number, end: number, ids:string) => {
+    const obj = {
+      collection_type:collection, 
+      filter_type: filter,
+      time: begin,
+      id: ids,
+      // nodetype: type 
+    }; 
+     const thiscollection = { type: obj.collection_type } as Collection
+     const thisfilter = { type: obj.filter_type, ...obj, ids: [obj.id] } as Filter
 
+     setCollection(thiscollection)
+     setFilters([thisfilter])
+     }
+     
   const loader = awaitingResponse && <Loader />
   return (
     <div>
@@ -143,6 +158,7 @@ const CustomGraph: React.FC = () => {
           />
         )}
       </div>
+     <Menu handleSubmit={handleFilterSubmit}/>
     </div>
   )
 }
