@@ -1,3 +1,6 @@
 [submodule "docs/EiffelVis/themes/hugo-coder"]
 	path = docs/EiffelVis/themes/hugo-coder
 	url = https://github.com/luizdepra/hugo-coder.git
+[submodule "docs/EiffelVis/themes/syna"]
+	path = docs/EiffelVis/themes/syna
+	url = https://git.okkur.org/syna
