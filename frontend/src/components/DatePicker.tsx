@@ -1,16 +1,21 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useEffect, useRef, useState } from 'react'
+import { Button } from 'react-bootstrap'
 import styles from '../css/datePicker.module.css'
-import formatDate from '../helpers/dateFromatter'
-import { ICalender, getDateAndTime } from '../interfaces/types'
+import { formatDate } from '../helpers/dateFromatter'
+import { ICalender, getDate } from '../interfaces/types'
+import TimePicker from './timePicker'
 
 interface props {
-  showData: boolean
-  getDateAndTime: getDateAndTime
+  showDataAndTimePicker: boolean
+  getDateAndTime: getDate
 }
 
-const DatePicker: React.FC<props> = ({ showData, getDateAndTime }) => {
+const DatePicker: React.FC<props> = ({
+  showDataAndTimePicker,
+  getDateAndTime,
+}) => {
   const [date] = useState<Date>(new Date())
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [day] = useState<number>(date.getDate())
@@ -40,6 +45,7 @@ const DatePicker: React.FC<props> = ({ showData, getDateAndTime }) => {
     month,
     year,
   })
+  const [time, setTime] = useState<string>('00:00:00')
 
   const populateDates = () => {
     const days: { classes: string }[] = []
@@ -97,12 +103,22 @@ const DatePicker: React.FC<props> = ({ showData, getDateAndTime }) => {
     setSelected({ day: day + 1, month, year })
     setDateFormatted(formatDate(newSelect))
     populateDates()
+  }
+
+  const showTime = (date: string) => setTime(date)
+
+  const selectDateAndTime = () => {
+    const newSelect = new Date(`${year}-${month + 1}-${day}:${time}`)
     getDateAndTime(newSelect.getTime())
   }
 
   return (
     <div className={styles.container}>
-      <div className={`${styles.datePicker} ${showData && styles.active}`}>
+      <div
+        className={`${styles.datePicker} ${
+          showDataAndTimePicker && styles.active
+        }`}
+      >
         <div className={styles.selectedDate} data-value={selectedDate}>
           {dateFormatted}
         </div>
@@ -110,7 +126,7 @@ const DatePicker: React.FC<props> = ({ showData, getDateAndTime }) => {
         <div
           role="textbox"
           onClick={(event) => event.stopPropagation()}
-          className={styles.dates}
+          className={`${styles.dates} d-grid`}
         >
           <div className={styles.month}>
             <div
@@ -142,6 +158,10 @@ const DatePicker: React.FC<props> = ({ showData, getDateAndTime }) => {
               </div>
             ))}
           </div>
+          <TimePicker getTime={showTime} />
+          <Button onClick={selectDateAndTime} variant="outline-light mb-1">
+            Select
+          </Button>
         </div>
       </div>
     </div>

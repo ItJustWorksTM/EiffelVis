@@ -1,4 +1,4 @@
-const formatDate = (d: Date) => {
+export const formatDate = (d: Date) => {
   const year = d.getFullYear()
   let day: number | string = d.getDate()
   let month: number | string = d.getMonth() + 1
@@ -13,4 +13,10 @@ const formatDate = (d: Date) => {
   return `${year} - ${month} - ${day}`
 }
 
-export default formatDate
+export const formatTime = (t: number) => {
+  let formatted: number | string = t
+  if (t < 10) {
+    formatted = `0${t}`
+  }
+  return formatted
+}

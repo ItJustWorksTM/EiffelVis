@@ -45,7 +45,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid rgb(39, 39, 39);
+  border-bottom: 2px solid hsl(0, 0%, 15%);
 }
 
 .datePicker .dates .month .arrows {
@@ -69,6 +69,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   height: 200px;
+  border-bottom: 2px solid hsl(0, 0%, 15%);
 }
 .datePicker .dates .days .day {
   display: flex;
@@ -79,6 +80,6 @@
 .datePicker .dates .days .day.selected {
   background-color: hsl(3, 95%, 35%);
 }
-.datePicker .dates .days .day:hover {
+.datePicker .dates .days .day:hover:not(.selected) {
   background-color: hsl(0, 0%, 19%);
 }
