@@ -72,7 +72,7 @@ lastmod = ["lastmod", ":git", "date"]
   weight = 10
 
 [[menu.main]]
-  url = "/about"
+  url = "docs/EiffelVis/content/about"
   name = "About"
   weight = 20
 
