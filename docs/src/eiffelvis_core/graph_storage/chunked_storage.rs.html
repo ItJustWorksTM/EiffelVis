@@ -338,16 +338,24 @@
 <span id="338">338</span>
 <span id="339">339</span>
 <span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::graph</span>;
+<span class="kw">use</span> <span class="ident">ahash::RandomState</span>;
 <span class="kw">use</span> <span class="ident">indexmap::IndexMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">hash::Hash</span>, <span class="ident">ops::IndexMut</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">default::Default</span>, <span class="ident">hash::Hash</span>, <span class="ident">ops::IndexMut</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChunkedIndex</span>(<span class="ident">usize</span>, <span class="ident">usize</span>);
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChunkedGraph</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">graph::Key</span>, <span class="ident">N</span>, <span class="ident">E</span><span class="op">&gt;</span> {
-    <span class="ident">store</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IndexMap</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">Element</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">E</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">store</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IndexMap</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">Element</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">E</span><span class="op">&gt;</span>, <span class="ident">RandomState</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">max_chunks</span>: <span class="ident">usize</span>,
     <span class="ident">max_elements</span>: <span class="ident">usize</span>,
     <span class="ident">tail</span>: <span class="ident">usize</span>,
@@ -370,7 +378,10 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">graph::Key</span>, <span class="ident">N</span>, <span class="ident">E</span><span class="op">&gt;</span> <span class="ident">ChunkedGraph</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">N</span>, <span class="ident">E</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_chunks</span>: <span class="ident">usize</span>, <span class="ident">chunk_size</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">store</span>: <span class="macro">vec!</span>[<span class="ident">IndexMap::with_capacity</span>(<span class="ident">chunk_size</span>)],
+            <span class="ident">store</span>: <span class="macro">vec!</span>[<span class="ident">IndexMap::with_capacity_and_hasher</span>(
+                <span class="ident">chunk_size</span>,
+                <span class="ident">Default::default</span>(),
+            )],
             <span class="ident">max_chunks</span>,
             <span class="ident">max_elements</span>: <span class="ident">chunk_size</span>,
             <span class="ident">tail</span>: <span class="number">0</span>,
@@ -380,7 +391,10 @@
     <span class="kw">fn</span> <span class="ident">add_node</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">data</span>: <span class="ident">N</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ChunkedIndex</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">store</span>[<span class="self">self</span>.<span class="ident">head_chunk</span>()].<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">max_elements</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">chunks</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">max_chunks</span> {
-                <span class="self">self</span>.<span class="ident">store</span>.<span class="ident">push</span>(<span class="ident">IndexMap::with_capacity</span>(<span class="self">self</span>.<span class="ident">max_elements</span>));
+                <span class="self">self</span>.<span class="ident">store</span>.<span class="ident">push</span>(<span class="ident">IndexMap::with_capacity_and_hasher</span>(
+                    <span class="self">self</span>.<span class="ident">max_elements</span>,
+                    <span class="ident">Default::default</span>(),
+                ));
             } <span class="kw">else</span> {
                 <span class="self">self</span>.<span class="ident">tail</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">tail</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">store</span>.<span class="ident">len</span>();
                 <span class="self">self</span>.<span class="ident">store</span>.<span class="ident">index_mut</span>(<span class="self">self</span>.<span class="ident">head_chunk</span>()).<span class="ident">clear</span>();
