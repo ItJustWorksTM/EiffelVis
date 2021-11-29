@@ -1,5 +1,5 @@
 # Site settings
-baseurl = "/"
+baseurl = "https://itjustworkstm.github.io/EiffelVis/"
 languageCode = "en-us"
 title = "ItJustWorks™ - EiffelVis"
 theme = "syna"
