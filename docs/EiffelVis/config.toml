@@ -1,38 +1,78 @@
-baseURL = 'https://itjustworkstm.github.io/EiffelVis'
-languageCode = 'en-us'
-title = 'EiffelVis'
-theme = "hugo-coder"
-languagecode = "en"
+# Site settings
+baseurl = "/"
+languageCode = "en-us"
+title = "ItJustWorks™ - EiffelVis"
+theme = "syna"
+enableGitInfo = true
+version = "0.17.4"
+
+# Google Analytics tracking
+googleAnalytics = ""
+
+disableKinds = ["RSS", "taxonomy", "taxonomyTerm"]
+
+[outputs]
+  home = ["HTML", "JSON"]
+
+[frontmatter]
+date = ["date", "lastmod"]
+lastmod = ["lastmod", ":git", "date"]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+     unsafe = true
 
 [params]
-    github = "https://github.com/ItJustWorksTM/EiffelVis"
-    background_color_class = "bg-black"
+  name = "EiffelVis"
+  description = "Open Source Theme for your next project"
 
-    author = "EiffelVis"
-    info = "Eiffel event visualization stack."
-    avatarurl = "images/EiffelVisLogo.png"
+  [params.style]
+    #background = "dark"
 
-    footercontent = "A project by ItJustWorks™"
-    hideCredits = true
-    hideCopyright = false
-    since = 2021
+  # Theme customizations
+  # Assets relative to 'static/'
+  [params.custom]
+    favicon = "favicon.ico"
+    favicon_ico_sizes = "16x16 32x32"
+    favicon_png = "favicon.png"
+    favicon_svg = "favicon.svg"
 
-    colorScheme = "auto"
-    hidecolorschemetoggle = true
-    customCSS = ["css/custom.css"]
+  # Piwik tracking
+  [params.analytics.piwik]
+    #url = ""
+    #id = ""
+    #domain = "" # Track subdomains via "*.example.com"
+    # Optional hash for integrity check
+    #hash = "sha512-RfeD0pacGTqy9m7U6PgehQfS4cc7SIt+e+P+H5e848kEvB/RW84CUGO3O4O3LNbxjevym6KPUZ8muPsMrI8WIw=="
 
-[[params.social]]
-  name = "Github"
-  icon = "fa fa-github fa-2x"
-  weight = 1
-  url = "https://github.com/ItJustWorksTM/EiffelVis"
+  # Optional, global disable switch for fontawesome related files
+  # For custom fontawesome js files use the custom.js method
+  [params.fontawesome]
+    disabled = false
+    pro = false
+
+  [params.colors]
+    primary = "#222222"
+    secondary = "#868e96"
+    success = "#008f54"
+    info = "#00c9dc"
+    warning = "#ad0c04"
+    danger = "#dc1200"
+    light = "#f8f9fa"
+    dark = "#181818"
+
+# main/prepend/postpend menus are displayed in nav fragment.
+# Keep an eye out for updates. These will be moved out to make navbar more
+# configurable.
 
 [[menu.main]]
-  name = "Api Docs"
-  weight = 1
-  url  = "docs/eiffelvis/index.html"
+  url = "docs/eiffelvis/index.html"
+  name = "API Docs"
+  weight = 10
 
 [[menu.main]]
+  url = "/about"
   name = "About"
-  weight = 2
-  url = "about/"
+  weight = 20
+
