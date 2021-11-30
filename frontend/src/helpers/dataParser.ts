@@ -6,6 +6,7 @@ export default (data: Event[]) => {
   data.forEach(({ id, time, event_type, edges }) => {
     G6Data.nodes!.push({
       id,
+      date: String(time),
       time,
       eventType: event_type,
       // the style should be base on something, not random

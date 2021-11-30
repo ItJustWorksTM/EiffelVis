@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData } from '@antv/g6'
+import G6, { Graph, GraphData, TimeBar} from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
+import '../css/timebar.css'
 import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
@@ -19,6 +20,10 @@ let timee = 0
 let posx = 0
 let posy = 0
 let log = 1
+interface TimeBarData {
+  date: string
+  value: string
+}
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -27,6 +32,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
+  const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
 
@@ -82,6 +88,73 @@ const CustomGraph: React.FC = () => {
     }
   }
 
+  const timeBar = () => {
+    const graph = graphRef.current
+    const timeBarData: TimeBarData[] = []
+    if (graph) {
+      if ((graph!.save() as GraphData)!.nodes!.length > 0) {
+        ;(graph!.save() as GraphData)!.nodes!.forEach((node) => {
+          timeBarData.push({
+            date: String(node.time),
+            value: String(node.id),
+          })
+        })
+        console.log(timeBarData)
+        if (timeBarRef.current) {
+          graph.removePlugin(timeBarRef.current)
+          console.log('TimeBar removed')
+        }
+        timeBarRef.current = new TimeBar({
+          className: 'g6TimeBar',
+          x: 0,
+          y: 0,
+          width: 1200,
+          height: 110,
+          padding: 10,
+          type: 'simple',
+          trend: {
+            data: timeBarData,
+          },
+        })
+        graph!.addPlugin(timeBarRef.current)
+        console.log('TimeBar added')
+      }
+    }
+  }
+
+  const graphInit = () => {
+    const miniMap = new G6.Minimap({
+      container: graphContainer.current,
+      type: 'keyShape',
+      className: 'g6MiniMap',
+    })
+    graphRef.current = new G6.Graph({
+      container: graphContainer.current,
+      width: window.innerWidth - 73,
+      height: window.innerHeight - 10,
+      fitView: true,
+      defaultEdge: {
+        style: {
+          endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
+        },
+      },
+      modes: {
+        default: [
+          'click-select',
+          'drag-canvas',
+          {
+            type: 'zoom-canvas',
+            enableOptimize: true,
+          },
+        ],
+      },
+
+      layout: {},
+      plugins: [miniMap],
+    })
+    bindEvents()
+  }
+
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
     if (graph) {
@@ -105,13 +178,17 @@ const CustomGraph: React.FC = () => {
       }
       graph!.setAutoPaint(true)    
 
+      if (timeBarRef) {
+        timeBar()
+      }
+      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     }
   }
 
   const onReset = () => {
     const graph = graphRef.current
-    graph!.data({})
-    graph!.render()
+    graph?.destroy();
+    graphInit()
     timee = 0
     posx = 0
     posy = 0
@@ -133,35 +210,8 @@ const CustomGraph: React.FC = () => {
 
   useEffect(() => {
     if (!graphRef.current) {
-
-      graphRef.current = new G6.Graph({
-        container: graphContainer.current,
-        width: window.innerWidth - 73,
-        height: window.innerHeight - 10,
-        fitView: true,
-        maxZoom: 20,
-        defaultEdge: {
-          style: {
-            endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
-          },
-        },
-        modes: {
-          default: [
-            'click-select',
-            'drag-canvas',
-            {
-              type: 'zoom-canvas',
-              optimizeZoom: 0.9,
-              enableOptimize: true,
-            },
-          ],
-        },
-
-        layout: {},
-        plugins: [],
-      })
+      graphInit();
     }
-
     bindEvents()
 
     setCollection({ type: 'Forward' } as Forward)
