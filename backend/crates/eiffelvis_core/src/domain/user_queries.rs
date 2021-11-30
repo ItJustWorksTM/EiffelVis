@@ -76,8 +76,7 @@ impl<I> TrackedQuery<I> {
         R: From<&'a BaseEvent> + 'static,
         I: Idx,
     {
-        let fresh = self.inner.handle(graph);
-        let iter = fresh.filter(|node| {
+        let iter = self.inner.handle(graph).filter(|node| {
             self.filters.iter().all(|filter| match filter {
                 Filter::None => true,
                 Filter::Time { begin, end } => {

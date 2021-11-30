@@ -92,14 +92,33 @@ where
     fn target(&self) -> Self::Idx;
 }
 
-// TODO: slightly cursed
-pub trait HasNodeIter<'a, T, _Outlives = &'a Self> {
-    type NodeIterType: Iterator<Item = T>;
+pub trait HasNodeIter<'a, _Outlives = &'a Self> {
+    type Item;
+    type NodeIterType: Iterator<Item = Self::Item>;
 }
-pub type NodeIterType<'a, This> = <This as HasNodeIter<'a, NodeType<'a, This>>>::NodeIterType;
+pub type NodeIterType<'a, This> = <This as HasNodeIter<'a>>::NodeIterType;
 
-pub trait ItemIter: for<'a> HasNodeIter<'a, NodeType<'a, Self>> + for<'a> HasNode<'a> {
+pub trait HasNodeRangeIter<'a, _Outlives = &'a Self> {
+    type Item;
+    type NodeRangeIterType: Iterator<Item = Self::Item>;
+}
+pub type NodeRangeIterType<'a, This> = <This as HasNodeRangeIter<'a>>::NodeRangeIterType;
+
+pub trait ItemIter:
+    for<'a> HasNodeIter<'a, Item = NodeType<'a, Self>>
+    + for<'a> HasNodeRangeIter<'a, Item = NodeType<'a, Self>>
+    + for<'a> HasNode<'a>
+{
+    /// Returns a ranged iterator over the nodes of this graph in order of insertion
     fn items(&self) -> NodeIterType<'_, Self>;
+
+    /// Returns a ranged iterator over the nodes of this graph
+    /// Note: end is exlusive
+    fn range(
+        &self,
+        begin: Option<Self::Idx>,
+        end: Option<Self::Idx>,
+    ) -> NodeRangeIterType<'_, Self>;
 }
 
 pub trait Indexable<T>: for<'a> HasNode<'a> {

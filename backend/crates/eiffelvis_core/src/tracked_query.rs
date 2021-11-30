@@ -20,17 +20,9 @@ impl<I> TrackedNodes<I> {
         G: Graph<Idx = I>,
         I: Idx,
     {
-        // TODO: reverse NodeIterator?
-        let mut iter = graph.items();
-
-        // TODO: consider building this into the Graph trait..
-        if let Some(cursor) = self.cursor {
-            iter.by_ref().take_while(|el| el.id() != cursor).count();
-        }
-
         TrackedNodesIter {
+            inner: graph.range(self.cursor, None),
             owner: self,
-            inner: iter,
         }
     }
 }
@@ -43,7 +35,7 @@ impl<I> Default for TrackedNodes<I> {
 
 pub struct TrackedNodesIter<'a, I, G: ItemIter> {
     owner: &'a mut TrackedNodes<I>,
-    inner: NodeIterType<'a, G>,
+    inner: NodeRangeIterType<'a, G>,
 }
 
 impl<'a, I, G> Iterator for TrackedNodesIter<'a, I, G>
@@ -86,6 +78,7 @@ impl<I> TrackedSubGraphs<I> {
             .map(|i| graph.index(*i))
             .roots_for_graph(graph);
 
+        // This is unavoidable as the entire graph needs to collected before we can reason about it
         if let Some(cursor) = self.cursor {
             iter.by_ref().take_while(|el| el.id() != cursor).count();
         }
