@@ -118,6 +118,11 @@ const CustomGraph: React.FC = () => {
         })
         graph!.addPlugin(timeBarRef.current)
         console.log('TimeBar added')
+        const timeBarCanvas =
+          document.getElementsByClassName('g6TimeBar')[0].children[0]
+        const ctx = (timeBarCanvas as any).getContext('2d')
+        ctx.filter = 'invert(1)'
+        ctx.fillStyle = 'black'
       }
     }
   }
@@ -187,7 +192,7 @@ const CustomGraph: React.FC = () => {
 
   const onReset = () => {
     const graph = graphRef.current
-    graph?.destroy();
+    graph?.destroy()
     graphInit()
     timee = 0
     posx = 0
@@ -210,7 +215,7 @@ const CustomGraph: React.FC = () => {
 
   useEffect(() => {
     if (!graphRef.current) {
-      graphInit();
+      graphInit()
     }
     bindEvents()
 
