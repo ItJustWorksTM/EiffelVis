@@ -108,13 +108,30 @@ const CustomGraph: React.FC = () => {
           className: 'g6TimeBar',
           x: 0,
           y: 0,
-          width: 1200,
+          width: 800,
           height: 110,
           padding: 10,
           type: 'simple',
           trend: {
             data: timeBarData,
           },
+          slider: {
+            backgroundStyle: {
+              fill: '#e67f00',
+            },
+            foregroundStyle: {
+              fill: '#e67f00',
+            },
+            handlerStyle: {
+              style: {
+                fill: '#e67f00',
+                stroke: '#e67f00',
+              },
+            },
+            textStyle: {
+              fill: '#1f1f1f',
+            },
+          }
         })
         graph!.addPlugin(timeBarRef.current)
         console.log('TimeBar added')

@@ -1,7 +1,7 @@
 .g6TimeBar {
-  background: white;
+  background: black;
   border-radius: 20px;
-  border: 2px solid #ad0e04;
+  box-shadow: 0px 0px 3px 0px #1980ff;
   position: absolute !important;
   left: 90px;
   bottom: 15px;
