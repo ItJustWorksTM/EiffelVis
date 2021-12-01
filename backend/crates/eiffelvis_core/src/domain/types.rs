@@ -31,7 +31,7 @@ pub struct BaseEvent {
 pub struct LeanEvent {
     pub id: Uuid,
     pub time: u64,
-    pub event_type: String
+    pub event_type: String,
     pub edges: Vec<Uuid>,
 }
 
