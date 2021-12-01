@@ -31,6 +31,7 @@ pub struct BaseEvent {
 pub struct LeanEvent {
     pub id: Uuid,
     pub time: u64,
+    pub event_type: String
     pub edges: Vec<Uuid>,
 }
 
@@ -39,6 +40,7 @@ impl From<&BaseEvent> for LeanEvent {
         Self {
             id: ev.meta.id,
             time: ev.meta.time,
+            event_type: ev.meta.event_type,
             edges: ev.links.iter().map(|link| link.target).collect(),
         }
     }
