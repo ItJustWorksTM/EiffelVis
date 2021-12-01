@@ -6,6 +6,7 @@ export type Uuid = string
 export interface Event {
   id: Uuid
   time: number
+  type: string
   edges: Array<Uuid>
 }
 
