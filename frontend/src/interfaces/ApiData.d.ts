@@ -6,6 +6,8 @@ export type Uuid = string
 export interface Event {
   id: Uuid
   time: number
+  // eslint-disable-next-line camelcase
+  event_type: string
   edges: Array<Uuid>
 }
 

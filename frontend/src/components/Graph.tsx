@@ -27,6 +27,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
   const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
+  const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
@@ -43,12 +44,13 @@ const CustomGraph: React.FC = () => {
         if (e.select) {
           const config = e.target._cfg
           const {
-            model: { id, time, x, y },
+            model: { id, time, eventType, x, y },
           } = config
           const point = graph!.getCanvasByPoint(x, y)
           setNodeToolTipX(point.x - 75)
           setNodeToolTipY(point.y + 15)
           setNodeToolTipTime(time)
+          setNodeToolTipType(eventType)
           setNodeToolTipId(id)
           setShowNodeTooltip(true)
         }
@@ -86,16 +88,16 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     const g6data: GraphData = dataParser(event)
     if (graph) {
-      const track = ""
+      const track = ''
       g6data.nodes!.forEach((node: any) => {
         layout(node)
         graph!.addItem('node', node)
       })
-      if (track !== "") {
+      if (track !== '') {
         graph!.focusItem(track, true, {
           easing: 'easeCubic',
           duration: 400,
-        });
+        })
       }
       if (g6data.edges) {
         g6data.edges.forEach((edge) => {
@@ -169,7 +171,13 @@ const CustomGraph: React.FC = () => {
 
   useTweakPane((obj) => {
     const collection = { type: obj.collection_type } as Collection
-    const filter = { type: obj.filter_type, ...obj, ids: [obj.id], begin: obj.begin >= 0 ? obj.begin : null, end: obj.end >= 0 ? obj.end : null } as Filter
+    const filter = {
+      type: obj.filter_type,
+      ...obj,
+      ids: [obj.id],
+      begin: obj.begin >= 0 ? obj.begin : null,
+      end: obj.end >= 0 ? obj.end : null,
+    } as Filter
 
     setCollection(collection)
     setFilters([filter])
@@ -184,6 +192,7 @@ const CustomGraph: React.FC = () => {
           <TooltipCard
             id={nodeTooltipId}
             time={nodeTooltipTime}
+            eventType={nodeTooltipType}
             x={nodeTooltipX}
             y={nodeTooltipY}
             getNodesWithRoot={getNodesWithThisRoot}
