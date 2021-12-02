@@ -6,7 +6,7 @@ import { getNodesWithRootFun } from '../interfaces/types'
 interface IProps {
   id: string
   time: number
-  type: string
+  eventType: string
   x: number
   y: number
   getNodesWithRoot: getNodesWithRootFun
@@ -15,7 +15,7 @@ interface IProps {
 const CustomCard: React.FC<IProps> = ({
   id,
   time,
-  type,
+  eventType,
   x,
   y,
   getNodesWithRoot,
@@ -30,7 +30,7 @@ const CustomCard: React.FC<IProps> = ({
     <Card.Body className="d-grid">
       <p>Event ID: {id}</p>
       <p>Event Time: {time}</p>
-      <p>Event Type: {type}</p>
+      <p>Event Type: {eventType}</p>
       <Button onClick={() => getNodesWithRoot(id)} variant="outline-light">
         Nodes With This Root
       </Button>

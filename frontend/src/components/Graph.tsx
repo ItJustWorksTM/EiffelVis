@@ -44,13 +44,13 @@ const CustomGraph: React.FC = () => {
         if (e.select) {
           const config = e.target._cfg
           const {
-            model: { id, time, type, x, y },
+            model: { id, time, eventType, x, y },
           } = config
           const point = graph!.getCanvasByPoint(x, y)
           setNodeToolTipX(point.x - 75)
           setNodeToolTipY(point.y + 15)
           setNodeToolTipTime(time)
-          setNodeToolTipType(type)
+          setNodeToolTipType(eventType)
           setNodeToolTipId(id)
           setShowNodeTooltip(true)
         }
@@ -60,7 +60,6 @@ const CustomGraph: React.FC = () => {
 
   const layout = (node: any) => {
     const temp = node
-    console.log(temp.type)
     const tempTime: number = temp.time
     if (tempTime <= timee + 1000) {
       temp.x = posx
@@ -193,7 +192,7 @@ const CustomGraph: React.FC = () => {
           <TooltipCard
             id={nodeTooltipId}
             time={nodeTooltipTime}
-            type={nodeTooltipType}
+            eventType={nodeTooltipType}
             x={nodeTooltipX}
             y={nodeTooltipY}
             getNodesWithRoot={getNodesWithThisRoot}

@@ -2,11 +2,12 @@ import { Event } from '../interfaces/ApiData'
 
 export default (data: Event[]) => {
   const G6Data: any = { nodes: [], edges: [] }
-  data.forEach(({ id, time, type, edges }) => {
+  // eslint-disable-next-line camelcase
+  data.forEach(({ id, time, event_type, edges }) => {
     G6Data.nodes!.push({
       id,
       time,
-      type,
+      eventType: event_type,
       // the style should be base on something, not random
       style: { fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)` },
     })
