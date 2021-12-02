@@ -9,8 +9,12 @@ export default (data: Event[]) => {
       date: String(time),
       time,
       eventType: event_type,
+      size: 1,
       // the style should be base on something, not random
-      style: { fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)` },
+      style: {
+        fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)`,
+        lineWidth: 0.1,
+      },
     })
     edges.forEach((target: string) => {
       G6Data.edges!.push({

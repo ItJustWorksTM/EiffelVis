@@ -68,7 +68,7 @@ const CustomGraph: React.FC = () => {
       temp.x = posx
       if (posy < 0) {
         temp.y = posy
-        posy = posy * -1 + 100 * 0.99 ** log
+        posy = posy * -1 + 10 * 0.99 ** log
         log += 1
       } else {
         temp.y = posy
@@ -77,12 +77,12 @@ const CustomGraph: React.FC = () => {
         }
       }
     } else if (tempTime > timee) {
-      posx += 100
+      posx += 10
       temp.x = posx
       posy = 0
       log = 1
       temp.y = posy
-      posy += 100
+      posy += 10
       timee = tempTime
     }
   }
@@ -122,7 +122,7 @@ const CustomGraph: React.FC = () => {
             },
             textStyle: {
               fill: '#ffffff',
-            }
+            },
           },
           controllerCfg: {
             fill: '#000000',
@@ -143,45 +143,12 @@ const CustomGraph: React.FC = () => {
     }
   }
 
-  const graphInit = () => {
-    const miniMap = new G6.Minimap({
-      container: graphContainer.current,
-      type: 'keyShape',
-      className: 'g6MiniMap',
-    })
-    graphRef.current = new G6.Graph({
-      container: graphContainer.current,
-      width: window.innerWidth - 73,
-      height: window.innerHeight - 10,
-      fitView: true,
-      defaultEdge: {
-        style: {
-          endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
-        },
-      },
-      modes: {
-        default: [
-          'click-select',
-          'drag-canvas',
-          {
-            type: 'zoom-canvas',
-            enableOptimize: true,
-          },
-        ],
-      },
-
-      layout: {},
-      plugins: [miniMap],
-    })
-    bindEvents()
-  }
-
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
     const timeBarDataCache: TimeBarData[] = timeBarData
     if (graph) {
       const g6data: GraphData = dataParser(event)
-      graph!.setAutoPaint(false)    
+      graph!.setAutoPaint(false)
       const track = ''
       let timeStamp: number = 0
       let timeStampCount: number = 0
@@ -190,7 +157,11 @@ const CustomGraph: React.FC = () => {
         graph!.addItem('node', node)
         // When indexing before last index of message
         if (timeStamp === 0) {
-          if ( timeBarDataCache.length !== 0 && node.time === Number(timeBarDataCache[timeBarDataCache.length - 1].date) ) {
+          if (
+            timeBarDataCache.length !== 0 &&
+            node.time ===
+              Number(timeBarDataCache[timeBarDataCache.length - 1].date)
+          ) {
             const timeBarDataCacheEnd = timeBarDataCache.pop()
             timeStamp = Number(timeBarDataCacheEnd!.date)
             timeStampCount = Number(timeBarDataCacheEnd!.value)
@@ -229,7 +200,7 @@ const CustomGraph: React.FC = () => {
           graph!.addItem('edge', edge)
         })
       }
-      graph!.setAutoPaint(true)    
+      graph!.setAutoPaint(true)
 
       setTimeBarData(timeBarDataCache)
       graph.data(graph!.save() as GraphData)
@@ -245,7 +216,7 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph?.data({})
     setTimeBarData([])
-    totalTrendCountRef.current = 0;
+    totalTrendCountRef.current = 0
     graph?.render()
     timee = 0
     posx = 0
@@ -261,14 +232,43 @@ const CustomGraph: React.FC = () => {
 
   const getNodesWithThisRoot = (id: string) => {
     console.log(id)
-    setFilters([{ rev: false, pred: { type: 'Id', ids: [id] }}])
+    setFilters([{ rev: false, pred: { type: 'Id', ids: [id] } }])
     setCollection({ type: 'AsRoots' } as AsRoots)
     setShowNodeTooltip(false)
   }
 
   useEffect(() => {
     if (!graphRef.current) {
-      graphInit()
+      const miniMap = new G6.Minimap({
+        container: graphContainer.current,
+        type: 'keyShape',
+        className: 'g6MiniMap',
+      })
+      graphRef.current = new G6.Graph({
+        container: graphContainer.current,
+        width: window.innerWidth - 73,
+        height: window.innerHeight - 10,
+        fitView: true,
+        defaultEdge: {
+          style: {
+            lineWidth: 0.05,
+            endArrow: { path: G6.Arrow.triangle(1, 0.5, 0), d: 0 },
+          },
+        },
+        modes: {
+          default: [
+            'click-select',
+            'drag-canvas',
+            {
+              type: 'zoom-canvas',
+              enableOptimize: true,
+            },
+          ],
+        },
+
+        layout: {},
+        plugins: [miniMap],
+      })
     }
     bindEvents()
 
