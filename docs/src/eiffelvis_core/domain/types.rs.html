@@ -43,6 +43,8 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
 
@@ -76,6 +78,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LeanEvent</span> {
     <span class="kw">pub</span> <span class="ident">id</span>: <span class="ident">Uuid</span>,
     <span class="kw">pub</span> <span class="ident">time</span>: <span class="ident">u64</span>,
+    <span class="kw">pub</span> <span class="ident">event_type</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Uuid</span><span class="op">&gt;</span>,
 }
 
@@ -84,6 +87,7 @@
         <span class="self">Self</span> {
             <span class="ident">id</span>: <span class="ident">ev</span>.<span class="ident">meta</span>.<span class="ident">id</span>,
             <span class="ident">time</span>: <span class="ident">ev</span>.<span class="ident">meta</span>.<span class="ident">time</span>,
+            <span class="ident">event_type</span>: <span class="ident">ev</span>.<span class="ident">meta</span>.<span class="ident">event_type</span>.<span class="ident">clone</span>(),
             <span class="ident">edges</span>: <span class="ident">ev</span>.<span class="ident">links</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">link</span><span class="op">|</span> <span class="ident">link</span>.<span class="ident">target</span>).<span class="ident">collect</span>(),
         }
     }
