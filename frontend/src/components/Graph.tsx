@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData, TimeBar} from '@antv/g6'
+import G6, { Graph, GraphData, TimeBar } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import '../css/timebar.css'
@@ -13,6 +13,8 @@ import {
   Event,
   EventFilter,
   Forward,
+  Ids,
+  TimeBarData,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
@@ -20,10 +22,6 @@ let timee = 0
 let posx = 0
 let posy = 0
 let log = 1
-interface TimeBarData {
-  date: string
-  value: string
-}
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -32,6 +30,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
+  const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([]);
   const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
@@ -90,15 +89,8 @@ const CustomGraph: React.FC = () => {
 
   const timeBar = () => {
     const graph = graphRef.current
-    const timeBarData: TimeBarData[] = []
     if (graph) {
-      if ((graph!.save() as GraphData)!.nodes!.length > 0) {
-        ;(graph!.save() as GraphData)!.nodes!.forEach((node) => {
-          timeBarData.push({
-            date: String(node.time),
-            value: String(node.id),
-          })
-        })
+      if (timeBarData.length > 0) {
         console.log(timeBarData)
         if (timeBarRef.current) {
           graph.removePlugin(timeBarRef.current)
@@ -111,35 +103,33 @@ const CustomGraph: React.FC = () => {
           width: 800,
           height: 110,
           padding: 10,
-          type: 'simple',
+          type: 'trend',
           trend: {
             data: timeBarData,
           },
           slider: {
             backgroundStyle: {
-              fill: '#e67f00',
+              fill: "#ad0c04"
             },
             foregroundStyle: {
-              fill: '#e67f00',
+              fill: "#ad0c04"
             },
             handlerStyle: {
               style: {
-                fill: '#e67f00',
-                stroke: '#e67f00',
+                fill: '#ad0c04',
+                stroke: '#ad0c04',
               },
             },
-            textStyle: {
-              fill: '#1f1f1f',
-            },
-          }
+          },
+          controllerCfg: {
+            fill: '#000',
+            stroke: '#000',
+            timePointControllerText: ' Point',
+            timeRangeControllerText: ' Point',
+          },
         })
         graph!.addPlugin(timeBarRef.current)
         console.log('TimeBar added')
-        const timeBarCanvas =
-          document.getElementsByClassName('g6TimeBar')[0].children[0]
-        const ctx = (timeBarCanvas as any).getContext('2d')
-        ctx.filter = 'invert(1)'
-        ctx.fillStyle = 'black'
       }
     }
   }
@@ -179,6 +169,8 @@ const CustomGraph: React.FC = () => {
 
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
+    const TimeBarDataCache: TimeBarData[] = timeBarData
+    const g6data: GraphData = dataParser(event)
     if (graph) {
       const g6data: GraphData = dataParser(event)
       graph!.setAutoPaint(false)    
@@ -186,6 +178,10 @@ const CustomGraph: React.FC = () => {
       g6data.nodes!.forEach((node: any) => {
         layout(node)
         graph!.addItem('node', node)
+        timeBarData.push({
+          date: String(node.time),
+          value: String(node.id),
+        })
       })
       if (track !== '') {
         graph!.focusItem(track, true, {
@@ -200,6 +196,8 @@ const CustomGraph: React.FC = () => {
       }
       graph!.setAutoPaint(true)    
 
+      setTimeBarData(TimeBarDataCache)
+      graph.data(graph!.save() as GraphData)
       if (timeBarRef) {
         timeBar()
       }
@@ -209,8 +207,9 @@ const CustomGraph: React.FC = () => {
 
   const onReset = () => {
     const graph = graphRef.current
-    graph?.destroy()
-    graphInit()
+    graph?.data({})
+    setTimeBarData([])
+    graph?.render()
     timee = 0
     posx = 0
     posy = 0
