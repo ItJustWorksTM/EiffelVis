@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph } from '@antv/g6'
-import { GraphData } from '@antv/g6/lib/types'
+import G6, { Graph, GraphData } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
