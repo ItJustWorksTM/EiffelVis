@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData, TimeBar } from '@antv/g6'
+import { Graph, GraphData, TimeBar } from '@antv/g6'
+import G6 from '../helpers/useCustomShapes'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import '../css/timebar.css'
@@ -63,6 +64,7 @@ const CustomGraph: React.FC = () => {
 
   const layout = (node: any) => {
     const temp = node
+    temp.type = 'custom'
     const tempTime: number = temp.time
     if (tempTime <= timee + 1000) {
       temp.x = posx
@@ -249,7 +251,9 @@ const CustomGraph: React.FC = () => {
         width: window.innerWidth - 73,
         height: window.innerHeight - 10,
         fitView: true,
+        autoPaint: false,
         defaultEdge: {
+          type: 'custom',
           style: {
             lineWidth: 0.05,
             endArrow: { path: G6.Arrow.triangle(1, 0.5, 0), d: 0 },
@@ -257,12 +261,12 @@ const CustomGraph: React.FC = () => {
         },
         modes: {
           default: [
-            'click-select',
-            'drag-canvas',
             {
               type: 'zoom-canvas',
               enableOptimize: true,
             },
+            'click-select',
+            'drag-canvas',
           ],
         },
 
