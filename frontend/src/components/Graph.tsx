@@ -1,19 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData } from '@antv/g6'
-import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
-import TooltipCard from './TooltipCard'
-import styles from '../css/graph.module.css'
-import Loader from './Loader'
+import {
+  useLoadGraph,
+  useRegisterEvents,
+  useSigma,
+} from 'react-sigma-v2/lib/esm'
+import Sigma from 'sigma'
+import dataParser from '../helpers/dataParser'
 import useTweakPane from '../helpers/useTweakPane'
+// import styles from '../css/graph.module.css'
 import {
   AsRoots,
+  // AsRoots,
   Collection,
   Event,
   Filter,
   Forward,
   Ids,
+  // Ids,
 } from '../interfaces/ApiData'
+import TooltipCard from './TooltipCard'
 import useEiffelNet from '../helpers/useEiffelNet'
 
 let timee = 0
@@ -23,37 +29,49 @@ let log = 1
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
-  const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
-  const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
+
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
-  const graphContainer = useRef<any>(null)
-  const graphRef = useRef<Graph | null>(null)
+  const sigma = useRef<Sigma>(useSigma())
+  const events = useRegisterEvents()
+
+  const loadGraph = useLoadGraph()
 
   const bindEvents = () => {
-    const graph = graphRef.current
+    const graph = sigma.current.getGraph()
+    console.log(sigma.current.getSettings())
+    events({
+      clickNode: (ev) => {
+        const { time, eventType } = graph.getNodeAttributes(ev.node)
+        // setNodeToolTipX(x - 75)
+        // setNodeToolTipY(y + 15)
+        setNodeToolTipTime(time)
+        setNodeToolTipType(eventType)
+        setNodeToolTipId(ev.node)
+        setShowNodeTooltip(true)
+      },
+    })
     if (graph) {
-      graph.data({})
-      graph.on('click', () => {
-        setShowNodeTooltip(false)
-      })
-
-      graph.on('nodeselectchange', (e: any) => {
-        if (e.select) {
-          const config = e.target._cfg
-          const {
-            model: { id, time, eventType, x, y },
-          } = config
-          const point = graph!.getCanvasByPoint(x, y)
-          setNodeToolTipX(point.x - 75)
-          setNodeToolTipY(point.y + 15)
-          setNodeToolTipTime(time)
-          setNodeToolTipType(eventType)
-          setNodeToolTipId(id)
-          setShowNodeTooltip(true)
-        }
-      })
+      // graph.data({})
+      // graph.on('click', () => {
+      //   setShowNodeTooltip(false)
+      // })
+      // graph.on('nodeselectchange', (e: any) => {
+      //   if (e.select) {
+      //     const config = e.target._cfg
+      //     const {
+      //       model: { id, time, eventType, x, y },
+      //     } = config
+      //     const point = graph!.getCanvasByPoint(x, y)
+      //     setNodeToolTipX(point.x - 75)
+      //     setNodeToolTipY(point.y + 15)
+      //     setNodeToolTipTime(time)
+      //     setNodeToolTipType(eventType)
+      //     setNodeToolTipId(id)
+      //     setShowNodeTooltip(true)
+      //   }
+      // })
     }
   }
 
@@ -84,44 +102,51 @@ const CustomGraph: React.FC = () => {
   }
 
   const onMessage = (event: Event[]) => {
-    const graph = graphRef.current
-    const g6data: GraphData = dataParser(event)
+    const graph = sigma.current.getGraph()
+    const g6data = dataParser(event)
     if (graph) {
-      const track = ''
       g6data.nodes!.forEach((node: any) => {
-        layout(node)
-        graph!.addItem('node', node)
+        if (!graph.hasNode(node.id)) {
+          layout(node)
+          graph.addNode(node.id, {
+            size: 2,
+            x: node.x,
+            y: node.y,
+            color: node.color,
+          })
+        }
       })
-      if (track !== '') {
-        graph!.focusItem(track, true, {
-          easing: 'easeCubic',
-          duration: 400,
-        })
-      }
+
       if (g6data.edges) {
-        g6data.edges.forEach((edge) => {
-          graph!.addItem('edge', edge)
+        g6data.edges.forEach((edge: any) => {
+          if (graph.hasNode(edge.source) && graph.hasNode(edge.target)) {
+            if (!graph.hasEdge(edge.source, edge.target)) {
+              graph.addEdge(edge.source, edge.target, {
+                size: 0.5,
+                color: 'rgba(255,255,255)',
+                type: 'arrow',
+              })
+            }
+          }
         })
       }
-      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
+      console.log('TOTAL NODES: ', graph.nodes.length)
     }
   }
 
   const onReset = () => {
-    const graph = graphRef.current
-    graph!.data({})
-    graph!.render()
+    const graph = sigma.current.getGraph()
+    graph.clear()
+    // graph!.data({})
+    // graph!.render()
     timee = 0
     posx = 0
     posy = 0
     log = 1
-    setShowNodeTooltip(false)
+    // setShowNodeTooltip(false)
   }
 
-  const { awaitingResponse, setFilters, setCollection } = useEiffelNet(
-    onMessage,
-    onReset
-  )
+  const { setFilters, setCollection } = useEiffelNet(onMessage, onReset)
 
   const getNodesWithThisRoot = (id: string) => {
     setFilters([{ type: 'Ids', ids: [id] } as Ids])
@@ -130,37 +155,54 @@ const CustomGraph: React.FC = () => {
   }
 
   useEffect(() => {
-    if (!graphRef.current) {
-      const miniMap = new G6.Minimap({
-        container: graphContainer.current,
-        type: 'keyShape',
-        className: 'g6MiniMap',
-      })
-      graphRef.current = new G6.Graph({
-        container: graphContainer.current,
-        width: window.innerWidth - 73,
-        height: window.innerHeight - 10,
-        fitView: true,
-        defaultEdge: {
-          style: {
-            endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
-          },
-        },
-        modes: {
-          default: [
-            'click-select',
-            'drag-canvas',
-            {
-              type: 'zoom-canvas',
-              enableOptimize: true,
-            },
-          ],
-        },
+    const graph = sigma.current.getGraph()
 
-        layout: {},
-        plugins: [miniMap],
-      })
-    }
+    graph.addNode('Jessica', {
+      label: 'Jessica',
+      x: 1,
+      y: 1,
+      color: '#FF0',
+      size: 10,
+    })
+    graph.addNode('Truman', {
+      label: 'Truman',
+      x: 0,
+      y: 0,
+      color: '#00F',
+      size: 5,
+    })
+    graph.addEdge('Jessica', 'Truman', { color: '#CCC', size: 1 })
+
+    loadGraph(graph)
+    // const miniMap = new G6.Minimap({
+    //   container: graphContainer.current,
+    //   type: 'keyShape',
+    //   className: 'g6MiniMap',
+    // })
+    // graphRef.current = new G6.Graph({
+    //   container: graphContainer.current,
+    //   width: window.innerWidth - 73,
+    //   height: window.innerHeight - 10,
+    //   fitView: true,
+    //   defaultEdge: {
+    //     style: {
+    //       endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
+    //     },
+    //   },
+    //   modes: {
+    //     default: [
+    //       'click-select',
+    //       'drag-canvas',
+    //       {
+    //         type: 'zoom-canvas',
+    //         enableOptimize: true,
+    //       },
+    //     ],
+    //   },
+
+    //   layout: {},
+    //   plugins: [miniMap],
+    // })
 
     bindEvents()
 
@@ -182,18 +224,16 @@ const CustomGraph: React.FC = () => {
     setFilters([filter])
   })
 
-  const loader = awaitingResponse && <Loader />
   return (
     <div>
-      {loader}
-      <div className={styles.graphContainer} ref={graphContainer}>
+      <div style={{ position: 'static', left: 0, top: 0 }}>
         {showNodeTooltip && (
           <TooltipCard
             id={nodeTooltipId}
             time={nodeTooltipTime}
             eventType={nodeTooltipType}
-            x={nodeTooltipX}
-            y={nodeTooltipY}
+            x={60}
+            y={0}
             getNodesWithRoot={getNodesWithThisRoot}
           />
         )}

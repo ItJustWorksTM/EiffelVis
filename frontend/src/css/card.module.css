@@ -1,4 +1,6 @@
 .cardContainer {
   width: 18rem;
   position: absolute;
+  left: 0px;
+  top: 0px;
 }
