@@ -5,6 +5,7 @@ import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import '../css/timebar.css'
 import TooltipCard from './TooltipCard'
+import { layout, resetLayout } from '../helpers/useLayout'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
@@ -17,11 +18,6 @@ import {
   TimeBarData,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
-
-let timee = 0
-let posx = 0
-let posy = 0
-let log = 1
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
@@ -59,33 +55,6 @@ const CustomGraph: React.FC = () => {
           setShowNodeTooltip(true)
         }
       })
-    }
-  }
-
-  const layout = (node: any) => {
-    const temp = node
-    temp.type = 'custom'
-    const tempTime: number = temp.time
-    if (tempTime <= timee + 1000) {
-      temp.x = posx
-      if (posy < 0) {
-        temp.y = posy
-        posy = posy * -1 + 10 * 0.99 ** log
-        log += 1
-      } else {
-        temp.y = posy
-        if (posy !== 0) {
-          posy *= -1
-        }
-      }
-    } else if (tempTime > timee) {
-      posx += 10
-      temp.x = posx
-      posy = 0
-      log = 1
-      temp.y = posy
-      posy += 10
-      timee = tempTime
     }
   }
 
@@ -220,10 +189,7 @@ const CustomGraph: React.FC = () => {
     setTimeBarData([])
     totalTrendCountRef.current = 0
     graph?.render()
-    timee = 0
-    posx = 0
-    posy = 0
-    log = 1
+    resetLayout()
     setShowNodeTooltip(false)
   }
 
