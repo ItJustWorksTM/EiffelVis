@@ -228,11 +228,15 @@ const CustomGraph: React.FC = () => {
         modes: {
           default: [
             {
-              type: 'zoom-canvas',
+              type: 'drag-canvas',
               enableOptimize: true,
             },
+            {
+              type: 'zoom-canvas',
+              enableOptimize: true,
+              optimizeZoom: 0.9,
+            },
             'click-select',
-            'drag-canvas',
           ],
         },
 
