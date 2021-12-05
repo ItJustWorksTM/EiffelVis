@@ -40,7 +40,7 @@ struct Cli {
 
     /// Maximum amount of events a single chunk will hold
     #[structopt(long, default_value = "100")]
-    chunk_size: usize,
+    chunk_size: u32,
 }
 
 /// Starts all the services that make up EiffelVis.
