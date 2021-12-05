@@ -41,6 +41,9 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'no-console': env !== 'production' ? 'off' : 'warn',
+    'no-plusplus': 'off',
+    'lit-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/interactive-supports-focus': 'off',
   },
   settings: {
     'import/resolver': {
