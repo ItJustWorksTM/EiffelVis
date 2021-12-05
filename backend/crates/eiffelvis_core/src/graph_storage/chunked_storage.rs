@@ -22,8 +22,8 @@ impl ChunkedIndex {
 pub struct ChunkedGraph<K: graph::Key, N, E> {
     store: Vec<IndexMap<K, Element<N, E>, RandomState>>,
     newest_generation: u32,
-    max_chunks: usize,
-    max_elements: u32,
+    max_chunks_pow: usize,
+    max_elements_pow: u32,
     tail: usize,
 }
 
@@ -42,33 +42,38 @@ pub struct EdgeData<E> {
 }
 
 impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
+    fn to_chunk_index(&self, generation: u32) -> usize {
+        generation as usize & !(!0 << self.max_chunks_pow)
+    }
     fn to_generation(&self, chunk_index: usize) -> u32 {
-        let chunk_index = if chunk_index < self.tail {
-            self.chunks() - (self.tail - chunk_index)
-        } else {
-            chunk_index - self.tail
-        };
+        let chunk_index = self.to_chunk_index(chunk_index.wrapping_sub(self.tail) as u32);
         self.newest_generation - (self.chunks() - 1 - chunk_index) as u32
     }
 
     pub fn new(max_chunks: usize, chunk_size: u32) -> Self {
+        if max_chunks.count_ones() != 1 {
+            panic!("Chunk count must be a power of two ({} isn't)", max_chunks);
+        }
+        if chunk_size.count_ones() != 1 {
+            panic!("Chunk size must be a power of two ({} isn't)", chunk_size);
+        }
         Self {
             store: vec![IndexMap::with_capacity_and_hasher(
                 chunk_size as usize,
                 Default::default(),
             )],
             newest_generation: 0,
-            max_chunks,
-            max_elements: chunk_size,
+            max_chunks_pow: max_chunks.trailing_zeros() as usize,
+            max_elements_pow: chunk_size.trailing_zeros(),
             tail: 0,
         }
     }
 
     fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
-        if self.store[self.head_chunk()].len() >= (self.max_elements as usize) {
-            if self.chunks() < self.max_chunks {
+        if self.store[self.head_chunk()].len() >= (1 << self.max_elements_pow) as usize {
+            if self.chunks() < (1 << self.max_chunks_pow) {
                 self.store.push(IndexMap::with_capacity_and_hasher(
-                    self.max_elements as usize,
+                    1 << self.max_elements_pow as usize,
                     Default::default(),
                 ));
             } else {
@@ -97,8 +102,9 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
                 index.gen() >= (self.newest_generation as u32 - (self.chunks() - 1) as u32)
             })
             .and_then(|index| {
+                let chunk_index = self.to_chunk_index(index.gen());
                 self.store
-                    .get_mut(index.gen() as usize % self.max_chunks)
+                    .get_mut(chunk_index)
                     .map(|a| &mut a[index.idx_in_chunk()].1)
             })
         {
@@ -127,7 +133,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         Some(
             *self
                 .store
-                .get(index.gen() as usize % self.max_chunks)?
+                .get(self.to_chunk_index(index.gen()))?
                 .get_index(index.idx_in_chunk())?
                 .0,
         )
@@ -152,7 +158,8 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     }
 
     pub fn node_count(&self) -> usize {
-        (self.chunks() - 1) * self.max_elements as usize + self.store[self.head_chunk()].len()
+        (self.chunks() - 1) * (1 << self.max_elements_pow) as usize
+            + self.store[self.head_chunk()].len()
     }
 
     pub fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
@@ -244,7 +251,7 @@ impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
 impl<'a, K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K, N, E> {
     fn get(&self, index: ChunkedIndex) -> Option<graph::NodeType<'_, Self>> {
         self.store
-            .get((index.gen() as usize % self.max_chunks) as usize)
+            .get(self.to_chunk_index(index.gen()))
             .and_then(|m| m.get_index(index.idx_in_chunk()))
             .map(|el| (index, el.1))
     }
@@ -274,7 +281,7 @@ impl<'a, K: graph::Key, N, E> Iterator for NodeIter<'a, K, N, E> {
                     self.generation += 1;
                     self.item = 0;
                     self.inner =
-                        self.graph.store[self.generation as usize % self.graph.max_chunks].iter();
+                        self.graph.store[self.graph.to_chunk_index(self.generation)].iter();
                     self.inner.next()
                 } else {
                     None
@@ -313,17 +320,14 @@ mod test {
     #[test]
     fn test_forward_link_single() {
         impl graph::Key for i32 {}
-        let mut g = ChunkedGraph::new(3, 3);
+        let mut g = ChunkedGraph::new(4, 4);
 
         g.add_node(0, "This is the beginning!");
 
-        for i in 1..10 {
+        for i in 1..17 {
             g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))));
         }
 
-        for node in g.items() {
-            println!("{:?} {:?}", node.id().gen(), node.id().idx_in_chunk());
-        }
         // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
 
         // All nodes should now have links to the first node (which are stored on the first node itself)
@@ -334,11 +338,11 @@ mod test {
 
     #[test]
     fn test_forward_link_many() {
-        let mut g = ChunkedGraph::new(3, 3);
+        let mut g = ChunkedGraph::new(4, 4);
 
         g.add_node(0, String::from("the first node"));
 
-        for i in 1..9 {
+        for i in 1..16 {
             g.add_node_with_edges(i, format!("boy {}", i), once((i - 1, "")))
                 .expect("This is valid");
         }
@@ -350,7 +354,7 @@ mod test {
 
         // Now i - 1 node should store an edge to node i
         // 0 -> 1, 1 -> 2 ...
-        for i in 1..8i32 {
+        for i in 1..15i32 {
             assert_eq!(
                 g.index((i - 1) as i32)
                     .edges()
