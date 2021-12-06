@@ -35,11 +35,11 @@ struct Cli {
     timeout: u64,
 
     /// Maximum amount of chunks stored in memory
-    #[structopt(long, default_value = "10")]
+    #[structopt(long, default_value = "8")]
     max_chunks: usize,
 
     /// Maximum amount of events a single chunk will hold
-    #[structopt(long, default_value = "100")]
+    #[structopt(long, default_value = "128")]
     chunk_size: u32,
 }
 
