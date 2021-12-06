@@ -3,18 +3,29 @@ use ahash::RandomState;
 use indexmap::IndexMap;
 use std::{default::Default, hash::Hash, ops::IndexMut};
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub struct ChunkedIndex(u64);
 
 impl ChunkedIndex {
-    pub fn new(gen: u32, chunk_idx: u32) -> ChunkedIndex {
-        ChunkedIndex(((gen as u64) << 32) | chunk_idx as u64)
+    pub fn new(gen: u32, idx: u32) -> ChunkedIndex {
+        ChunkedIndex(((gen as u64) << 32) | idx as u64)
     }
+
     pub fn gen(self) -> u32 {
         (self.0 >> 32) as u32
     }
-    pub fn idx_in_chunk(self) -> usize {
-        (self.0 & 0xFFFFFFFF) as usize
+
+    pub fn idx(self) -> u32 {
+        (self.0 & 0xFFFFFFFF) as u32
+    }
+}
+
+impl std::fmt::Debug for ChunkedIndex {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ChunkedIndex")
+            .field(&self.gen())
+            .field(&self.idx())
+            .finish()
     }
 }
 
@@ -45,9 +56,18 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     fn to_chunk_index(&self, generation: u32) -> usize {
         generation as usize & !(!0 << self.max_chunks_pow)
     }
+
     fn to_generation(&self, chunk_index: usize) -> u32 {
         let chunk_index = self.to_chunk_index(chunk_index.wrapping_sub(self.tail) as u32);
         self.newest_generation - (self.chunks() - 1 - chunk_index) as u32
+    }
+
+    fn max_elements(&self) -> usize {
+        (1 << self.max_elements_pow) as usize
+    }
+
+    fn max_chunks(&self) -> usize {
+        1 << self.max_chunks_pow
     }
 
     pub fn new(max_chunks: usize, chunk_size: u32) -> Self {
@@ -70,11 +90,11 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     }
 
     fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
-        if self.store[self.head_chunk()].len() >= (1 << self.max_elements_pow) as usize {
+        if self.store[self.head_chunk()].len() >= self.max_elements() {
             self.newest_generation += 1;
-            if self.chunks() < (1 << self.max_chunks_pow) {
+            if self.chunks() < self.max_chunks() {
                 self.store.push(IndexMap::with_capacity_and_hasher(
-                    1 << self.max_elements_pow as usize,
+                    self.max_elements(),
                     Default::default(),
                 ));
             } else {
@@ -105,7 +125,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
                 let chunk_index = self.to_chunk_index(index.gen());
                 self.store
                     .get_mut(chunk_index)
-                    .map(|a| &mut a[index.idx_in_chunk()].1)
+                    .map(|a| &mut a[index.idx() as usize].1)
             })
         {
             node_edges.push(EdgeData {
@@ -134,7 +154,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
             *self
                 .store
                 .get(self.to_chunk_index(index.gen()))?
-                .get_index(index.idx_in_chunk())?
+                .get_index(index.idx() as usize)?
                 .0,
         )
     }
@@ -162,8 +182,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     }
 
     pub fn node_count(&self) -> usize {
-        (self.chunks() - 1) * (1 << self.max_elements_pow) as usize
-            + self.store[self.head_chunk()].len()
+        (self.chunks() - 1) * self.max_elements() + self.store[self.head_chunk()].len()
     }
 
     pub fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
@@ -256,7 +275,7 @@ impl<'a, K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K,
     fn get(&self, index: ChunkedIndex) -> Option<graph::NodeType<'_, Self>> {
         self.store
             .get(self.to_chunk_index(index.gen()))
-            .and_then(|m| m.get_index(index.idx_in_chunk()))
+            .and_then(|m| m.get_index(index.idx() as usize))
             .map(|el| (index, el.1))
     }
 }
@@ -329,7 +348,8 @@ mod test {
         g.add_node(0, "This is the beginning!");
 
         for i in 1..17 {
-            g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))));
+            g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))))
+                .unwrap();
         }
 
         // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
