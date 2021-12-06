@@ -13,7 +13,6 @@ import {
   Event,
   EventFilter,
   Forward,
-  Ids,
   TimeBarData,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
@@ -30,7 +29,8 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
-  const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([]);
+  const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([])
+  const totalTrendCountRef = useRef<number>(0)
   const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
@@ -91,7 +91,6 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     if (graph) {
       if (timeBarData.length > 0) {
-        console.log(timeBarData)
         if (timeBarRef.current) {
           graph.removePlugin(timeBarRef.current)
           console.log('TimeBar removed')
@@ -100,19 +99,20 @@ const CustomGraph: React.FC = () => {
           className: 'g6TimeBar',
           x: 0,
           y: 0,
-          width: 800,
+          width: 900,
           height: 110,
           padding: 10,
           type: 'trend',
           trend: {
             data: timeBarData,
+            smooth: true,
           },
           slider: {
             backgroundStyle: {
-              fill: "#ad0c04"
+              fill: '#000000',
             },
             foregroundStyle: {
-              fill: "#ad0c04"
+              fill: '#626262',
             },
             handlerStyle: {
               style: {
@@ -120,16 +120,25 @@ const CustomGraph: React.FC = () => {
                 stroke: '#ad0c04',
               },
             },
+            textStyle: {
+              fill: '#ffffff',
+            }
           },
           controllerCfg: {
-            fill: '#000',
-            stroke: '#000',
+            fill: '#000000',
+            stroke: '#000000',
             timePointControllerText: ' Point',
             timeRangeControllerText: ' Point',
           },
+          /* TimeBarSliceOption: {
+            tickLabelFormatter: (d: any) => {
+
+            } 
+          } */
         })
         graph!.addPlugin(timeBarRef.current)
         console.log('TimeBar added')
+        console.log('TIMEBAR DATA: ', timeBarData)
       }
     }
   }
@@ -169,19 +178,45 @@ const CustomGraph: React.FC = () => {
 
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
-    const TimeBarDataCache: TimeBarData[] = timeBarData
-    const g6data: GraphData = dataParser(event)
+    const timeBarDataCache: TimeBarData[] = timeBarData
     if (graph) {
       const g6data: GraphData = dataParser(event)
       graph!.setAutoPaint(false)    
       const track = ''
-      g6data.nodes!.forEach((node: any) => {
+      let timeStamp: number = 0
+      let timeStampCount: number = 0
+      g6data.nodes!.forEach((node: any, i: number) => {
         layout(node)
         graph!.addItem('node', node)
-        timeBarData.push({
-          date: String(node.time),
-          value: String(node.id),
-        })
+        // When indexing before last index of message
+        if (timeStamp === 0) {
+          if ( timeBarDataCache.length !== 0 && node.time === Number(timeBarDataCache[timeBarDataCache.length - 1].date) ) {
+            const timeBarDataCacheEnd = timeBarDataCache.pop()
+            timeStamp = Number(timeBarDataCacheEnd!.date)
+            timeStampCount = Number(timeBarDataCacheEnd!.value)
+            totalTrendCountRef.current -= timeStampCount
+          } else {
+            timeStamp = node.time
+          }
+        }
+        if (node.time !== timeStamp) {
+          timeBarDataCache.push({
+            date: String(timeStamp),
+            value: String(timeStampCount),
+          })
+          totalTrendCountRef.current += timeStampCount
+          timeStamp = node.time
+          timeStampCount = 0
+        }
+        timeStampCount += 1
+        // When indexing last index of message
+        if (g6data.nodes!.length - 1 === i) {
+          timeBarDataCache.push({
+            date: String(timeStamp),
+            value: String(timeStampCount),
+          })
+          totalTrendCountRef.current += timeStampCount
+        }
       })
       if (track !== '') {
         graph!.focusItem(track, true, {
@@ -196,11 +231,12 @@ const CustomGraph: React.FC = () => {
       }
       graph!.setAutoPaint(true)    
 
-      setTimeBarData(TimeBarDataCache)
+      setTimeBarData(timeBarDataCache)
       graph.data(graph!.save() as GraphData)
       if (timeBarRef) {
         timeBar()
       }
+      console.log('TREND RECORDED EVENTS: ', totalTrendCountRef.current)
       console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     }
   }
@@ -209,6 +245,7 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph?.data({})
     setTimeBarData([])
+    totalTrendCountRef.current = 0;
     graph?.render()
     timee = 0
     posx = 0
