@@ -78,7 +78,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
                     Default::default(),
                 ));
             } else {
-                self.tail = (self.tail + 1) % self.store.len();
+                self.tail = self.tail_chunk();
                 self.store.index_mut(self.head_chunk()).clear();
             }
         }
@@ -155,6 +155,10 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
 
     fn head_chunk(&self) -> usize {
         self.to_chunk_index(self.newest_generation)
+    }
+
+    fn tail_chunk(&self) -> usize {
+        self.to_chunk_index(self.newest_generation - (self.chunks() as u32) + 1)
     }
 
     pub fn node_count(&self) -> usize {
