@@ -162,12 +162,12 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">TrackedQuery</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">query</span>: <span class="ident">Query</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">query</span>: <span class="ident">Query</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">filters</span>: <span class="ident">query</span>.<span class="ident">filters</span>,
             <span class="ident">collector</span>: <span class="kw">match</span> <span class="ident">query</span>.<span class="ident">collection</span> {
-                <span class="ident">Collection::Forward</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Collector::Forward</span>,
-                <span class="ident">Collection::AsRoots</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Collector::SubGraph</span>(<span class="ident">TrackedSubGraphs::new</span>(<span class="macro">vec!</span>[])),
+                <span class="ident">Collection::Forward</span> =&gt; <span class="ident">Collector::Forward</span>,
+                <span class="ident">Collection::AsRoots</span> =&gt; <span class="ident">Collector::SubGraph</span>(<span class="ident">TrackedSubGraphs::new</span>(<span class="macro">vec!</span>[])),
             },
             <span class="ident">inner</span>: <span class="ident">TrackedNodes::new</span>(),
         }
@@ -175,7 +175,7 @@
 
     <span class="doccomment">/// Collects new nodes that match the query since the last time this method was called</span>
     <span class="doccomment">/// If it was not called before it behaves as the non-tracked version.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span>, <span class="ident">G</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">G</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span>, <span class="ident">G</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">G</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">G</span>: <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">I</span>, <span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span><span class="op">&gt;</span>,
         <span class="ident">R</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BaseEvent</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -184,24 +184,24 @@
         <span class="kw">let</span> <span class="ident">fresh</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">handle</span>(<span class="ident">graph</span>);
         <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">fresh</span>.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> {
             <span class="self">self</span>.<span class="ident">filters</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">filter</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">filter</span> {
-                <span class="ident">Filter::None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-                <span class="ident">Filter::Time</span> { <span class="ident">begin</span>, <span class="ident">end</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Filter::None</span> =&gt; <span class="bool-val">true</span>,
+                <span class="ident">Filter::Time</span> { <span class="ident">begin</span>, <span class="ident">end</span> } =&gt; {
                     <span class="ident">begin</span>
                         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">begin</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">time</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">begin</span>)
                         .<span class="ident">unwrap_or</span>(<span class="bool-val">true</span>)
                         <span class="op">&amp;&amp;</span> <span class="ident">end</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">end</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">time</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">end</span>).<span class="ident">unwrap_or</span>(<span class="bool-val">true</span>)
                 }
-                <span class="ident">Filter::Type</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">event_type</span> <span class="op">=</span><span class="op">=</span> <span class="ident">name</span>,
-                <span class="ident">Filter::Ids</span> { <span class="kw-2">ref</span> <span class="ident">ids</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ids</span>
+                <span class="ident">Filter::Type</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } =&gt; <span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">event_type</span> <span class="op">==</span> <span class="ident">name</span>,
+                <span class="ident">Filter::Ids</span> { <span class="kw-2">ref</span> <span class="ident">ids</span> } =&gt; <span class="ident">ids</span>
                     .<span class="ident">iter</span>()
                     .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">graph</span>.<span class="ident">get</span>(<span class="kw-2">*</span><span class="ident">i</span>))
-                    .<span class="ident">any</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">id</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">id</span>()),
+                    .<span class="ident">any</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">id</span>() <span class="op">==</span> <span class="ident">node</span>.<span class="ident">id</span>()),
             })
         });
 
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">collector</span> {
-            <span class="ident">Collector::Forward</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">iter</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">R::from</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">v</span>.<span class="ident">data</span>())).<span class="ident">collect</span>(),
-            <span class="ident">Collector::SubGraph</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">sub</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Collector::Forward</span> =&gt; <span class="ident">iter</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">R::from</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">v</span>.<span class="ident">data</span>())).<span class="ident">collect</span>(),
+            <span class="ident">Collector::SubGraph</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">sub</span>) =&gt; {
                 <span class="ident">iter</span>.<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">sub</span>.<span class="ident">add_id</span>(<span class="ident">v</span>.<span class="ident">id</span>()));
                 <span class="ident">sub</span>.<span class="ident">handle</span>(<span class="ident">graph</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">R::from</span>(<span class="ident">v</span>.<span class="ident">data</span>())).<span class="ident">collect</span>()
             }

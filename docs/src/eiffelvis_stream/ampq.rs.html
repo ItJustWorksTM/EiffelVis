@@ -89,7 +89,7 @@
         <span class="ident">addr</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
         <span class="ident">queue</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
         <span class="ident">consumer_tag</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Some</span>(<span class="self">Self</span> {
             <span class="ident">consumer</span>: <span class="prelude-val">Some</span>(<span class="ident">make_ampq_consumer</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>, <span class="kw-2">&amp;</span><span class="ident">queue</span>, <span class="kw-2">&amp;</span><span class="ident">consumer_tag</span>).<span class="kw">await</span><span class="question-mark">?</span>),
             <span class="ident">addr</span>,
@@ -100,7 +100,7 @@
 
     <span class="doccomment">/// Yields the next message.</span>
     <span class="doccomment">/// Returns None on failure, reconnects on the next call; thus it&#39;s recommended to wait a bit before trying again.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">consumer</span>.<span class="ident">is_none</span>() {
             <span class="self">self</span>.<span class="ident">consumer</span> <span class="op">=</span> <span class="ident">make_ampq_consumer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">addr</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">queue</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">consumer_tag</span>).<span class="kw">await</span>;
         }
@@ -117,7 +117,7 @@
     }
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">make_ampq_consumer</span>(<span class="ident">addr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">queue</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">consumer_tag</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Consumer</span><span class="op">&gt;</span> {
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">make_ampq_consumer</span>(<span class="ident">addr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">queue</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">consumer_tag</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Consumer</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">Connection::connect_uri_with_identity</span>(
         <span class="ident">AMQPUri::from_str</span>(<span class="ident">addr</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>,
         <span class="ident">ConnectionProperties::default</span>().<span class="ident">with_tokio</span>(),

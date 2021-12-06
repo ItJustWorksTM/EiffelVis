@@ -143,12 +143,12 @@
     <span class="ident">timeout</span>: <span class="ident">u64</span>,
 
     <span class="doccomment">/// Maximum amount of chunks stored in memory</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;10&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8&quot;</span>)]</span>
     <span class="ident">max_chunks</span>: <span class="ident">usize</span>,
 
     <span class="doccomment">/// Maximum amount of events a single chunk will hold</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;100&quot;</span>)]</span>
-    <span class="ident">chunk_size</span>: <span class="ident">usize</span>,
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;128&quot;</span>)]</span>
+    <span class="ident">chunk_size</span>: <span class="ident">u32</span>,
 }
 
 <span class="doccomment">/// Starts all the services that make up EiffelVis.</span>
@@ -199,8 +199,8 @@
 
     <span class="kw">let</span> <span class="ident">event_parser</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
         <span class="macro">tokio::select!</span> {
-            <span class="kw">_</span> <span class="op">=</span> <span class="ident">event_parser</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(()),
-            () <span class="op">=</span> <span class="ident">shutdown_signal</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(())
+            <span class="kw">_</span> <span class="op">=</span> <span class="ident">event_parser</span> =&gt; <span class="prelude-val">Err</span>(()),
+            () <span class="op">=</span> <span class="ident">shutdown_signal</span>() =&gt; <span class="prelude-val">Ok</span>(())
         }
     };
 

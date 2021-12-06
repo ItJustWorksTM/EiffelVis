@@ -188,14 +188,14 @@
     <span class="ident">replay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="ident">tokio::runtime::Builder::new_current_thread</span>()
         .<span class="ident">enable_all</span>()
         .<span class="ident">build</span>()<span class="question-mark">?</span>
         .<span class="ident">block_on</span>(<span class="ident">app</span>())
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">app</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">app</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">cli</span> <span class="op">=</span> <span class="ident">Cli::from_args</span>();
     <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">url</span>.<span class="ident">as_str</span>();
 
