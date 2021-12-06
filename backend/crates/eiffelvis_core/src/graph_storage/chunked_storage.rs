@@ -71,6 +71,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
 
     fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
         if self.store[self.head_chunk()].len() >= (1 << self.max_elements_pow) as usize {
+            self.newest_generation += 1;
             if self.chunks() < (1 << self.max_chunks_pow) {
                 self.store.push(IndexMap::with_capacity_and_hasher(
                     1 << self.max_elements_pow as usize,
@@ -80,7 +81,6 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
                 self.tail = (self.tail + 1) % self.store.len();
                 self.store.index_mut(self.head_chunk()).clear();
             }
-            self.newest_generation += 1;
         }
 
         let head_chunk = self.head_chunk();
@@ -154,7 +154,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     }
 
     fn head_chunk(&self) -> usize {
-        (self.tail + self.chunks() - 1) % self.chunks()
+        self.to_chunk_index(self.newest_generation)
     }
 
     pub fn node_count(&self) -> usize {
