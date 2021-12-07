@@ -46,7 +46,7 @@ pub trait GraphQuery: Iterator {
         }
 
         // Sort the visit map, as depth_first does not preserve insertion order
-        index.sort_by(|&lhs, &rhs| graph.cmp_index(lhs, rhs));
+        index.sort();
 
         SubGraphs {
             graph,
