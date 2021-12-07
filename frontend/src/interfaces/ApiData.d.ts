@@ -84,3 +84,9 @@ export interface QueryRes {
 }
 
 export type ServerMessage = QueryRes | Event[]
+
+export interface TimeBarData {
+  date: string
+  value: string
+}
+

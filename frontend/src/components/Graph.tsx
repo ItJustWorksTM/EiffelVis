@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData } from '@antv/g6'
+import G6, { Graph, GraphData, TimeBar } from '@antv/g6'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
+import '../css/timebar.css'
 import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
@@ -12,6 +13,7 @@ import {
   Event,
   EventFilter,
   Forward,
+  TimeBarData,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
@@ -27,6 +29,9 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
+  const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([])
+  const totalTrendCountRef = useRef<number>(0)
+  const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
   const graphRef = useRef<Graph | null>(null)
 
@@ -82,15 +87,136 @@ const CustomGraph: React.FC = () => {
     }
   }
 
+  const timeBar = () => {
+    const graph = graphRef.current
+    if (graph) {
+      if (timeBarData.length > 0) {
+        if (timeBarRef.current) {
+          graph.removePlugin(timeBarRef.current)
+          console.log('TimeBar removed')
+        }
+        timeBarRef.current = new TimeBar({
+          className: 'g6TimeBar',
+          x: 0,
+          y: 0,
+          width: 900,
+          height: 110,
+          padding: 10,
+          type: 'trend',
+          trend: {
+            data: timeBarData,
+            smooth: true,
+          },
+          slider: {
+            backgroundStyle: {
+              fill: '#000000',
+            },
+            foregroundStyle: {
+              fill: '#626262',
+            },
+            handlerStyle: {
+              style: {
+                fill: '#ad0c04',
+                stroke: '#ad0c04',
+              },
+            },
+            textStyle: {
+              fill: '#ffffff',
+            }
+          },
+          controllerCfg: {
+            fill: '#000000',
+            stroke: '#000000',
+            timePointControllerText: ' Point',
+            timeRangeControllerText: ' Point',
+          },
+          /* TimeBarSliceOption: {
+            tickLabelFormatter: (d: any) => {
+
+            } 
+          } */
+        })
+        graph!.addPlugin(timeBarRef.current)
+        console.log('TimeBar added')
+        console.log('TIMEBAR DATA: ', timeBarData)
+      }
+    }
+  }
+
+  const graphInit = () => {
+    const miniMap = new G6.Minimap({
+      container: graphContainer.current,
+      type: 'keyShape',
+      className: 'g6MiniMap',
+    })
+    graphRef.current = new G6.Graph({
+      container: graphContainer.current,
+      width: window.innerWidth - 73,
+      height: window.innerHeight - 10,
+      fitView: true,
+      defaultEdge: {
+        style: {
+          endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
+        },
+      },
+      modes: {
+        default: [
+          'click-select',
+          'drag-canvas',
+          {
+            type: 'zoom-canvas',
+            enableOptimize: true,
+          },
+        ],
+      },
+
+      layout: {},
+      plugins: [miniMap],
+    })
+    bindEvents()
+  }
+
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
+    const timeBarDataCache: TimeBarData[] = timeBarData
     if (graph) {
       const g6data: GraphData = dataParser(event)
       graph!.setAutoPaint(false)    
       const track = ''
-      g6data.nodes!.forEach((node: any) => {
+      let timeStamp: number = 0
+      let timeStampCount: number = 0
+      g6data.nodes!.forEach((node: any, i: number) => {
         layout(node)
         graph!.addItem('node', node)
+        // When indexing before last index of message
+        if (timeStamp === 0) {
+          if ( timeBarDataCache.length !== 0 && node.time === Number(timeBarDataCache[timeBarDataCache.length - 1].date) ) {
+            const timeBarDataCacheEnd = timeBarDataCache.pop()
+            timeStamp = Number(timeBarDataCacheEnd!.date)
+            timeStampCount = Number(timeBarDataCacheEnd!.value)
+            totalTrendCountRef.current -= timeStampCount
+          } else {
+            timeStamp = node.time
+          }
+        }
+        if (node.time !== timeStamp) {
+          timeBarDataCache.push({
+            date: String(timeStamp),
+            value: String(timeStampCount),
+          })
+          totalTrendCountRef.current += timeStampCount
+          timeStamp = node.time
+          timeStampCount = 0
+        }
+        timeStampCount += 1
+        // When indexing last index of message
+        if (g6data.nodes!.length - 1 === i) {
+          timeBarDataCache.push({
+            date: String(timeStamp),
+            value: String(timeStampCount),
+          })
+          totalTrendCountRef.current += timeStampCount
+        }
       })
       if (track !== '') {
         graph!.focusItem(track, true, {
@@ -105,13 +231,22 @@ const CustomGraph: React.FC = () => {
       }
       graph!.setAutoPaint(true)    
 
+      setTimeBarData(timeBarDataCache)
+      graph.data(graph!.save() as GraphData)
+      if (timeBarRef) {
+        timeBar()
+      }
+      console.log('TREND RECORDED EVENTS: ', totalTrendCountRef.current)
+      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
     }
   }
 
   const onReset = () => {
     const graph = graphRef.current
-    graph!.data({})
-    graph!.render()
+    graph?.data({})
+    setTimeBarData([])
+    totalTrendCountRef.current = 0;
+    graph?.render()
     timee = 0
     posx = 0
     posy = 0
@@ -133,35 +268,8 @@ const CustomGraph: React.FC = () => {
 
   useEffect(() => {
     if (!graphRef.current) {
-
-      graphRef.current = new G6.Graph({
-        container: graphContainer.current,
-        width: window.innerWidth - 73,
-        height: window.innerHeight - 10,
-        fitView: true,
-        maxZoom: 20,
-        defaultEdge: {
-          style: {
-            endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
-          },
-        },
-        modes: {
-          default: [
-            'click-select',
-            'drag-canvas',
-            {
-              type: 'zoom-canvas',
-              optimizeZoom: 0.9,
-              enableOptimize: true,
-            },
-          ],
-        },
-
-        layout: {},
-        plugins: [],
-      })
+      graphInit()
     }
-
     bindEvents()
 
     setCollection({ type: 'Forward' } as Forward)
