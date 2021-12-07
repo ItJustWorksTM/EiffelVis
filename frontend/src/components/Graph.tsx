@@ -126,7 +126,7 @@ const CustomGraph: React.FC = () => {
 
   const getNodesWithThisRoot = (id: string) => {
     console.log(id)
-    setFilters([{ rev: false, pred: { type: 'Id', id }}])
+    setFilters([{ rev: false, pred: { type: 'Id', ids: [id] }}])
     setCollection({ type: 'AsRoots' } as AsRoots)
     setShowNodeTooltip(false)
   }

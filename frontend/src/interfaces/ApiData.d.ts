@@ -28,27 +28,27 @@ interface _Ids {
 export type Ids = TypeTag<_Ids, 'Ids'>
 
 interface _Type {
-  name: string
+  names: string[]
 }
 export type Type = TypeTag<_Type, 'Type'>
 
 interface _SourceHost {
-  host: string,
+  hosts: string[],
 }
 export type SourceHost = TypeTag<_SourceHost, 'SourceHost'>
 
 interface _SourceName {
-  name: string
+  names: string[]
 }
 export type SourceName = TypeTag<_SourceName, 'SourceName'>
 
 interface _Tag {
-  tag: string
+  tags: string[]
 }
 export type Tag = TypeTag<_Tag, 'Tag'>
 
 interface _Id {
-  id: Uuid
+  ids: Uuid[]
 }
 export type Id = TypeTag<_Id, 'Id'>
 

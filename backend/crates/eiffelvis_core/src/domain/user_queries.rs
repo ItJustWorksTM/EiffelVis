@@ -45,15 +45,15 @@ pub struct EventFilterMeta {
 #[serde(tag = "type")]
 pub enum EventFilter {
     /// Event Type
-    Type { name: String },
+    Type { names: Vec<String> },
     /// Specific ids
-    Id { id: Uuid },
+    Id { ids: Vec<Uuid> },
     /// meta.tags
-    Tag { tag: String },
+    Tag { tags: Vec<String> },
     /// meta.source.host
-    SourceHost { host: String },
+    SourceHost { hosts: Vec<String> },
     /// meta.source.name
-    SourceName { name: String },
+    SourceName { names: Vec<String> },
 }
 
 /// Used collection method,
@@ -148,17 +148,15 @@ impl<I> TrackedQuery<I> {
             } else {
                 self.event_filters.iter().any(|filters| {
                     filters.iter().all(|filter| match &filter.pred {
-                        EventFilter::Type { ref name } => &node.data().meta.event_type == name,
-                        EventFilter::Id { id } => {
-                            graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)
-                        }
-                        EventFilter::Tag { tag } => {
-                            node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)
-                        },
-                        EventFilter::SourceHost { host } =>
-                            node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(false),
-                        EventFilter::SourceName { name } =>
-                            node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(false),
+                        EventFilter::Type { names: ref name } => name.iter().any(|name| &node.data().meta.event_type == name),
+                        EventFilter::Id { ids } =>
+                            ids.iter().any(|id| graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)),
+                        EventFilter::Tag { tags } =>
+                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)),
+                        EventFilter::SourceHost { hosts } =>
+                            hosts.iter().any(|host|node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(false)),
+                        EventFilter::SourceName { names } =>
+                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(false)),
                     } ^ filter.rev)
                 })
             }
