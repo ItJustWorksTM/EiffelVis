@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import styles from '../css/datePicker.module.css'
-import { formatDate } from '../helpers/dateFromatter'
 import { ICalender, getDate } from '../interfaces/types'
 import TimePicker from './timePicker'
 
@@ -38,7 +37,6 @@ const DatePicker: React.FC<props> = ({
   const [calTitle, setCalTitle] = useState<string>(
     `${months.current[month]} ${year}`
   )
-  const [dateFormatted, setDateFormatted] = useState<string>(formatDate(date))
   const [days, setDays] = useState<{ classes: string }[]>([])
   const [selected, setSelected] = useState<ICalender>({
     day,
@@ -101,7 +99,6 @@ const DatePicker: React.FC<props> = ({
     const newSelect = new Date(`${year}-${month + 1}-${day + 1}`)
     setSelectedDate(newSelect)
     setSelected({ day: day + 1, month, year })
-    setDateFormatted(formatDate(newSelect))
     populateDates()
   }
 
@@ -119,10 +116,6 @@ const DatePicker: React.FC<props> = ({
           showDataAndTimePicker && styles.active
         }`}
       >
-        <div className={styles.selectedDate} data-value={selectedDate}>
-          {dateFormatted}
-        </div>
-
         <div
           role="textbox"
           onClick={(event) => event.stopPropagation()}

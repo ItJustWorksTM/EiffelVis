@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react'
 import G6, { Graph, GraphData } from '@antv/g6'
+import { Funnel } from 'react-bootstrap-icons'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import TooltipCard from './TooltipCard'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
-import useTweakPane from '../helpers/useTweakPane'
+// import useTweakPane from '../helpers/useTweakPane'
 import {
   AsRoots,
-  Collection,
+  // Collection,
   Event,
-  Filter,
+  // Filter,
   Forward,
   Ids,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
+import Drawer from './Drawer'
+import { IDrawerSubmitData } from '../interfaces/types'
 
 let timee = 0
 let posx = 0
@@ -23,6 +26,7 @@ let log = 1
 
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
+  const [showDrawer, setShowDrawer] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
   const [nodeTooltipY, setNodeToolTipY] = useState<number>(0)
   const [nodeTooltipTime, setNodeToolTipTime] = useState<number>(0)
@@ -168,24 +172,39 @@ const CustomGraph: React.FC = () => {
   }, [])
   // info: the reason behind not adding the window.screen.width as a dependency of useEffect is that we dont want to re-render the entire graph every time the window width changes
 
-  useTweakPane((obj) => {
-    const collection = { type: obj.collection_type } as Collection
-    const filter = {
-      type: obj.filter_type,
-      ...obj,
-      ids: [obj.id],
-      begin: obj.begin >= 0 ? obj.begin : null,
-      end: obj.end >= 0 ? obj.end : null,
-    } as Filter
+  // useTweakPane((obj) => {
+  //   const collection = { type: obj.collection_type } as Collection
+  //   const filter = {
+  //     type: obj.filter_type,
+  //     ...obj,
+  //     ids: [obj.id],
+  //     begin: obj.begin >= 0 ? obj.begin : null,
+  //     end: obj.end >= 0 ? obj.end : null,
+  //   } as Filter
 
-    setCollection(collection)
-    setFilters([filter])
-  })
+  //   setCollection(collection)
+  //   setFilters([filter])
+  // })
+
+  const handleSubmit = (data: IDrawerSubmitData) => {
+    console.log(data)
+  }
 
   const loader = awaitingResponse && <Loader />
   return (
     <div>
       {loader}
+      <Funnel
+        onClick={() => setShowDrawer(true)}
+        color="white"
+        className={styles.filter}
+        size={40}
+      />
+      <Drawer
+        show={showDrawer}
+        handleClose={() => setShowDrawer(false)}
+        onSubmit={handleSubmit}
+      />
       <div className={styles.graphContainer} ref={graphContainer}>
         {showNodeTooltip && (
           <TooltipCard

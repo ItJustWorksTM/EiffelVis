@@ -1,17 +1,20 @@
 .container {
   position: absolute;
-  width: 320px;
-  top: 0;
-  right: 50%;
+  width: 280px;
+  top: 100%;
+  right: 0;
+  z-index: 10;
 }
 
 .datePicker {
   display: none;
   position: relative;
   width: 100%;
-  background-color: hsla(0, 0%, 0%, 0.3);
+  background-color: hsl(0, 0%, 0%);
   border-bottom: 2px solid rgb(39, 39, 39);
   cursor: pointer;
+  -webkit-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   color: hsl(0, 0%, 100%);
 }
@@ -38,7 +41,7 @@
   top: 100%;
   left: 0;
   right: 0;
-  background-color: hsla(0, 0%, 0%, 0.3);
+  background-color: hsl(0, 0%, 0%);
 }
 
 .datePicker .dates .month {

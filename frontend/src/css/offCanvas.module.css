@@ -1,0 +1,12 @@
+.offCanvas {
+  width: 20% !important;
+  overflow: visible !important;
+  -webkit-box-shadow: 20px -15px 15px 1px rgb(255 255 255 / 20%);
+  box-shadow: 20px -15px 15px 1px rgb(255 255 255 / 20%);
+}
+
+.offCanvasBody {
+  color: rgb(255, 255, 255);
+  background: rgb(23, 23, 23);
+  overflow: visible;
+}

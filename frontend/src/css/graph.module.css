@@ -1,3 +1,9 @@
-.graphContainer {
-  margin-left: 53px;
+.filter {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  cursor: pointer;
+}
+.filter:hover {
+  opacity: 0.5;
 }
