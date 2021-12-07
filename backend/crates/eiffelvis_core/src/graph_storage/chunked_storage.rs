@@ -348,6 +348,17 @@ impl<'a, K: graph::Key, N, E> graph::Indexable<K> for ChunkedGraph<K, N, E> {
     }
 }
 
+impl<'a, K: graph::Key, N, E> graph::Indexable<usize> for ChunkedGraph<K, N, E> {
+    /// Indexes the graph as if it was a linear storage like [Vec]
+    fn get(&self, index: usize) -> Option<graph::NodeType<'_, Self>> {
+        if index < self.node_count() {
+            self.get(self.abs_to_index(index))
+        } else {
+            None
+        }
+    }
+}
+
 pub struct NodeIter<'a, K: graph::Key, N, E> {
     chunks: ChunkIndexIter,
     inner: Option<ChunkElementIter<'a, K, N, E>>,
