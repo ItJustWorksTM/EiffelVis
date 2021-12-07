@@ -11,6 +11,14 @@ pub struct BaseMeta {
     pub event_type: String,
     pub version: String,
     pub time: u64,
+    pub tags: Option<Vec<String>>,
+    pub source: Option<MetaSource>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct MetaSource {
+    pub host: Option<String>,
+    pub name: Option<String>,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
