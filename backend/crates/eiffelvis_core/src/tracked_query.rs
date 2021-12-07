@@ -1,3 +1,5 @@
+use std::ops::{Bound, RangeBounds};
+
 use crate::{
     graph::*,
     query::{GraphQuery, SubGraphs},
@@ -5,12 +7,29 @@ use crate::{
 
 /// Yields only the nodes that have been added to graph since the last call to `handle`
 pub struct TrackedNodes<I> {
-    cursor: Option<I>,
+    begin: Bound<I>,
+    end: Bound<I>,
 }
 
 impl<I> TrackedNodes<I> {
+    /// Creates a new unbounded instance
     pub fn new() -> Self {
-        Self { cursor: None }
+        Self {
+            begin: Bound::Unbounded,
+            end: Bound::Unbounded,
+        }
+    }
+
+    /// Creates a new bounded instance, works like [ItemIter::range] but unbounded bounds are updated on each call to `handle`
+    pub fn range<R>(range: R) -> Self
+    where
+        I: Copy,
+        R: RangeBounds<I>,
+    {
+        Self {
+            begin: range.start_bound().cloned(),
+            end: range.end_bound().cloned(),
+        }
     }
 
     /// Returns an iterator over the newly added nodes since the last call.
@@ -20,13 +39,7 @@ impl<I> TrackedNodes<I> {
         G: Graph<Idx = I>,
         I: Idx,
     {
-        // TODO: reverse NodeIterator?
-        let mut iter = graph.items();
-
-        // TODO: consider building this into the Graph trait..
-        if let Some(cursor) = self.cursor {
-            iter.by_ref().take_while(|el| el.id() != cursor).count();
-        }
+        let iter = graph.range(OwnedBounds(self.begin, self.end));
 
         TrackedNodesIter {
             owner: self,
@@ -43,7 +56,7 @@ impl<I> Default for TrackedNodes<I> {
 
 pub struct TrackedNodesIter<'a, I, G: ItemIter> {
     owner: &'a mut TrackedNodes<I>,
-    inner: NodeIterType<'a, G>,
+    inner: NodeRangeIterType<'a, G>,
 }
 
 impl<'a, I, G> Iterator for TrackedNodesIter<'a, I, G>
@@ -56,7 +69,7 @@ where
     fn next(&mut self) -> Option<Self::Item> {
         let ret = self.inner.next();
         if let Some(item) = &ret {
-            self.owner.cursor = Some(item.id());
+            self.owner.begin = Bound::Excluded(item.id());
         }
         ret
     }
@@ -124,5 +137,26 @@ where
             self.owner.cursor = Some(item.id());
         }
         ret
+    }
+}
+
+/// Pair of RangeBounds implementation that owns it's bounds
+pub struct OwnedBounds<I>(Bound<I>, Bound<I>);
+
+impl<I> RangeBounds<I> for OwnedBounds<I> {
+    fn start_bound(&self) -> Bound<&I> {
+        match self.0 {
+            Bound::Included(ref x) => Bound::Included(x),
+            Bound::Excluded(ref x) => Bound::Excluded(x),
+            Bound::Unbounded => Bound::Unbounded,
+        }
+    }
+
+    fn end_bound(&self) -> Bound<&I> {
+        match self.1 {
+            Bound::Included(ref x) => Bound::Included(x),
+            Bound::Excluded(ref x) => Bound::Excluded(x),
+            Bound::Unbounded => Bound::Unbounded,
+        }
     }
 }
