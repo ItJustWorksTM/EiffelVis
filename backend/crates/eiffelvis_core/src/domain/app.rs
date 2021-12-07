@@ -3,8 +3,14 @@ use crate::{domain::types::BaseEvent, graph::*};
 
 use uuid::Uuid;
 
-pub trait EiffelGraph: Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> {}
-impl<T> EiffelGraph for T where T: Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> {}
+pub trait EiffelGraph:
+    Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> + Indexable<usize>
+{
+}
+impl<T> EiffelGraph for T where
+    T: Graph<Key = Uuid, Data = BaseEvent, EdgeData = String> + Indexable<usize>
+{
+}
 
 impl Key for Uuid {}
 
