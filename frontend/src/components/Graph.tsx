@@ -10,9 +10,8 @@ import {
   AsRoots,
   Collection,
   Event,
-  Filter,
+  EventFilter,
   Forward,
-  Ids,
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
@@ -85,8 +84,9 @@ const CustomGraph: React.FC = () => {
 
   const onMessage = (event: Event[]) => {
     const graph = graphRef.current
-    const g6data: GraphData = dataParser(event)
     if (graph) {
+      const g6data: GraphData = dataParser(event)
+      graph!.setAutoPaint(false)    
       const track = ''
       g6data.nodes!.forEach((node: any) => {
         layout(node)
@@ -103,7 +103,8 @@ const CustomGraph: React.FC = () => {
           graph!.addItem('edge', edge)
         })
       }
-      console.log('TOTAL NODES: ', (graph!.save() as GraphData)!.nodes!.length)
+      graph!.setAutoPaint(true)    
+
     }
   }
 
@@ -124,23 +125,21 @@ const CustomGraph: React.FC = () => {
   )
 
   const getNodesWithThisRoot = (id: string) => {
-    setFilters([{ type: 'Ids', ids: [id] } as Ids])
+    console.log(id)
+    setFilters([{ rev: false, pred: { type: 'Id', id }}])
     setCollection({ type: 'AsRoots' } as AsRoots)
     setShowNodeTooltip(false)
   }
 
   useEffect(() => {
     if (!graphRef.current) {
-      const miniMap = new G6.Minimap({
-        container: graphContainer.current,
-        type: 'keyShape',
-        className: 'g6MiniMap',
-      })
+
       graphRef.current = new G6.Graph({
         container: graphContainer.current,
         width: window.innerWidth - 73,
         height: window.innerHeight - 10,
         fitView: true,
+        maxZoom: 20,
         defaultEdge: {
           style: {
             endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
@@ -152,13 +151,14 @@ const CustomGraph: React.FC = () => {
             'drag-canvas',
             {
               type: 'zoom-canvas',
+              optimizeZoom: 0.9,
               enableOptimize: true,
             },
           ],
         },
 
         layout: {},
-        plugins: [miniMap],
+        plugins: [],
       })
     }
 
@@ -176,7 +176,7 @@ const CustomGraph: React.FC = () => {
       ids: [obj.id],
       begin: obj.begin >= 0 ? obj.begin : null,
       end: obj.end >= 0 ? obj.end : null,
-    } as Filter
+    } as EventFilter
 
     setCollection(collection)
     setFilters([filter])

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Collection, Filter, Query, ServerMessage } from '../interfaces/ApiData'
+import { Collection, EventFilter, Forward, Query, RangeFilter, ServerMessage } from '../interfaces/ApiData'
 import useWebsocket from './useWebSocket'
 
 const useEiffelNet = (onEvents: any, onReset: any) => {
@@ -45,15 +45,15 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
   }
 
   const { reconnecting, sendMessage } = useWebsocket(onMessage, onConnect)
-
   useEffect(() => {
     if (reconnecting) {
       setIsConnected(false)
     }
   }, [reconnecting])
 
-  const [filters, setFilters] = useState<Filter[]>([])
-  const [collection, setCollection] = useState<Collection>(null)
+  const [rangeFilter, setRangeFilter] = useState<RangeFilter>({})
+  const [filters, setFilters] = useState<EventFilter[]>([])
+  const [collection, setCollection] = useState<Collection>(<Forward>{ type: 'Forward' })
 
   useEffect(() => {
     if (collection == null) {
@@ -61,7 +61,7 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
     } else if (!isConnected) {
       console.log('web socket not connected')
     } else {
-      const msg = <Query>{ filters, collection }
+      const msg = <Query>{ range_filter: rangeFilter, event_filters: [filters], collection }
       console.log('sending out new query ', msg)
       if (sendMessage(JSON.stringify(msg))) {
         setAwaitingResponseCount(awaitingResponseCount + 1)
@@ -69,7 +69,7 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
         console.log('failed to send message, bad things may happen')
       }
     }
-  }, [filters, collection, isConnected])
+  }, [rangeFilter, filters, collection, isConnected])
 
   useEffect(() => {
     setAwaitingResponse(awaitingResponseCount > 0)
@@ -77,6 +77,7 @@ const useEiffelNet = (onEvents: any, onReset: any) => {
 
   return {
     awaitingResponse,
+    setRangeFilters: setRangeFilter,
     setFilters,
     setCollection,
   }
