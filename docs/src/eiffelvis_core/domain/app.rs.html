@@ -51,13 +51,25 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::query::GraphQuery</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">domain::types::BaseEvent</span>, <span class="ident">graph</span>::<span class="kw-2">*</span>};
 
 <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EiffelGraph</span>: <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span>, <span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">EdgeData</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">EiffelGraph</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span>, <span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">EdgeData</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span> {}
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EiffelGraph</span>:
+    <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span>, <span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">EdgeData</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+{
+}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">EiffelGraph</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span>, <span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">EdgeData</span> <span class="op">=</span> <span class="ident">String</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+{
+}
 
 <span class="kw">impl</span> <span class="ident">Key</span> <span class="kw">for</span> <span class="ident">Uuid</span> {}
 

@@ -108,9 +108,36 @@
 <span id="108">108</span>
 <span id="109">109</span>
 <span id="110">110</span>
-</pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Key</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span> {}
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Idx</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Idx</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span> {}
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::RangeBounds</span>;
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Key</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span> {}
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Idx</span>:
+    <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialOrd</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span>
+{
+}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Idx</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">PartialOrd</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span>
+{
+}
 
 <span class="doccomment">/// Meta graph trait, defines the base types of a graph such as key and data types</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Meta</span> {
@@ -124,9 +151,6 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Graph</span>:
     <span class="ident">Meta</span> <span class="op">+</span> <span class="ident">ItemIter</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Idx</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Key</span><span class="op">&gt;</span>
 {
-    <span class="doccomment">/// Compares 2 indicies, this is not [Ord] as ordering may depend on graph internal state</span>
-    <span class="kw">fn</span> <span class="ident">cmp_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lhs</span>: <span class="ident"><span class="self">Self</span>::Idx</span>, <span class="ident">rhs</span>: <span class="ident"><span class="self">Self</span>::Idx</span>) -&gt; <span class="ident">std::cmp::Ordering</span>;
-
     <span class="doccomment">/// Returns the total amount of nodes this graph holds</span>
     <span class="kw">fn</span> <span class="ident">node_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
 
@@ -202,14 +226,28 @@
     <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Idx</span>;
 }
 
-<span class="comment">// TODO: slightly cursed</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">NodeIterType</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Item</span>;
+    <span class="kw">type</span> <span class="ident">NodeIterType</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
 }
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeIterType</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeIterType</span>;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ItemIter</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Item</span>;
+    <span class="kw">type</span> <span class="ident">NodeRangeIterType</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
+}
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeRangeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeRangeIterType</span>;
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ItemIter</span>:
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>
+    <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>
+    <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>
+{
     <span class="kw">fn</span> <span class="ident">items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">NodeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+
+    <span class="kw">fn</span> <span class="ident">range</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">R</span>) -&gt; <span class="ident">NodeRangeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">R</span>: <span class="ident">RangeBounds</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Idx</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {

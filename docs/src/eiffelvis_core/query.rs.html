@@ -104,7 +104,7 @@
         }
 
         <span class="comment">// Sort the visit map, as depth_first does not preserve insertion order</span>
-        <span class="ident">index</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">lhs</span>, <span class="kw-2">&amp;</span><span class="ident">rhs</span><span class="op">|</span> <span class="ident">graph</span>.<span class="ident">cmp_index</span>(<span class="ident">lhs</span>, <span class="ident">rhs</span>));
+        <span class="ident">index</span>.<span class="ident">sort</span>();
 
         <span class="ident">SubGraphs</span> {
             <span class="ident">graph</span>,
