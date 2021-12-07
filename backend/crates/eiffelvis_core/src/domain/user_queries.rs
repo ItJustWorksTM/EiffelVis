@@ -10,26 +10,50 @@ use uuid::Uuid;
 /// to match an event **all** filters need to match.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Query {
-    /// Will return a given node if any of the filters match
-    filters: Vec<Filter>,
+    #[serde(default)]
+    /// Filters used to determine initial range of nodes to be filtered
+    range_filter: RangeFilter,
+    /// Filters to be applied over individual events
+    event_filters: Vec<Vec<EventFilterMeta>>,
     /// Method of collection, may add additional nodes
     collection: Collection,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum Filter {
-    /// Do not filter at all, just give everything
-    None,
-    /// Open ended range of time
-    Time {
-        begin: Option<u64>,
-        end: Option<u64>,
-    },
+pub enum RangeFilterBound {
+    Absolute { val: i64 },
+    Time { val: u64 },
+    Ids { val: Uuid },
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+struct RangeFilter {
+    begin: Option<RangeFilterBound>,
+    end: Option<RangeFilterBound>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EventFilterMeta {
+    /// Reverses the predicate's result if true
+    #[serde(default)]
+    rev: bool,
+    pred: EventFilter,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum EventFilter {
     /// Event Type
     Type { name: String },
     /// Specific ids
-    Ids { ids: Vec<Uuid> },
+    Id { id: Uuid },
+    /// meta.tags
+    Tag { tag: String },
+    /// meta.source.host
+    SourceHost { host: String },
+    /// meta.source.name
+    SourceName { name: String },
 }
 
 /// Used collection method,
@@ -46,9 +70,10 @@ pub enum Collection {
 
 /// A tracked query, only returns new matches.
 pub struct TrackedQuery<I> {
-    filters: Vec<Filter>,
+    range_filter: RangeFilter,
+    event_filters: Vec<Vec<EventFilterMeta>>,
     collector: Collector<I>,
-    inner: TrackedNodes<I>,
+    inner: Option<TrackedNodes<I>>,
 }
 
 enum Collector<I> {
@@ -59,12 +84,13 @@ enum Collector<I> {
 impl<I> TrackedQuery<I> {
     pub fn new(query: Query) -> Self {
         Self {
-            filters: query.filters,
+            range_filter: query.range_filter,
+            event_filters: query.event_filters,
             collector: match query.collection {
                 Collection::Forward => Collector::Forward,
                 Collection::AsRoots => Collector::SubGraph(TrackedSubGraphs::new(vec![])),
             },
-            inner: TrackedNodes::new(),
+            inner: None,
         }
     }
 
@@ -72,26 +98,70 @@ impl<I> TrackedQuery<I> {
     /// If it was not called before it behaves as the non-tracked version.
     pub fn handle<'a, R, G>(&'a mut self, graph: &'a G) -> Vec<R>
     where
-        G: Graph<Data = BaseEvent, Idx = I, Key = Uuid>,
+        G: Graph<Data = BaseEvent, Idx = I, Key = Uuid> + Indexable<usize>,
         R: From<&'a BaseEvent> + 'static,
         I: Idx,
     {
-        let fresh = self.inner.handle(graph);
+        let inner = if let Some(ref mut inner) = self.inner {
+            inner
+        } else {
+            let range_bound_to_idx = |rg: &Option<RangeFilterBound>| match rg {
+                Some(rg) => match *rg {
+                    RangeFilterBound::Ids { val } => graph.get(val).map(|d| Some(d.id())),
+                    RangeFilterBound::Time { val } => graph
+                        .items()
+                        .find(|node| node.data().meta.time >= val)
+                        .map(|d| Some(d.id())),
+                    RangeFilterBound::Absolute { val } => {
+                        let val = if val < 0 {
+                            (graph.node_count() - val.abs() as usize) as usize
+                        } else {
+                            val as usize
+                        };
+                        graph.get(val).map(|no| Some(no.id()))
+                    }
+                },
+                _ => Some(None),
+            };
+
+            let begin = range_bound_to_idx(&self.range_filter.begin);
+            let end = range_bound_to_idx(&self.range_filter.end);
+
+            let new = match begin.zip(end) {
+                Some(s) => match s {
+                    (Some(d), Some(b)) => TrackedNodes::range(d..=b),
+                    (Some(d), None) => TrackedNodes::range(d..),
+                    (None, Some(b)) => TrackedNodes::range(..=b),
+                    _ => TrackedNodes::range(..),
+                },
+                _ => return Vec::new(), // TODO: decide error handling
+            };
+
+            self.inner = Some(new);
+            self.inner.as_mut().unwrap()
+        };
+
+        let fresh = inner.handle(graph);
         let iter = fresh.filter(|node| {
-            self.filters.iter().all(|filter| match filter {
-                Filter::None => true,
-                Filter::Time { begin, end } => {
-                    begin
-                        .map(|begin| node.data().meta.time >= begin)
-                        .unwrap_or(true)
-                        && end.map(|end| node.data().meta.time <= end).unwrap_or(true)
-                }
-                Filter::Type { ref name } => &node.data().meta.event_type == name,
-                Filter::Ids { ref ids } => ids
-                    .iter()
-                    .filter_map(|i| graph.get(*i))
-                    .any(|i| i.id() == node.id()),
-            })
+            if self.event_filters.is_empty() {
+                true
+            } else {
+                self.event_filters.iter().any(|filters| {
+                    filters.iter().all(|filter| match &filter.pred {
+                        EventFilter::Type { ref name } => &node.data().meta.event_type == name,
+                        EventFilter::Id { id } => {
+                            graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)
+                        }
+                        EventFilter::Tag { tag } => {
+                            node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)
+                        },
+                        EventFilter::SourceHost { host } =>
+                            node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(false),
+                        EventFilter::SourceName { name } =>
+                            node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(false),
+                    } ^ filter.rev)
+                })
+            }
         });
 
         match self.collector {
