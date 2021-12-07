@@ -1,6 +1,14 @@
+use std::ops::RangeBounds;
+
 pub trait Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
-pub trait Idx: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
-impl<T> Idx for T where T: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
+pub trait Idx:
+    PartialEq + Eq + PartialOrd + Ord + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send
+{
+}
+impl<T> Idx for T where
+    T: PartialEq + PartialOrd + Ord + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send
+{
+}
 
 /// Meta graph trait, defines the base types of a graph such as key and data types
 pub trait Meta {
@@ -14,9 +22,6 @@ pub trait Meta {
 pub trait Graph:
     Meta + ItemIter + Indexable<<Self as Meta>::Idx> + Indexable<<Self as Meta>::Key>
 {
-    /// Compares 2 indicies, this is not [Ord] as ordering may depend on graph internal state
-    fn cmp_index(&self, lhs: Self::Idx, rhs: Self::Idx) -> std::cmp::Ordering;
-
     /// Returns the total amount of nodes this graph holds
     fn node_count(&self) -> usize;
 
@@ -92,14 +97,28 @@ where
     fn target(&self) -> Self::Idx;
 }
 
-// TODO: slightly cursed
-pub trait HasNodeIter<'a, T, _Outlives = &'a Self> {
-    type NodeIterType: Iterator<Item = T>;
+pub trait HasNodeIter<'a, _Outlives = &'a Self> {
+    type Item;
+    type NodeIterType: Iterator<Item = Self::Item>;
 }
-pub type NodeIterType<'a, This> = <This as HasNodeIter<'a, NodeType<'a, This>>>::NodeIterType;
+pub type NodeIterType<'a, This> = <This as HasNodeIter<'a>>::NodeIterType;
 
-pub trait ItemIter: for<'a> HasNodeIter<'a, NodeType<'a, Self>> + for<'a> HasNode<'a> {
+pub trait HasNodeRangeIter<'a, _Outlives = &'a Self> {
+    type Item;
+    type NodeRangeIterType: Iterator<Item = Self::Item>;
+}
+pub type NodeRangeIterType<'a, This> = <This as HasNodeRangeIter<'a>>::NodeRangeIterType;
+
+pub trait ItemIter:
+    for<'a> HasNodeRangeIter<'a, Item = NodeType<'a, Self>>
+    + for<'a> HasNodeIter<'a, Item = NodeType<'a, Self>>
+    + for<'a> HasNode<'a>
+{
     fn items(&self) -> NodeIterType<'_, Self>;
+
+    fn range<R>(&self, range: R) -> NodeRangeIterType<'_, Self>
+    where
+        R: RangeBounds<Self::Idx>;
 }
 
 pub trait Indexable<T>: for<'a> HasNode<'a> {

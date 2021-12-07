@@ -1,7 +1,12 @@
 use crate::graph;
 use ahash::RandomState;
 use indexmap::IndexMap;
-use std::{default::Default, hash::Hash, ops::IndexMut};
+use std::{
+    default::Default,
+    hash::Hash,
+    iter::Take,
+    ops::{Bound, IndexMut, Range, RangeBounds},
+};
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub struct ChunkedIndex(u64);
@@ -29,9 +34,13 @@ impl std::fmt::Debug for ChunkedIndex {
     }
 }
 
+type ChunkMap<K, N, E> = IndexMap<K, Element<N, E>, RandomState>;
+type ChunkIndexIter = <Range<u32> as IntoIterator>::IntoIter;
+type ChunkElementIter<'a, K, N, E> = <&'a ChunkMap<K, N, E> as IntoIterator>::IntoIter;
+
 #[derive(Debug)]
 pub struct ChunkedGraph<K: graph::Key, N, E> {
-    store: Vec<IndexMap<K, Element<N, E>, RandomState>>,
+    store: Vec<ChunkMap<K, N, E>>,
     newest_generation: u32,
     max_chunks_pow: usize,
     max_elements_pow: u32,
@@ -78,7 +87,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
             panic!("Chunk size must be a power of two ({} isn't)", chunk_size);
         }
         Self {
-            store: vec![IndexMap::with_capacity_and_hasher(
+            store: vec![ChunkMap::with_capacity_and_hasher(
                 chunk_size as usize,
                 Default::default(),
             )],
@@ -93,7 +102,7 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         if self.store[self.head_chunk()].len() >= self.max_elements() {
             self.newest_generation += 1;
             if self.chunks() < self.max_chunks() {
-                self.store.push(IndexMap::with_capacity_and_hasher(
+                self.store.push(ChunkMap::with_capacity_and_hasher(
                     self.max_elements(),
                     Default::default(),
                 ));
@@ -178,15 +187,26 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
     }
 
     fn tail_chunk(&self) -> usize {
-        self.to_chunk_index(self.newest_generation - (self.chunks() as u32) + 1)
+        self.to_chunk_index(self.oldest_generation())
+    }
+
+    fn oldest_generation(&self) -> u32 {
+        self.newest_generation - ((self.chunks() as u32) - 1)
+    }
+
+    fn abs_to_index(&self, id: usize) -> ChunkedIndex {
+        ChunkedIndex::new(
+            self.to_generation((id & !(self.max_elements() - 1)) >> self.max_elements_pow),
+            (id & (self.max_elements() - 1)) as u32,
+        )
+    }
+
+    fn index_to_abs(&self, id: ChunkedIndex) -> usize {
+        self.to_chunk_index(id.gen()) * self.max_elements() + id.idx() as usize
     }
 
     pub fn node_count(&self) -> usize {
         (self.chunks() - 1) * self.max_elements() + self.store[self.head_chunk()].len()
-    }
-
-    pub fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
-        lhs.cmp(&rhs)
     }
 }
 
@@ -236,28 +256,70 @@ impl<'a, K: graph::Key, N, E> graph::HasNode<'a> for ChunkedGraph<K, N, E> {
     type NodeType = (ChunkedIndex, &'a Element<N, E>);
 }
 
-impl<'a, K: graph::Key, N, E> graph::HasNodeIter<'a, (ChunkedIndex, &'a Element<N, E>)>
-    for ChunkedGraph<K, N, E>
-{
+impl<'a, K: graph::Key, N, E> graph::HasNodeIter<'a> for ChunkedGraph<K, N, E> {
+    type Item = <NodeIter<'a, K, N, E> as Iterator>::Item;
     type NodeIterType = NodeIter<'a, K, N, E>;
+}
+
+impl<'a, K: graph::Key, N, E> graph::HasNodeRangeIter<'a> for ChunkedGraph<K, N, E> {
+    type Item = <NodeIter<'a, K, N, E> as Iterator>::Item;
+    type NodeRangeIterType = Take<NodeIter<'a, K, N, E>>;
 }
 
 impl<'a, K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
     fn items(&self) -> graph::NodeIterType<'_, Self> {
         NodeIter {
-            inner: self.store[self.tail].iter(),
-            generation: self.to_generation(self.tail),
+            chunks: (self.oldest_generation()..self.newest_generation + 1),
+            inner: None,
+            generation: self.oldest_generation(),
             graph: self,
             item: 0,
         }
     }
+
+    fn range<R>(&self, range: R) -> graph::NodeRangeIterType<'_, Self>
+    where
+        R: RangeBounds<Self::Idx>,
+    {
+        let begin = match range.start_bound() {
+            Bound::Included(&inc) => inc,
+            Bound::Excluded(&inc) => self.abs_to_index(self.index_to_abs(inc) + 1),
+            Bound::Unbounded => ChunkedIndex::new(self.oldest_generation(), 0),
+        };
+
+        let end = match range.end_bound() {
+            Bound::Included(&inc) => self.abs_to_index(self.index_to_abs(inc) + 1),
+            Bound::Excluded(&inc) => inc,
+            Bound::Unbounded => ChunkedIndex::new(
+                self.newest_generation,
+                self.store[self.head_chunk()].len() as u32,
+            ),
+        };
+
+        let mut chunks = begin.gen()..end.gen() + 1;
+
+        // Partially consume the first iterator as IndexMap does not support this natively
+        let inner = chunks.next().map(|idx| {
+            let mut iter = self.store[self.to_chunk_index(idx) as usize].iter();
+            iter.by_ref().take(begin.idx() as usize).count();
+            iter
+        });
+
+        let total = ((end.gen() - begin.gen()) as usize + 1) * self.max_elements()
+            - (((self.max_elements() as u32 - end.idx()) + begin.idx()) as usize);
+
+        NodeIter {
+            chunks,
+            inner,
+            generation: begin.gen(),
+            graph: self,
+            item: begin.idx(),
+        }
+        .take(total)
+    }
 }
 
 impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
-    fn cmp_index(&self, lhs: ChunkedIndex, rhs: ChunkedIndex) -> std::cmp::Ordering {
-        ChunkedGraph::cmp_index(self, lhs, rhs)
-    }
-
     fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
         Some(self.add_node(key, data))
     }
@@ -287,34 +349,30 @@ impl<'a, K: graph::Key, N, E> graph::Indexable<K> for ChunkedGraph<K, N, E> {
 }
 
 pub struct NodeIter<'a, K: graph::Key, N, E> {
-    inner: <&'a IndexMap<K, Element<N, E>> as IntoIterator>::IntoIter,
+    chunks: ChunkIndexIter,
+    inner: Option<ChunkElementIter<'a, K, N, E>>,
     graph: &'a ChunkedGraph<K, N, E>,
     generation: u32,
-    item: usize,
+    item: u32,
 }
 
 impl<'a, K: graph::Key, N, E> Iterator for NodeIter<'a, K, N, E> {
     type Item = (ChunkedIndex, &'a Element<N, E>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner
-            .next()
-            .or_else(|| {
-                if self.generation < self.graph.newest_generation {
-                    self.generation += 1;
-                    self.item = 0;
-                    self.inner =
-                        self.graph.store[self.graph.to_chunk_index(self.generation)].iter();
-                    self.inner.next()
-                } else {
-                    None
-                }
-            })
-            .map(|(_, n)| {
-                let ret = (ChunkedIndex::new(self.generation, self.item as u32), n);
+        loop {
+            if let Some((_, n)) = self.inner.as_mut().and_then(Iterator::next) {
+                let ret = Some((ChunkedIndex::new(self.generation, self.item), n));
                 self.item += 1;
-                ret
-            })
+                return ret;
+            }
+
+            self.inner = Some(self.chunks.next().map(|id| {
+                self.generation = id;
+                self.item = 0;
+                self.graph.store[self.graph.to_chunk_index(id)].iter()
+            })?);
+        }
     }
 }
 
@@ -338,21 +396,31 @@ mod test {
 
     use std::iter::once;
 
-    // TODO: Add more correctness tests, like cmp_index, especially in cases where we have wrapped around.
-
     #[test]
     fn test_forward_link_single() {
         impl graph::Key for i32 {}
         let mut g = ChunkedGraph::new(4, 4);
 
-        g.add_node(0, "This is the beginning!");
+        g.add_node(0, "This is the beginning!".into());
 
         for i in 1..17 {
-            g.add_node_with_edges(i, "more data", once((0, format!("targets {}", i))))
-                .unwrap();
+            g.add_node_with_edges(
+                i,
+                format!("more data {}", i),
+                once((0, format!("targets {}", i))),
+            )
+            .unwrap();
         }
 
-        // assert_eq!(g.iter_range(NodeIndex(0, 0), NodeIndex(1, 2)).count(), 5);
+        assert_eq!(g.items().count(), g.node_count());
+        assert_eq!(g.range(..).count(), g.node_count());
+
+        let mut last = g.items().next().unwrap().id();
+        for no in g.items().skip(1) {
+            assert_eq!(g.abs_to_index(g.index_to_abs(no.id())), no.id());
+            assert_eq!(g.range(last..=no.id()).count(), 2);
+            last = no.id();
+        }
 
         // All nodes should now have links to the first node (which are stored on the first node itself)
         if let Some(zeroth) = g.get(0) {
@@ -370,6 +438,8 @@ mod test {
             g.add_node_with_edges(i, format!("boy {}", i), once((i - 1, "")))
                 .expect("This is valid");
         }
+
+        assert_eq!(g.items().count(), g.node_count());
 
         for (i, item) in g.items().enumerate() {
             let it = g.index(i as i32);
