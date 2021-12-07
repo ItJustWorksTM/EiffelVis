@@ -221,8 +221,14 @@ const CustomGraph: React.FC = () => {
         defaultEdge: {
           type: 'custom',
           style: {
-            lineWidth: 0.05,
+            lineWidth: 0.5,
             endArrow: { path: G6.Arrow.triangle(1, 0.5, 0), d: 0 },
+          },
+        },
+        nodeStateStyles: {
+          selected: {
+            fill: '#ffffff',
+            lineWidth: 0.4,
           },
         },
         modes: {

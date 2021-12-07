@@ -11,7 +11,7 @@ export const layout = (node: any) => {
     temp.x = posx
     if (posy < 0) {
       temp.y = posy
-      posy = posy * -1 + 10 * 0.99 ** log
+      posy = posy * -1 + 50 * 0.99 ** log
       log += 1
     } else {
       temp.y = posy
@@ -20,12 +20,12 @@ export const layout = (node: any) => {
       }
     }
   } else if (tempTime > timee) {
-    posx += 10
+    posx += 50
     temp.x = posx
     posy = 0
     log = 1
     temp.y = posy
-    posy += 10
+    posy += 50
     timee = tempTime
   }
 }

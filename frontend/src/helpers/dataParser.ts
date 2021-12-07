@@ -9,11 +9,11 @@ export default (data: Event[]) => {
       date: String(time),
       time,
       eventType: event_type,
-      size: 1,
+      size: 4,
       // the style should be base on something, not random
       style: {
         fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)`,
-        lineWidth: 0.1,
+        lineWidth: 0.4,
       },
     })
     edges.forEach((target: string) => {
