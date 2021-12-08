@@ -41,6 +41,12 @@ struct Cli {
     /// Maximum amount of events a single chunk will hold
     #[structopt(long, default_value = "128")]
     chunk_size: u32,
+
+    #[structopt(long)]
+    tls_cert: Option<String>,
+
+    #[structopt(long)]
+    tls_key: Option<String>,
 }
 
 /// Starts all the services that make up EiffelVis.
@@ -58,12 +64,17 @@ async fn main() {
         cli.chunk_size,
     )));
 
-    let http_server = tokio::spawn(eiffelvis_http::app(
-        graph.clone(),
-        cli.address,
-        cli.port,
-        shutdown_signal(),
-    ));
+    let http_server = tokio::spawn(
+        eiffelvis_http::app(
+            graph.clone(),
+            cli.address,
+            cli.port,
+            shutdown_signal(),
+            cli.tls_cert.zip(cli.tls_key),
+        )
+        .await
+        .unwrap(),
+    );
 
     let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
         cli.rmq_uri.into(),
