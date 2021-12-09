@@ -120,12 +120,17 @@ const CustomGraph: React.FC = () => {
     if (graph) {
       const g6data: GraphData = dataParser(event)
       graph!.setAutoPaint(false)
-      const track = ''
       let timeStamp: number = 0
       let timeStampCount: number = 0
       g6data.nodes!.forEach((node: any, i: number) => {
         layout(node)
         graph!.addItem('node', node)
+        if (node.y === 0) {
+          graph!.focusItem(node.id, false, {
+            easing: 'easeCubic',
+            duration: 200,
+          })
+        }
         // When indexing before last index of message
         if (timeStamp === 0) {
           if (
@@ -160,12 +165,7 @@ const CustomGraph: React.FC = () => {
           totalTrendCountRef.current += timeStampCount
         }
       })
-      if (track !== '') {
-        graph!.focusItem(track, true, {
-          easing: 'easeCubic',
-          duration: 400,
-        })
-      }
+
       if (g6data.edges) {
         g6data.edges.forEach((edge) => {
           graph!.addItem('edge', edge)
@@ -221,8 +221,7 @@ const CustomGraph: React.FC = () => {
         defaultEdge: {
           type: 'custom',
           style: {
-            lineWidth: 0.5,
-            endArrow: { path: G6.Arrow.triangle(1, 0.5, 0), d: 0 },
+            endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
           },
         },
         nodeStateStyles: {

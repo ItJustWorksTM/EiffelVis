@@ -1,4 +1,5 @@
 import { Event } from '../interfaces/ApiData'
+import { nodeColor } from './useLayout'
 
 export default (data: Event[]) => {
   const G6Data: any = { nodes: [], edges: [] }
@@ -9,10 +10,10 @@ export default (data: Event[]) => {
       date: String(time),
       time,
       eventType: event_type,
-      size: 4,
+      size: 10,
       // the style should be base on something, not random
       style: {
-        fill: `hsl(${(edges.length * 100) % 365}, 50%, 50%)`,
+        fill: nodeColor(event_type),
         lineWidth: 0.4,
       },
     })

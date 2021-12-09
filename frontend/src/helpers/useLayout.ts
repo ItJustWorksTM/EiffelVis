@@ -1,7 +1,9 @@
+/* eslint-disable no-bitwise */
 let timee = 0
 let posx = 0
 let posy = 0
 let log = 1
+export const colors = new Map()
 
 export const layout = (node: any) => {
   const temp = node
@@ -11,7 +13,7 @@ export const layout = (node: any) => {
     temp.x = posx
     if (posy < 0) {
       temp.y = posy
-      posy = posy * -1 + 50 * 0.99 ** log
+      posy = posy * -1 + 60 * 0.99 ** log
       log += 1
     } else {
       temp.y = posy
@@ -20,12 +22,12 @@ export const layout = (node: any) => {
       }
     }
   } else if (tempTime > timee) {
-    posx += 50
+    posx += 60
     temp.x = posx
     posy = 0
     log = 1
     temp.y = posy
-    posy += 50
+    posy += 60
     timee = tempTime
   }
 }
@@ -35,4 +37,16 @@ export const resetLayout = () => {
   posx = 0
   posy = 0
   log = 1
+}
+
+export function nodeColor(eventType: string) {
+  if (!colors.has(eventType)) {
+    const hash = [...eventType].reduce(
+      (acc, char) => char.charCodeAt(0) + ((acc << 5) - acc),
+      2
+    )
+    const color = `hsl(${hash % 360}, 50%, 50%)`
+    colors.set(eventType, color)
+  }
+  return colors.get(eventType)
 }
