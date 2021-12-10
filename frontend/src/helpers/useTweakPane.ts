@@ -10,6 +10,7 @@ const useTweakPane = (cb: TweakCb): void => {
     begin: 0,
     end: -1,
     name: '',
+    offset: 0,
   })
 
   useEffect(() => {
@@ -39,6 +40,12 @@ const useTweakPane = (cb: TweakCb): void => {
 
     pane.addInput(paneData, 'name', {
       label: 'type name',
+      step: 1,
+    })
+
+    pane.addSeparator()
+    pane.addInput(paneData, 'offset', {
+      label: 'offset',
       step: 1,
     })
 

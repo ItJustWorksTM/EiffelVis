@@ -27,6 +27,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([])
+  const [offset, setOffset] = useState<number>(0)
   const totalTrendCountRef = useRef<number>(0)
   const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
@@ -123,12 +124,12 @@ const CustomGraph: React.FC = () => {
       let timeStamp: number = 0
       let timeStampCount: number = 0
       g6data.nodes!.forEach((node: any, i: number) => {
-        layout(node)
+        layout(node, offset)
         graph!.addItem('node', node)
         if (node.y === 0) {
           graph!.focusItem(node.id, false, {
             easing: 'easeCubic',
-            duration: 200,
+            duration: 1000,
           })
         }
         // When indexing before last index of message
@@ -265,6 +266,7 @@ const CustomGraph: React.FC = () => {
       end: obj.end >= 0 ? obj.end : null,
     } as EventFilter
 
+    setOffset(obj.offset)
     setCollection(collection)
     setFilters([filter])
   })
