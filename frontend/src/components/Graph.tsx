@@ -101,11 +101,6 @@ const CustomGraph: React.FC = () => {
           timePointControllerText: ' Point',
           timeRangeControllerText: ' Point',
         },
-        /* TimeBarSliceOption: {
-            tickLabelFormatter: (d: any) => {
-
-            } 
-          } */
       })
       graph!.addPlugin(timeBarRef.current)
       console.log('TimeBar added')
