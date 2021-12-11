@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import G6, { Graph, GraphData, TimeBar } from '@antv/g6'
+import { Graph, GraphData, TimeBar } from '@antv/g6'
+import G6 from '../helpers/useCustomShapes'
 import dataParser from '../helpers/dataParser'
 import '../css/minimap.css'
 import '../css/timebar.css'
 import TooltipCard from './TooltipCard'
+import { layout, resetLayout } from '../helpers/useLayout'
 import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
@@ -17,11 +19,6 @@ import {
 } from '../interfaces/ApiData'
 import useEiffelNet from '../helpers/useEiffelNet'
 
-let timee = 0
-let posx = 0
-let posy = 0
-let log = 1
-
 const CustomGraph: React.FC = () => {
   const [showNodeTooltip, setShowNodeTooltip] = useState<boolean>(false)
   const [nodeTooltipX, setNodeToolTipX] = useState<number>(0)
@@ -30,6 +27,7 @@ const CustomGraph: React.FC = () => {
   const [nodeTooltipType, setNodeToolTipType] = useState<string>(' ')
   const [nodeTooltipId, setNodeToolTipId] = useState<string>(' ')
   const [timeBarData, setTimeBarData] = useState<TimeBarData[]>([])
+  const [offset, setOffset] = useState<number>(0)
   const totalTrendCountRef = useRef<number>(0)
   const timeBarRef = useRef<any>(null)
   const graphContainer = useRef<any>(null)
@@ -61,119 +59,53 @@ const CustomGraph: React.FC = () => {
     }
   }
 
-  const layout = (node: any) => {
-    const temp = node
-    const tempTime: number = temp.time
-    if (tempTime <= timee + 1000) {
-      temp.x = posx
-      if (posy < 0) {
-        temp.y = posy
-        posy = posy * -1 + 100 * 0.99 ** log
-        log += 1
-      } else {
-        temp.y = posy
-        if (posy !== 0) {
-          posy *= -1
-        }
-      }
-    } else if (tempTime > timee) {
-      posx += 100
-      temp.x = posx
-      posy = 0
-      log = 1
-      temp.y = posy
-      posy += 100
-      timee = tempTime
-    }
-  }
-
   const timeBar = () => {
     const graph = graphRef.current
-    if (graph) {
-      if (timeBarData.length > 0) {
-        if (timeBarRef.current) {
-          graph.removePlugin(timeBarRef.current)
-          console.log('TimeBar removed')
-        }
-        timeBarRef.current = new TimeBar({
-          className: 'g6TimeBar',
-          x: 0,
-          y: 0,
-          width: 900,
-          height: 110,
-          padding: 10,
-          type: 'trend',
-          trend: {
-            data: timeBarData,
-            smooth: true,
-          },
-          slider: {
-            backgroundStyle: {
-              fill: '#000000',
-            },
-            foregroundStyle: {
-              fill: '#626262',
-            },
-            handlerStyle: {
-              style: {
-                fill: '#ad0c04',
-                stroke: '#ad0c04',
-              },
-            },
-            textStyle: {
-              fill: '#ffffff',
-            }
-          },
-          controllerCfg: {
-            fill: '#000000',
-            stroke: '#000000',
-            timePointControllerText: ' Point',
-            timeRangeControllerText: ' Point',
-          },
-          /* TimeBarSliceOption: {
-            tickLabelFormatter: (d: any) => {
-
-            } 
-          } */
-        })
-        graph!.addPlugin(timeBarRef.current)
-        console.log('TimeBar added')
-        console.log('TIMEBAR DATA: ', timeBarData)
+    if (timeBarData.length > 0) {
+      if (timeBarRef.current) {
+        graph?.removePlugin(timeBarRef.current)
+        console.log('TimeBar removed')
       }
-    }
-  }
-
-  const graphInit = () => {
-    const miniMap = new G6.Minimap({
-      container: graphContainer.current,
-      type: 'keyShape',
-      className: 'g6MiniMap',
-    })
-    graphRef.current = new G6.Graph({
-      container: graphContainer.current,
-      width: window.innerWidth - 73,
-      height: window.innerHeight - 10,
-      fitView: true,
-      defaultEdge: {
-        style: {
-          endArrow: { path: G6.Arrow.triangle(10, 20, 0), d: 0 },
+      timeBarRef.current = new TimeBar({
+        className: 'g6TimeBar',
+        x: 0,
+        y: 0,
+        width: 900,
+        height: 110,
+        padding: 10,
+        type: 'trend',
+        trend: {
+          data: timeBarData,
+          smooth: true,
         },
-      },
-      modes: {
-        default: [
-          'click-select',
-          'drag-canvas',
-          {
-            type: 'zoom-canvas',
-            enableOptimize: true,
+        slider: {
+          backgroundStyle: {
+            fill: '#000000',
           },
-        ],
-      },
-
-      layout: {},
-      plugins: [miniMap],
-    })
-    bindEvents()
+          foregroundStyle: {
+            fill: '#626262',
+          },
+          handlerStyle: {
+            style: {
+              fill: '#ad0c04',
+              stroke: '#ad0c04',
+            },
+          },
+          textStyle: {
+            fill: '#ffffff',
+          },
+        },
+        controllerCfg: {
+          fill: '#000000',
+          stroke: '#000000',
+          timePointControllerText: ' Point',
+          timeRangeControllerText: ' Point',
+        },
+      })
+      graph!.addPlugin(timeBarRef.current)
+      console.log('TimeBar added')
+      console.log('TIMEBAR DATA: ', timeBarData)
+    }
   }
 
   const onMessage = (event: Event[]) => {
@@ -181,16 +113,25 @@ const CustomGraph: React.FC = () => {
     const timeBarDataCache: TimeBarData[] = timeBarData
     if (graph) {
       const g6data: GraphData = dataParser(event)
-      graph!.setAutoPaint(false)    
-      const track = ''
       let timeStamp: number = 0
       let timeStampCount: number = 0
+      console.log('autoPaint: ', graph.get('autoPaint'))
       g6data.nodes!.forEach((node: any, i: number) => {
-        layout(node)
+        layout(node, offset)
         graph!.addItem('node', node)
+        if (node.y === 0) {
+          graph!.focusItem(node.id, false, {
+            easing: 'easeLinear',
+            duration: 200,
+          })
+        }
         // When indexing before last index of message
         if (timeStamp === 0) {
-          if ( timeBarDataCache.length !== 0 && node.time === Number(timeBarDataCache[timeBarDataCache.length - 1].date) ) {
+          if (
+            timeBarDataCache.length !== 0 &&
+            node.time ===
+              Number(timeBarDataCache[timeBarDataCache.length - 1].date)
+          ) {
             const timeBarDataCacheEnd = timeBarDataCache.pop()
             timeStamp = Number(timeBarDataCacheEnd!.date)
             timeStampCount = Number(timeBarDataCacheEnd!.value)
@@ -218,18 +159,12 @@ const CustomGraph: React.FC = () => {
           totalTrendCountRef.current += timeStampCount
         }
       })
-      if (track !== '') {
-        graph!.focusItem(track, true, {
-          easing: 'easeCubic',
-          duration: 400,
-        })
-      }
+
       if (g6data.edges) {
         g6data.edges.forEach((edge) => {
           graph!.addItem('edge', edge)
         })
       }
-      graph!.setAutoPaint(true)    
 
       setTimeBarData(timeBarDataCache)
       graph.data(graph!.save() as GraphData)
@@ -245,12 +180,9 @@ const CustomGraph: React.FC = () => {
     const graph = graphRef.current
     graph?.data({})
     setTimeBarData([])
-    totalTrendCountRef.current = 0;
+    totalTrendCountRef.current = 0
     graph?.render()
-    timee = 0
-    posx = 0
-    posy = 0
-    log = 1
+    resetLayout()
     setShowNodeTooltip(false)
   }
 
@@ -261,14 +193,54 @@ const CustomGraph: React.FC = () => {
 
   const getNodesWithThisRoot = (id: string) => {
     console.log(id)
-    setFilters([{ rev: false, pred: { type: 'Id', ids: [id] }}])
+    setFilters([{ rev: false, pred: { type: 'Id', ids: [id] } }])
     setCollection({ type: 'AsRoots' } as AsRoots)
     setShowNodeTooltip(false)
   }
 
   useEffect(() => {
     if (!graphRef.current) {
-      graphInit()
+      const miniMap = new G6.Minimap({
+        container: graphContainer.current,
+        type: 'keyShape',
+        className: 'g6MiniMap',
+      })
+      graphRef.current = new G6.Graph({
+        container: graphContainer.current,
+        width: window.innerWidth - 73,
+        height: window.innerHeight - 10,
+        fitView: true,
+        autoPaint: false,
+        defaultEdge: {
+          type: 'custom',
+          style: {
+            endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
+          },
+        },
+        nodeStateStyles: {
+          selected: {
+            fill: '#ffffff',
+            lineWidth: 0.4,
+          },
+        },
+        modes: {
+          default: [
+            {
+              type: 'drag-canvas',
+              enableOptimize: true,
+            },
+            {
+              type: 'zoom-canvas',
+              enableOptimize: true,
+              optimizeZoom: 0.9,
+            },
+            'click-select',
+          ],
+        },
+
+        layout: {},
+        plugins: [miniMap],
+      })
     }
     bindEvents()
 
@@ -286,6 +258,7 @@ const CustomGraph: React.FC = () => {
       end: obj.end >= 0 ? obj.end : null,
     } as EventFilter
 
+    setOffset(obj.offset)
     setCollection(collection)
     setFilters([filter])
   })
