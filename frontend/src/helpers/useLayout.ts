@@ -5,7 +5,7 @@ let posy = 0
 let log = 1
 let curve = 0
 let curveSep = 0
-export const colors = new Map()
+export const colors = new Map<string, string>()
 
 export const layout = (node: any, offset?: number) => {
   if (curve === 0 && offset !== undefined) {

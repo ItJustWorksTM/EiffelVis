@@ -61,57 +61,55 @@ const CustomGraph: React.FC = () => {
 
   const timeBar = () => {
     const graph = graphRef.current
-    if (graph) {
-      if (timeBarData.length > 0) {
-        if (timeBarRef.current) {
-          graph.removePlugin(timeBarRef.current)
-          console.log('TimeBar removed')
-        }
-        timeBarRef.current = new TimeBar({
-          className: 'g6TimeBar',
-          x: 0,
-          y: 0,
-          width: 900,
-          height: 110,
-          padding: 10,
-          type: 'trend',
-          trend: {
-            data: timeBarData,
-            smooth: true,
-          },
-          slider: {
-            backgroundStyle: {
-              fill: '#000000',
-            },
-            foregroundStyle: {
-              fill: '#626262',
-            },
-            handlerStyle: {
-              style: {
-                fill: '#ad0c04',
-                stroke: '#ad0c04',
-              },
-            },
-            textStyle: {
-              fill: '#ffffff',
-            },
-          },
-          controllerCfg: {
+    if (timeBarData.length > 0) {
+      if (timeBarRef.current) {
+        graph?.removePlugin(timeBarRef.current)
+        console.log('TimeBar removed')
+      }
+      timeBarRef.current = new TimeBar({
+        className: 'g6TimeBar',
+        x: 0,
+        y: 0,
+        width: 900,
+        height: 110,
+        padding: 10,
+        type: 'trend',
+        trend: {
+          data: timeBarData,
+          smooth: true,
+        },
+        slider: {
+          backgroundStyle: {
             fill: '#000000',
-            stroke: '#000000',
-            timePointControllerText: ' Point',
-            timeRangeControllerText: ' Point',
           },
-          /* TimeBarSliceOption: {
+          foregroundStyle: {
+            fill: '#626262',
+          },
+          handlerStyle: {
+            style: {
+              fill: '#ad0c04',
+              stroke: '#ad0c04',
+            },
+          },
+          textStyle: {
+            fill: '#ffffff',
+          },
+        },
+        controllerCfg: {
+          fill: '#000000',
+          stroke: '#000000',
+          timePointControllerText: ' Point',
+          timeRangeControllerText: ' Point',
+        },
+        /* TimeBarSliceOption: {
             tickLabelFormatter: (d: any) => {
 
             } 
           } */
-        })
-        graph!.addPlugin(timeBarRef.current)
-        console.log('TimeBar added')
-        console.log('TIMEBAR DATA: ', timeBarData)
-      }
+      })
+      graph!.addPlugin(timeBarRef.current)
+      console.log('TimeBar added')
+      console.log('TIMEBAR DATA: ', timeBarData)
     }
   }
 
@@ -120,16 +118,16 @@ const CustomGraph: React.FC = () => {
     const timeBarDataCache: TimeBarData[] = timeBarData
     if (graph) {
       const g6data: GraphData = dataParser(event)
-      graph!.setAutoPaint(false)
       let timeStamp: number = 0
       let timeStampCount: number = 0
+      console.log('autoPaint: ', graph.get('autoPaint'))
       g6data.nodes!.forEach((node: any, i: number) => {
         layout(node, offset)
         graph!.addItem('node', node)
         if (node.y === 0) {
           graph!.focusItem(node.id, false, {
-            easing: 'easeCubic',
-            duration: 1000,
+            easing: 'easeLinear',
+            duration: 200,
           })
         }
         // When indexing before last index of message
@@ -172,7 +170,6 @@ const CustomGraph: React.FC = () => {
           graph!.addItem('edge', edge)
         })
       }
-      graph!.setAutoPaint(true)
 
       setTimeBarData(timeBarDataCache)
       graph.data(graph!.save() as GraphData)
