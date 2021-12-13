@@ -1,23 +1,20 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-	import G6Graph from "./components/G6Graph.svelte";
+	// import G6Graph from "./components/G6Graph.svelte";
 	import G6 from "@antv/g6";
 	import { QueryStream, EiffelVisConnection } from "./eiffelvis";
 	import { StatefulLayout } from "./layout";
 	import FilterWidget from "./components/FilterWidget.svelte";
-	import type { Collection, Query } from "./apidefinition";
+	import type { Query } from "./apidefinition";
 	import { deep_copy } from "./utils";
+	import G6Graph from "./components/G6Graph.svelte";
 
 	let graph_elem: G6Graph | null;
 
 	const backendurl = "localhost:3001";
 
 	const conn = new EiffelVisConnection(`ws://${backendurl}/ws`);
-	let stream = new QueryStream(conn, {
-		range_filter: { begin: null, end: null },
-		event_filters: [],
-		collection: { type: "Forward" },
-	});
+	let stream = null;
 
 	let selected_node = null;
 
@@ -48,6 +45,8 @@
 			},
 		};
 	};
+
+	let qhistory = [];
 
 	let filters = [newDefault()] as any;
 
@@ -102,6 +101,14 @@
 				.filter((fil: any[]) => fil.length > 0),
 			collection: { type: collection_mode as "Forward" | "AsRoots" },
 		};
+
+		qhistory = [
+			...qhistory,
+			{
+				collection_mode: collection_mode,
+				filters: deep_copy(filters),
+			},
+		];
 
 		const newq = new QueryStream(conn, query);
 		stream = newq;
@@ -160,14 +167,29 @@
 						: "n/a"}
 				</p>
 
-				<a class="font-mono">{selected_node?.meta.id}</a>
+				<!-- <a class="font-mono">{selected_node?.meta.id}</a> -->
+				<div
+					data-tip="Use this node as the graph root"
+					class="tooltip tooltip-neutral w-full"
+				>
+					<button
+						class="btn btn-xs btn-accent font-mono w-full"
+						on:click={async () => {
+							const nw = newDefault();
+							nw.ids.pred.ids = [selected_node.meta.id];
+							collection_mode = "AsRoots";
+							filters = [nw];
+							submitCurrentQuery();
+						}}>{selected_node?.meta.id}</button
+					>
+				</div>
 			</div>
 
 			<!-- TODO: Support range filter -->
 			{#each filters as filter, i}
 				<div
 					tabindex="0"
-					class="collapse w-full border rounded-box border-base-300 collapse-arrow"
+					class="grow collapse w-full border rounded-box border-base-300 collapse-arrow"
 				>
 					<input type="checkbox" />
 					<div class="collapse-title text-base font-medium">
@@ -195,13 +217,28 @@
 			</div>
 			<div class="btn-group w-full flex flex-row mt-2">
 				<button
-					class="btn btn-sm btn-primary basis-1/2"
+					class="btn btn-sm btn-primary basis-1/3"
 					on:click={() => (filters = [...filters, newDefault()])}
 				>
 					+ new filter</button
 				>
 				<button
-					class="btn btn-sm btn-primary basis-1/2"
+					class="btn btn-sm btn-primary btn-outline basis-1/3"
+					class:btn-disabled={qhistory.length <= 1 || waiting}
+					on:click={() => {
+						qhistory.pop();
+						qhistory = [...qhistory];
+						const q = qhistory.pop();
+						collection_mode = q.collection_mode;
+						filters = q.filters;
+						submitCurrentQuery();
+					}}
+					>{qhistory.length - 1 > 0
+						? "undo " + (qhistory.length - 1)
+						: ":)"}</button
+				>
+				<button
+					class="btn btn-sm btn-primary basis-1/3"
 					class:loading={waiting}
 					class:btn-disabled={waiting}
 					on:click={submitCurrentQuery}>submit</button
