@@ -7,8 +7,11 @@ mod handlers;
 use handlers::*;
 
 use axum::{routing::get, AddExtensionLayer, Router};
+use hyper::Method;
 
 use std::{future::Future, net::SocketAddr, sync::Arc};
+
+use tower_http::cors::{any, CorsLayer};
 
 use uuid::Uuid;
 
@@ -33,6 +36,7 @@ pub async fn app<T: EiffelVisHttpApp>(
         .route("/get_event/:id", get(get_event::<T>))
         .route("/events_with_root/:id", get(events_with_root::<T>))
         .route("/ws", get(establish_websocket::<T>))
+        .layer(CorsLayer::new().allow_origin(any()).allow_methods(any()))
         .layer(AddExtensionLayer::new(app));
     let address = address.parse()?;
 

@@ -7,7 +7,10 @@
 	import FilterWidget from "./components/FilterWidget.svelte";
 
 	let graph_elem: G6Graph | null;
-	const conn = new EiffelVisConnection();
+
+	const backendurl = "localhost:3001";
+
+	const conn = new EiffelVisConnection(`ws://${backendurl}/ws`);
 	let stream = new QueryStream(conn, {
 		range_filter: { begin: null, end: null },
 		event_filters: [],
@@ -45,60 +48,60 @@
 	let filters = [newDefault()] as any;
 
 	$: {
-		console.log("filters ", filters);
-	}
-
-	$: {
 		if (graph_elem) {
 			graph_elem.resizeGraph();
 			selected_node = null;
-			(async () => {
-				const layout = new StatefulLayout();
-				const iter = await stream.iter();
-				graph_elem.reset();
-
-				let once = true;
-				for await (const event of iter) {
-					const node = { ...event };
-					layout.apply(node);
-					graph_elem.push(node);
-
-					// TODO: Find a better way to do this
-					if (once) {
-						graph_elem.focusNode(event.id);
-						once = false;
-					}
-				}
-			})();
 		}
 	}
+
+	const consumeQuery = async () => {
+		const layout = new StatefulLayout();
+		const iter = await stream.iter();
+		graph_elem.reset();
+		console.log("query start");
+		let once = true;
+		for await (const event of iter) {
+			layout.apply(event);
+			graph_elem.push(event);
+
+			// TODO: Find a better way to do this
+			if (once) {
+				graph_elem.focusNode(event.id);
+				once = false;
+			}
+		}
+		console.log("query end");
+	};
 
 	const submitCurrentQuery = () => {
 		stream = new QueryStream(conn, {
 			range_filter: {},
-			event_filters: filters.map((fil: any) => {
-				const ret = [];
+			event_filters: filters
+				.map((fil: any) => {
+					const ret = [];
 
-				const push_if = (arr: any[], obj: object) => {
-					if (arr.length > 0) ret.push(obj);
-				};
+					const push_if = (arr: any[], obj: object) => {
+						if (arr.length > 0) ret.push(obj);
+					};
 
-				push_if(fil.ids.pred.ids, fil.ids);
-				push_if(fil.tags.pred.tags, fil.tags);
-				push_if(fil.types.pred.names, fil.types);
-				push_if(fil.sourcehosts.pred.hosts, fil.sourcehosts);
-				push_if(fil.sourcenames.pred.names, fil.sourcenames);
-
-				return ret as any;
-			}),
+					push_if(fil.ids.pred.ids, fil.ids);
+					push_if(fil.tags.pred.tags, fil.tags);
+					push_if(fil.types.pred.names, fil.types);
+					push_if(fil.sourcehosts.pred.hosts, fil.sourcehosts);
+					push_if(fil.sourcenames.pred.names, fil.sourcenames);
+					return ret as any;
+				})
+				.filter((fil: any[]) => fil.length > 0),
 			collection: { type: "Forward" },
 		});
+		consumeQuery();
 	};
 
-	const onNodeSelected = (e: any) => {
-		console.log(e);
+	const onNodeSelected = async (e: any) => {
 		if (e.detail.target) {
-			selected_node = e.detail.target._cfg.model;
+			selected_node = await fetch(
+				`http://${backendurl}/get_event/${e.detail.target._cfg.model.id}`
+			).then((resp) => resp.json());
 		} else {
 			selected_node = null;
 		}
@@ -136,9 +139,17 @@
 				class:hidden={!selected_node}
 				class="rounded-box bg-accent p-3 mb-2"
 			>
-				<p>Time: {selected_node?.time}</p>
-				<p>Type: {selected_node?.event_type}</p>
-				<a class="font-mono">{selected_node?.id}</a>
+				<p>Time: {selected_node?.meta.time}</p>
+				<p>Type: {selected_node?.meta.type}</p>
+				<p>Host: {selected_node?.meta.source.host}</p>
+				<p>Source: {selected_node?.meta.source.name}</p>
+				<p>
+					Tags: {selected_node?.meta.tags
+						? selected_node?.meta.tags
+						: "n/a"}
+				</p>
+
+				<a class="font-mono">{selected_node?.meta.id}</a>
 			</div>
 			<!-- TODO: Support range filter -->
 			{#each filters as filter, i}

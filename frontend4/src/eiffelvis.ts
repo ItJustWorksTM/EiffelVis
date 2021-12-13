@@ -33,6 +33,7 @@ export class QueryStream {
   constructor(sharedcon: EiffelVisConnection, query: Query) {
     this.sharedcon = sharedcon
     this.query = query
+    console.log("New query stream with ", query)
   }
 
   private async activate() {
@@ -59,7 +60,6 @@ export class QueryStream {
   }
 
   onclose() {
-    console.log("query stream closed!")
     this.closed = true
     if (this.tick)
       this.tick()
@@ -80,7 +80,7 @@ export class EiffelVisConnection {
 
   private activestream: QueryStream | null = null;
 
-  constructor(uri: string = "ws://localhost:3001/ws") {
+  constructor(uri: string) {
     this.uri = uri
   }
 
@@ -109,8 +109,8 @@ export class EiffelVisConnection {
         conn.onmessage = (ev) => {
           const msg: ServerMessage = JSON.parse(ev.data)
           if (!Array.isArray(msg)) {
-            resolve(msg as QueryRes)
             conn.onmessage = null
+            resolve(msg as QueryRes)
           }
         }
       })
@@ -125,17 +125,18 @@ export class EiffelVisConnection {
       this.activestream = querystream
 
       conn.onmessage = (ev) => this.activestream.onmessage(JSON.parse(ev.data))
-
+      this.pending = null
       return true
     })()
 
-    return this.pending
+    return await this.pending
   }
 
 
 
   private async connect(): Promise<WebSocket | null> {
     const conn = new WebSocket(this.uri)
+    console.log("MAKING NEW WEBSOCKET CONNETION!!!!!!")
 
     return new Promise((resolve, _) => {
       conn.onopen = () => {
@@ -148,10 +149,12 @@ export class EiffelVisConnection {
   }
 
   private async acquire_aconnection(): Promise<WebSocket> {
+
     while (true) {
-      this.connection = await this.connect()
-      if (!this.connection)
+      if (!this.connection) {
+        this.connection = await this.connect()
         await new Promise((resolve, _) => setTimeout(resolve, 1000))
+      }
       else
         break
     }
@@ -160,6 +163,7 @@ export class EiffelVisConnection {
       if (this.activestream)
         this.activestream.onclose()
       this.activestream = null
+      this.connection = null
     }
 
     return this.connection
@@ -174,37 +178,5 @@ export class EiffelVisConnection {
 
     return true
   }
-
-}
-
-const testing = async () => {
-  const connection = {} as any
-
-  const specific_query = connection.createQuery({})
-  const another_query = connection.createQuery({})
-
-    (async () => {
-      for await (const event of another_query) {
-        // do stuff
-      }
-    })()
-
-    // some time passes
-
-    (async () => {
-      // Awaiting a different query stops the first one
-      for await (const event of specific_query) {
-        // do stuff
-      }
-    })()
-
-    // some time passes
-
-    (async () => {
-      // awaiting the original one, yields all cached events + new ones
-      for await (const event of another_query) {
-        // do stuff
-      }
-    })()
 
 }

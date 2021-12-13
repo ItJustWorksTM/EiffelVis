@@ -19,8 +19,6 @@
     export let types: EventFilter<Type>;
     export let sourcehosts: EventFilter<SourceHost>;
     export let sourcenames: EventFilter<SourceName>;
-
-    $: console.log("UHHH", ids);
 </script>
 
 <div class="w-full h-full">
