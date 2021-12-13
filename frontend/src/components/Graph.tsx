@@ -6,7 +6,6 @@ import '../css/minimap.css'
 import '../css/timebar.css'
 import TooltipCard from './TooltipCard'
 import { layout, resetLayout } from '../helpers/useLayout'
-import styles from '../css/graph.module.css'
 import Loader from './Loader'
 import useTweakPane from '../helpers/useTweakPane'
 import {
@@ -207,7 +206,7 @@ const CustomGraph: React.FC = () => {
       })
       graphRef.current = new G6.Graph({
         container: graphContainer.current,
-        width: window.innerWidth - 73,
+        width: window.innerWidth - 12,
         height: window.innerHeight - 10,
         fitView: true,
         autoPaint: false,
@@ -267,7 +266,7 @@ const CustomGraph: React.FC = () => {
   return (
     <div>
       {loader}
-      <div className={styles.graphContainer} ref={graphContainer}>
+      <div ref={graphContainer}>
         {showNodeTooltip && (
           <TooltipCard
             id={nodeTooltipId}
