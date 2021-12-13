@@ -5,7 +5,7 @@
 	import { QueryStream, EiffelVisConnection } from "./eiffelvis";
 	import { StatefulLayout } from "./layout";
 	import FilterWidget from "./components/FilterWidget.svelte";
-	import type { Query } from "./apidefinition";
+	import type { Collection, Query } from "./apidefinition";
 	import { deep_copy } from "./utils";
 
 	let graph_elem: G6Graph | null;
@@ -20,6 +20,8 @@
 	});
 
 	let selected_node = null;
+
+	let waiting = false;
 
 	// TODO: make a real type
 	const newDefault = () => {
@@ -49,6 +51,9 @@
 
 	let filters = [newDefault()] as any;
 
+	let collection_modes = ["Forward", "AsRoots"];
+	let collection_mode = "Forward";
+
 	$: {
 		if (graph_elem) {
 			graph_elem.resizeGraph();
@@ -59,7 +64,9 @@
 
 	const consumeQuery = async () => {
 		const layout = new StatefulLayout();
+		waiting = true;
 		const iter = await stream.iter();
+		waiting = false;
 		graph_elem.reset();
 		let once = true;
 		for await (const event of iter) {
@@ -93,7 +100,7 @@
 					return ret as any;
 				})
 				.filter((fil: any[]) => fil.length > 0),
-			collection: { type: "Forward" },
+			collection: { type: collection_mode as "Forward" | "AsRoots" },
 		};
 
 		const newq = new QueryStream(conn, query);
@@ -102,7 +109,7 @@
 	};
 
 	const onNodeSelected = async (e: any) => {
-		if (e.detail.target) {
+		if (e.detail?.target) {
 			selected_node = await fetch(
 				`http://${backendurl}/get_event/${e.detail.target._cfg.model.id}`
 			).then((resp) => resp.json());
@@ -155,6 +162,7 @@
 
 				<a class="font-mono">{selected_node?.meta.id}</a>
 			</div>
+
 			<!-- TODO: Support range filter -->
 			{#each filters as filter, i}
 				<div
@@ -177,6 +185,15 @@
 				</div>
 			{/each}
 			<div class="btn-group w-full flex flex-row mt-2">
+				{#each collection_modes as mode}
+					<button
+						class="btn btn-xs grow"
+						class:btn-active={mode == collection_mode}
+						on:click={() => (collection_mode = mode)}>{mode}</button
+					>
+				{/each}
+			</div>
+			<div class="btn-group w-full flex flex-row mt-2">
 				<button
 					class="btn btn-sm btn-primary basis-1/2"
 					on:click={() => (filters = [...filters, newDefault()])}
@@ -185,6 +202,8 @@
 				>
 				<button
 					class="btn btn-sm btn-primary basis-1/2"
+					class:loading={waiting}
+					class:btn-disabled={waiting}
 					on:click={submitCurrentQuery}>submit</button
 				>
 			</div>

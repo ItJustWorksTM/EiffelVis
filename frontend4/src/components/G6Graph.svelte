@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import G6, { Graph } from "@antv/g6";
-    import type { Event } from "../apidefinition";
 
     import { createEventDispatcher } from "svelte";
 
@@ -17,6 +16,7 @@
     export const reset = () => {
         graph?.data({});
         graph?.render();
+        dispatch("nodeselected", null);
     };
 
     export const resizeGraph = () => {

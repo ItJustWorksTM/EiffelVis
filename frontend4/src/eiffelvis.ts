@@ -139,6 +139,7 @@ export class EiffelVisConnection {
         resolve(conn)
       }
       conn.onerror = () => {
+        conn.close()
         resolve(null)
       }
     })
@@ -159,6 +160,7 @@ export class EiffelVisConnection {
       if (this.activestream)
         this.activestream.onclose()
       this.activestream = null
+      this.connection.close()
       this.connection = null
     }
 
