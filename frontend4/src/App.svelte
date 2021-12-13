@@ -5,6 +5,8 @@
 	import { QueryStream, EiffelVisConnection } from "./eiffelvis";
 	import { StatefulLayout } from "./layout";
 	import FilterWidget from "./components/FilterWidget.svelte";
+	import type { Query } from "./apidefinition";
+	import { deep_copy } from "./utils";
 
 	let graph_elem: G6Graph | null;
 
@@ -18,6 +20,8 @@
 	});
 
 	let selected_node = null;
+
+	let query_cache = [];
 
 	// TODO: make a real type
 	const newDefault = () => {
@@ -51,6 +55,7 @@
 		if (graph_elem) {
 			graph_elem.resizeGraph();
 			selected_node = null;
+			submitCurrentQuery();
 		}
 	}
 
@@ -58,7 +63,6 @@
 		const layout = new StatefulLayout();
 		const iter = await stream.iter();
 		graph_elem.reset();
-		console.log("query start");
 		let once = true;
 		for await (const event of iter) {
 			layout.apply(event);
@@ -70,18 +74,17 @@
 				once = false;
 			}
 		}
-		console.log("query end");
 	};
 
 	const submitCurrentQuery = () => {
-		stream = new QueryStream(conn, {
+		const query: Query = {
 			range_filter: {},
 			event_filters: filters
 				.map((fil: any) => {
 					const ret = [];
 
-					const push_if = (arr: any[], obj: object) => {
-						if (arr.length > 0) ret.push(obj);
+					const push_if = (arr: any[], obj: any) => {
+						if (arr.length > 0) ret.push(deep_copy(obj));
 					};
 
 					push_if(fil.ids.pred.ids, fil.ids);
@@ -93,8 +96,26 @@
 				})
 				.filter((fil: any[]) => fil.length > 0),
 			collection: { type: "Forward" },
-		});
-		consumeQuery();
+		};
+
+		const key = JSON.stringify(query);
+		if (key == JSON.stringify(stream?.query)) {
+			console.log("Query already in use!");
+		} else {
+			const cached = query_cache.findIndex(
+				(el) => key == JSON.stringify(el.query)
+			);
+			if (cached >= 0) {
+				stream = query_cache[cached];
+				console.log("cache hit!");
+			} else {
+				const newq = new QueryStream(conn, query);
+				stream = newq;
+				if (query_cache.length >= 3) query_cache.splice(0, 1);
+				query_cache.push(newq);
+			}
+			consumeQuery();
+		}
 	};
 
 	const onNodeSelected = async (e: any) => {

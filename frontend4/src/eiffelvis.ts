@@ -132,12 +132,8 @@ export class EiffelVisConnection {
     return await this.pending
   }
 
-
-
   private async connect(): Promise<WebSocket | null> {
     const conn = new WebSocket(this.uri)
-    console.log("MAKING NEW WEBSOCKET CONNETION!!!!!!")
-
     return new Promise((resolve, _) => {
       conn.onopen = () => {
         resolve(conn)
