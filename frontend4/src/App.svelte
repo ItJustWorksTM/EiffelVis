@@ -21,8 +21,6 @@
 
 	let selected_node = null;
 
-	let query_cache = [];
-
 	// TODO: make a real type
 	const newDefault = () => {
 		return {
@@ -98,24 +96,9 @@
 			collection: { type: "Forward" },
 		};
 
-		const key = JSON.stringify(query);
-		if (key == JSON.stringify(stream?.query)) {
-			console.log("Query already in use!");
-		} else {
-			const cached = query_cache.findIndex(
-				(el) => key == JSON.stringify(el.query)
-			);
-			if (cached >= 0) {
-				stream = query_cache[cached];
-				console.log("cache hit!");
-			} else {
-				const newq = new QueryStream(conn, query);
-				stream = newq;
-				if (query_cache.length >= 3) query_cache.splice(0, 1);
-				query_cache.push(newq);
-			}
-			consumeQuery();
-		}
+		const newq = new QueryStream(conn, query);
+		stream = newq;
+		consumeQuery();
 	};
 
 	const onNodeSelected = async (e: any) => {
