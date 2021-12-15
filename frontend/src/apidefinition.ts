@@ -7,7 +7,6 @@ export type Uuid = string
 export interface Event {
   id: Uuid
   time: number
-  // eslint-disable-next-line camelcase
   event_type: string
   edges: Array<Uuid>
 }
@@ -53,16 +52,16 @@ interface _Id {
 export type Id = TypeTag<_Id, 'Id'>
 
 export type Forward = TypeTag<_Forward, 'Forward'>
-interface _Forward {}
+interface _Forward { }
 
 export type AsRoots = TypeTag<_AsRoots, 'AsRoots'>
-interface _AsRoots {}
+interface _AsRoots { }
 
 
 export type EventFilterType = Type | Id | SourceHost | SourceName | Tag
-export interface EventFilter {
+export interface EventFilter<T> {
   rev: boolean,
-  pred: EventFilterType
+  pred: T
 }
 export type Collection = Forward | AsRoots
 export type RangeFilterBound = Absolute | Time | Ids
@@ -73,8 +72,8 @@ export interface RangeFilter {
 }
 
 export interface Query {
-  range_filter?: RangeFilter,
-  event_filters: EventFilter[][],
+  range_filter: RangeFilter,
+  event_filters: EventFilter<EventFilterType>[][],
   collection: Collection
 }
 
@@ -84,9 +83,3 @@ export interface QueryRes {
 }
 
 export type ServerMessage = QueryRes | Event[]
-
-export interface TimeBarData {
-  date: string
-  value: string
-}
-
