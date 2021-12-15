@@ -2,6 +2,7 @@ use std::ops::ControlFlow;
 
 use crate::{algorithms::depth_first, graph::*};
 
+use ahash::RandomState;
 use indexmap::IndexSet;
 
 /// An iterator that takes graph nodes and yields the subgraph
@@ -34,7 +35,7 @@ pub trait GraphQuery: Iterator {
         Self: Iterator<Item = NodeType<'a, G>> + Sized,
     {
         // Simple visit map, all nodes will be only visited once
-        let mut index = IndexSet::new();
+        let mut index = IndexSet::with_capacity_and_hasher(8, RandomState::default());
         for node in self {
             depth_first(graph, node.id(), &mut |i| {
                 if index.insert(i) {
