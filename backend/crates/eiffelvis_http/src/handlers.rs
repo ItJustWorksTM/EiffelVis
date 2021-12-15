@@ -42,6 +42,7 @@ pub async fn get_event<T: EiffelVisHttpApp>(
             .status(StatusCode::NOT_FOUND)
             .body(Full::default())
             .unwrap()
+            .into_response()
     }
 }
 
