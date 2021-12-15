@@ -56,10 +56,12 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::ControlFlow</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">algorithms::depth_first</span>, <span class="ident">graph</span>::<span class="kw-2">*</span>};
 
+<span class="kw">use</span> <span class="ident">ahash::RandomState</span>;
 <span class="kw">use</span> <span class="ident">indexmap::IndexSet</span>;
 
 <span class="doccomment">/// An iterator that takes graph nodes and yields the subgraph</span>
@@ -92,7 +94,7 @@
         <span class="self">Self</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sized</span>,
     {
         <span class="comment">// Simple visit map, all nodes will be only visited once</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">IndexSet::new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">IndexSet::with_capacity_and_hasher</span>(<span class="number">8</span>, <span class="ident">RandomState::default</span>());
         <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="self">self</span> {
             <span class="ident">depth_first</span>(<span class="ident">graph</span>, <span class="ident">node</span>.<span class="ident">id</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="op">|</span><span class="ident">i</span><span class="op">|</span> {
                 <span class="kw">if</span> <span class="ident">index</span>.<span class="ident">insert</span>(<span class="ident">i</span>) {
