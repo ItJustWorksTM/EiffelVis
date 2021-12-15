@@ -43,6 +43,9 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
 </pre><pre class="rust"><code><span class="doccomment">//!</span>
 <span class="doccomment">//! An HTTP frontend for eiffelvis_core</span>
 <span class="doccomment">//!</span>
@@ -54,6 +57,8 @@
 <span class="kw">use</span> <span class="ident">axum</span>::{<span class="ident">routing::get</span>, <span class="ident">AddExtensionLayer</span>, <span class="ident">Router</span>};
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">future::Future</span>, <span class="ident">net::SocketAddr</span>, <span class="ident">sync::Arc</span>};
+
+<span class="kw">use</span> <span class="ident">tower_http::cors</span>::{<span class="ident">any</span>, <span class="ident">CorsLayer</span>};
 
 <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
 
@@ -78,6 +83,7 @@
         .<span class="ident">route</span>(<span class="string">&quot;/get_event/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">get_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
         .<span class="ident">route</span>(<span class="string">&quot;/events_with_root/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">events_with_root</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
         .<span class="ident">route</span>(<span class="string">&quot;/ws&quot;</span>, <span class="ident">get</span>(<span class="ident">establish_websocket</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
+        .<span class="ident">layer</span>(<span class="ident">CorsLayer::new</span>().<span class="ident">allow_origin</span>(<span class="ident">any</span>()).<span class="ident">allow_methods</span>(<span class="ident">any</span>()))
         .<span class="ident">layer</span>(<span class="ident">AddExtensionLayer::new</span>(<span class="ident">app</span>));
     <span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> <span class="ident">address</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
 

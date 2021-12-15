@@ -112,6 +112,7 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
 
@@ -156,6 +157,7 @@
             .<span class="ident">status</span>(<span class="ident">StatusCode::NOT_FOUND</span>)
             .<span class="ident">body</span>(<span class="ident">Full::default</span>())
             .<span class="ident">unwrap</span>()
+            .<span class="ident">into_response</span>()
     }
 }
 
