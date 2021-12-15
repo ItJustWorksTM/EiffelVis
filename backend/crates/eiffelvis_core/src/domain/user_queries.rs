@@ -114,7 +114,8 @@ impl<I> TrackedQuery<I> {
                         .map(|d| Some(d.id())),
                     RangeFilterBound::Absolute { val } => {
                         let val = if val < 0 {
-                            (graph.node_count() - val.abs() as usize) as usize
+                            (graph.node_count() - (val.abs() as usize).min(graph.node_count()))
+                                as usize
                         } else {
                             val as usize
                         };
