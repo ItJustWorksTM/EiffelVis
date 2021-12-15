@@ -147,7 +147,7 @@ impl<I> TrackedQuery<I> {
             if self.event_filters.is_empty() {
                 true
             } else {
-                self.event_filters.iter().any(|filters| {
+                self.event_filters.iter().filter(|v| !v.is_empty()).any(|filters| {
                     filters.iter().all(|filter| match &filter.pred {
                         EventFilter::Type { names: ref name } => name.iter().any(|name| &node.data().meta.event_type == name),
                         EventFilter::Id { ids } =>
