@@ -1,26 +1,32 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-	import G6 from "@antv/g6";
-	import { QueryStream, EiffelVisConnection } from "./eiffelvis";
-	import { StatefulLayout } from "./layout";
-	import FilterWidget from "./components/FilterWidget.svelte";
-	import type { Query } from "./apidefinition";
-	import { deep_copy } from "./utils";
-	import G6Graph from "./components/G6Graph.svelte";
-	import { loop_guard } from "svelte/internal";
+	import G6 from '@antv/g6';
+	import { QueryStream, EiffelVisConnection } from './eiffelvis';
+	import { StatefulLayout } from './layout';
+	import FilterWidget from './components/FilterWidget.svelte';
+	import type { GraphSettings, Query } from './apidefinition';
+	import { deep_copy } from './utils';
+	import G6Graph from './components/G6Graph.svelte';
 
 	let graph_elem: G6Graph | null;
 
 	const backend_url = process.env.EIFFELVIS_URL.startsWith('@origin')
-			          ? `${window.location.host}${window.location.pathname}${process.env.EIFFELVIS_URL.replace('@origin', '')}`
-			          : process.env.EIFFELVIS_URL.startsWith('@hostname')
-					  ? `${window.location.hostname}${process.env.EIFFELVIS_URL.replace('@hostname', '')}`
-			          : process.env.EIFFELVIS_URL;
+		? `${window.location.host}${
+				window.location.pathname
+		  }${process.env.EIFFELVIS_URL.replace('@origin', '')}`
+		: process.env.EIFFELVIS_URL.startsWith('@hostname')
+		? `${window.location.hostname}${process.env.EIFFELVIS_URL.replace(
+				'@hostname',
+				''
+		  )}`
+		: process.env.EIFFELVIS_URL;
 	const backend_has_ssl = JSON.parse(process.env.EIFFELVIS_SSL);
 	const backend_proto_ws = backend_has_ssl ? 'wss' : 'ws';
 	const backend_proto_http = backend_has_ssl ? 'https' : 'http';
 
-	const conn = new EiffelVisConnection(`${backend_proto_ws}://${backend_url}/ws`);
+	const conn = new EiffelVisConnection(
+		`${backend_proto_ws}://${backend_url}/ws`
+	);
 	let stream = null;
 
 	let selected_node = null;
@@ -32,23 +38,23 @@
 		return {
 			ids: {
 				rev: false,
-				pred: { type: "Id", ids: [] },
+				pred: { type: 'Id', ids: [] },
 			},
 			tags: {
 				rev: false,
-				pred: { type: "Tag", tags: [] },
+				pred: { type: 'Tag', tags: [] },
 			},
 			types: {
 				rev: false,
-				pred: { type: "Type", names: [] },
+				pred: { type: 'Type', names: [] },
 			},
 			sourcehosts: {
 				rev: false,
-				pred: { type: "SourceHost", hosts: [] },
+				pred: { type: 'SourceHost', hosts: [] },
 			},
 			sourcenames: {
 				rev: false,
-				pred: { type: "SourceName", names: [] },
+				pred: { type: 'SourceName', names: [] },
 			},
 		};
 	};
@@ -57,15 +63,23 @@
 
 	let filters = [newDefault()] as any;
 
-	let collection_modes = ["Forward", "AsRoots"];
-	let collection_mode = "Forward";
+	let collection_modes = ['Forward', 'AsRoots'];
+	let collection_mode = 'Forward';
 
-	const range_modes = ["Time", "Absolute", "Ids"];
-	let begin_mode = "Absolute";
-	let begin_value = "-500";
+	const range_modes = ['Time', 'Absolute', 'Ids'];
+	let begin_mode = 'Absolute';
+	let begin_value = '-500';
 
-	let end_mode = "Time";
-	let end_value = "";
+	let end_mode = 'Time';
+	let end_value = '';
+
+	let graph_options: GraphSettings = {
+		offset: 0,
+		time_diff: 1000,
+		y_scale: 0.99,
+		x_sep: 60,
+		y_sep: 60,
+	};
 
 	$: {
 		if (graph_elem) {
@@ -83,7 +97,7 @@
 		graph_elem.reset();
 		let once = true;
 		for await (const event of iter) {
-			layout.apply(event);
+			layout.apply(event, graph_options);
 			graph_elem.push(event);
 
 			// TODO: Find a better way to do this
@@ -101,20 +115,14 @@
 					begin_value.length > 0
 						? ({
 								type: begin_mode as any,
-								val:
-									begin_mode == "Ids"
-										? begin_value
-										: parseInt(begin_value),
+								val: begin_mode == 'Ids' ? begin_value : parseInt(begin_value),
 						  } as any)
 						: null,
 				end:
 					end_value.length > 0
 						? ({
 								type: end_mode as any,
-								val:
-									end_mode === "Ids"
-										? end_value
-										: parseInt(end_value),
+								val: end_mode === 'Ids' ? end_value : parseInt(end_value),
 						  } as any)
 						: null,
 			},
@@ -134,7 +142,7 @@
 					return ret as any;
 				})
 				.filter((fil: any[]) => fil.length > 0),
-			collection: { type: collection_mode as "Forward" | "AsRoots" },
+			collection: { type: collection_mode as 'Forward' | 'AsRoots' },
 		};
 
 		qhistory = [
@@ -158,10 +166,21 @@
 		if (e.detail?.target) {
 			selected_node = await fetch(
 				`${backend_proto_http}://${backend_url}/get_event/${e.detail.target._cfg.model.id}`
-			).then((resp) => resp.json());
+			).then(resp => resp.json());
 		} else {
 			selected_node = null;
 		}
+	};
+
+	const resetGraphOptions = () => {
+		graph_options = {
+			offset: 0,
+			time_diff: 1000,
+			y_scale: 0.99,
+			x_sep: 60,
+			y_sep: 60,
+		};
+		consumeQuery();
 	};
 
 	const options = {
@@ -176,16 +195,16 @@
 		},
 		nodeStateStyles: {
 			selected: {
-				fill: "#ffffff",
+				fill: '#ffffff',
 				lineWidth: 0.4,
 			},
 		},
 		modes: {
 			default: [
-				"click-select",
-				"drag-canvas",
+				'click-select',
+				'drag-canvas',
 				{
-					type: "zoom-canvas",
+					type: 'zoom-canvas',
 					enableOptimize: true,
 				},
 			],
@@ -198,18 +217,72 @@
 		class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
 	>
 		<div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-			<div
-				class:hidden={!selected_node}
-				class="rounded-box bg-accent p-3 mb-2"
-			>
+			<!-- TODO: Remove Graph Options from filter tab-->>
+			<div class="form-control">
+				<h1 class="text-lg py-2">Graph Options</h1>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Offset</span>
+					<input
+						type="number"
+						bind:value={graph_options.offset}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
+					<input
+						type="number"
+						bind:value={graph_options.time_diff}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
+					<input
+						type="number"
+						bind:value={graph_options.y_scale}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100"
+						>X-axis Node Separation</span
+					>
+					<input
+						type="number"
+						bind:value={graph_options.x_sep}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100"
+						>Y-axis Node Separation</span
+					>
+					<input
+						type="number"
+						bind:value={graph_options.y_sep}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<div class="btn-group w-full flex flex-row mt-2">
+					<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
+						>Update Graph</button
+					>
+					<button
+						class="btn btn-xs grow bg-primary"
+						on:click={resetGraphOptions}>Reset Default</button
+					>
+				</div>
+			</div>
+			<h1 class="text-lg py-2">Filter Options:</h1>
+			<div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
 				<p>Time: {selected_node?.meta.time}</p>
 				<p>Type: {selected_node?.meta.type}</p>
 				<p>Host: {selected_node?.meta.source.host}</p>
 				<p>Source: {selected_node?.meta.source.name}</p>
 				<p>
-					Tags: {selected_node?.meta.tags
-						? selected_node?.meta.tags
-						: "n/a"}
+					Tags: {selected_node?.meta.tags ? selected_node?.meta.tags : 'n/a'}
 				</p>
 
 				<!-- <a class="font-mono">{selected_node?.meta.id}</a> -->
@@ -222,10 +295,10 @@
 						on:click={async () => {
 							const nw = newDefault();
 							nw.ids.pred.ids = [selected_node.meta.id];
-							collection_mode = "AsRoots";
+							collection_mode = 'AsRoots';
 							filters = [nw];
-							begin_value = "";
-							end_value = "";
+							begin_value = '';
+							end_value = '';
 							submitCurrentQuery();
 						}}>{selected_node?.meta.id}</button
 					>
@@ -267,7 +340,7 @@
 					<input
 						type="text"
 						bind:value={begin_value}
-						placeholder={"Begin"}
+						placeholder={'Begin'}
 						class="input input-bordered input-sm w-full"
 					/>
 				</label>
@@ -283,7 +356,7 @@
 					<input
 						type="text"
 						bind:value={end_value}
-						placeholder={"End"}
+						placeholder={'End'}
 						class="input input-bordered input-sm w-full"
 					/>
 				</label>
@@ -321,8 +394,8 @@
 						submitCurrentQuery();
 					}}
 					>{qhistory.length - 1 > 0
-						? "undo " + (qhistory.length - 1)
-						: ":)"}</button
+						? 'undo ' + (qhistory.length - 1)
+						: ':)'}</button
 				>
 				<button
 					class="btn btn-sm btn-primary basis-1/3"
@@ -335,7 +408,7 @@
 	</div>
 
 	<G6Graph
-		on:nodeselected={(e) => onNodeSelected(e)}
+		on:nodeselected={e => onNodeSelected(e)}
 		bind:this={graph_elem}
 		{options}
 		data={{}}
