@@ -6,10 +6,10 @@
 	import FilterWidget from "./components/FilterWidget.svelte";
 	import type { Query } from "./apidefinition";
 	import { deep_copy } from "./utils";
-	import G6Graph from "./components/G6Graph.svelte";
-	import { loop_guard } from "svelte/internal";
+	import ThreeJSGraph from "./components/ThreeJSGraph.svelte";
+	// import G6Graph from "./components/G6Graph.svelte";
 
-	let graph_elem: G6Graph | null;
+	let graph_elem: ThreeJSGraph | null;
 
 	const backendurl = process.env.EIFFELVIS_URL;
 
@@ -62,7 +62,7 @@
 
 	$: {
 		if (graph_elem) {
-			graph_elem.resizeGraph();
+			// graph_elem.resizeGraph();
 			selected_node = null;
 			submitCurrentQuery();
 		}
@@ -81,7 +81,7 @@
 
 			// TODO: Find a better way to do this
 			if (once) {
-				graph_elem.focusNode(event.id);
+				// graph_elem.focusNode(event.id);
 				once = false;
 			}
 		}
@@ -197,8 +197,8 @@
 			>
 				<p>Time: {selected_node?.meta.time}</p>
 				<p>Type: {selected_node?.meta.type}</p>
-				<p>Host: {selected_node?.meta.source.host}</p>
-				<p>Source: {selected_node?.meta.source.name}</p>
+				<p>Host: {selected_node?.meta.source?.host}</p>
+				<p>Source: {selected_node?.meta.source?.name}</p>
 				<p>
 					Tags: {selected_node?.meta.tags
 						? selected_node?.meta.tags
@@ -327,12 +327,7 @@
 		</div>
 	</div>
 
-	<G6Graph
-		on:nodeselected={(e) => onNodeSelected(e)}
-		bind:this={graph_elem}
-		{options}
-		data={{}}
-	/>
+	<ThreeJSGraph bind:this={graph_elem} />
 </main>
 
 <style lang="postcss" global>
