@@ -57,7 +57,7 @@ async fn serve_service(
 ) -> io::Result<()> {
     match tls {
         Some(config) => {
-            info!("Binding to {:?} using {:?} tls", addr, config);
+            info!("Binding to {:?} using tls", addr);
             axum_server::bind_rustls(addr, config)
                 .handle(handle)
                 .serve(service.into_make_service())
