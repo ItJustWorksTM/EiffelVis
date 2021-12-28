@@ -42,9 +42,11 @@ struct Cli {
     #[structopt(long, default_value = "128")]
     chunk_size: u32,
 
+    /// Path to TLS certificate pem file
     #[structopt(long)]
     tls_cert: Option<String>,
 
+    /// Path to TLS private key pem file
     #[structopt(long)]
     tls_key: Option<String>,
 }
