@@ -7,10 +7,15 @@ mod handlers;
 use handlers::*;
 
 use axum::{routing::get, AddExtensionLayer, Router};
-use axum_server::{self, tls_rustls::RustlsConfig, Handle};
+pub use axum_server::Handle;
+use axum_server::{self, tls_rustls::RustlsConfig};
 use tracing::info;
 
-use std::{future::Future, net::SocketAddr, sync::Arc};
+use std::{
+    io,
+    net::{IpAddr, SocketAddr},
+    sync::Arc,
+};
 
 use tower_http::cors::{any, CorsLayer};
 
@@ -28,57 +33,42 @@ type App<T> = Arc<tokio::sync::RwLock<T>>;
 /// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.
 pub async fn app<T: EiffelVisHttpApp>(
     app: App<T>,
-    address: String,
+    address: IpAddr,
     port: u16,
-    shutdown: impl Future<Output = ()> + Send + 'static,
+    handle: Handle,
     tls: Option<(String, String)>,
-) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
-    let address = address.parse()?;
+) -> io::Result<()> {
     let tls = match tls {
-        Some((cert, key)) => Some(RustlsConfig::from_pem_file(cert, key).await.unwrap()),
+        Some((cert, key)) => Some(RustlsConfig::from_pem_file(cert, key).await?),
         _ => None,
     };
 
-    Ok(serv(app, SocketAddr::new(address, port), tls, shutdown))
+    let service = make_service(app);
+
+    serve_service(SocketAddr::new(address, port), service, handle, tls).await
 }
 
-async fn serv<T: EiffelVisHttpApp>(
-    app: App<T>,
+/// Serves an axum router on the given address, with optional TLS
+async fn serve_service(
     addr: SocketAddr,
+    service: Router,
+    handle: Handle,
     tls: Option<RustlsConfig>,
-    shutdown: impl Future<Output = ()> + Send + 'static,
-) -> anyhow::Result<()> {
-    let service = Router::new()
-        .route("/", get(event_dump::<T>))
-        .route("/get_event/:id", get(get_event::<T>))
-        .route("/events_with_root/:id", get(events_with_root::<T>))
-        .route("/ws", get(establish_websocket::<T>))
-        .layer(CorsLayer::new().allow_origin(any()).allow_methods(any()))
-        .layer(AddExtensionLayer::new(app));
-
-    let handle = Handle::new();
-    let stop_handle = handle.clone();
-    tokio::spawn(async move {
-        shutdown.await;
-        stop_handle.graceful_shutdown(None);
-    });
-
+) -> io::Result<()> {
     match tls {
         Some(config) => {
             info!("Binding to {:?} using {:?} tls", addr, config);
             axum_server::bind_rustls(addr, config)
                 .handle(handle)
                 .serve(service.into_make_service())
-                .await?;
+                .await
         }
         None => {
             info!("Binding to {:?} without tls", addr);
             axum_server::bind(addr)
                 .handle(handle)
                 .serve(service.into_make_service())
-                .await?;
+                .await
         }
     }
-
-    Ok(())
 }
