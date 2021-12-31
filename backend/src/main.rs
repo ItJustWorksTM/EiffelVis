@@ -41,6 +41,14 @@ struct Cli {
     /// Maximum amount of events a single chunk will hold
     #[structopt(long, default_value = "128")]
     chunk_size: u32,
+
+    /// Path to TLS certificate pem file
+    #[structopt(long)]
+    tls_cert: Option<String>,
+
+    /// Path to TLS private key pem file
+    #[structopt(long)]
+    tls_key: Option<String>,
 }
 
 /// Starts all the services that make up EiffelVis.
@@ -58,11 +66,13 @@ async fn main() {
         cli.chunk_size,
     )));
 
+    let http_server_handle = eiffelvis_http::Handle::new();
     let http_server = tokio::spawn(eiffelvis_http::app(
         graph.clone(),
-        cli.address,
+        cli.address.parse().unwrap(),
         cli.port,
-        shutdown_signal(),
+        http_server_handle.clone(),
+        cli.tls_cert.zip(cli.tls_key),
     ));
 
     let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
@@ -89,15 +99,15 @@ async fn main() {
         }
     });
 
-    let event_parser = async move {
-        tokio::select! {
-            _ = event_parser => Err(()),
-            () = shutdown_signal() => Ok(())
-        }
-    };
+    tokio::spawn(async move {
+        shutdown_signal().await;
+        http_server_handle.graceful_shutdown(None);
+    });
 
-    let (res, _) = tokio::join!(http_server, event_parser);
-    res.unwrap().unwrap();
+    tokio::select! {
+        res = event_parser => res.unwrap(),
+        res = http_server => res.unwrap().unwrap(),
+    };
 }
 
 #[doc(hidden)]
