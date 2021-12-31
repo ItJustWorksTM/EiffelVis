@@ -113,6 +113,16 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
 
@@ -132,6 +142,16 @@
     <span class="ident">user_queries</span>::{<span class="ident">Query</span>, <span class="ident">TrackedQuery</span>},
 };
 <span class="kw">use</span> <span class="ident">hyper::Response</span>;
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">make_service</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(<span class="ident">app</span>: <span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">Router</span> {
+    <span class="ident">Router::new</span>()
+        .<span class="ident">route</span>(<span class="string">&quot;/&quot;</span>, <span class="ident">get</span>(<span class="ident">event_dump</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
+        .<span class="ident">route</span>(<span class="string">&quot;/get_event/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">get_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
+        .<span class="ident">route</span>(<span class="string">&quot;/events_with_root/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">events_with_root</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
+        .<span class="ident">route</span>(<span class="string">&quot;/ws&quot;</span>, <span class="ident">get</span>(<span class="ident">establish_websocket</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
+        .<span class="ident">layer</span>(<span class="ident">CorsLayer::new</span>().<span class="ident">allow_origin</span>(<span class="ident">any</span>()).<span class="ident">allow_methods</span>(<span class="ident">any</span>()))
+        .<span class="ident">layer</span>(<span class="ident">AddExtensionLayer::new</span>(<span class="ident">app</span>))
+}
 
 <span class="doccomment">/// Dumps the entire event store into a json array</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">event_dump</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(

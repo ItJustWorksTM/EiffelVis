@@ -106,6 +106,16 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
 </pre><pre class="rust"><code><span class="doccomment">//!</span>
 <span class="doccomment">//! Combines all individual eiffelvis_* libraries into the final product.</span>
 <span class="doccomment">//!</span>
@@ -149,6 +159,14 @@
     <span class="doccomment">/// Maximum amount of events a single chunk will hold</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;128&quot;</span>)]</span>
     <span class="ident">chunk_size</span>: <span class="ident">u32</span>,
+
+    <span class="doccomment">/// Path to TLS certificate pem file</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+    <span class="ident">tls_cert</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// Path to TLS private key pem file</span>
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+    <span class="ident">tls_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Starts all the services that make up EiffelVis.</span>
@@ -166,11 +184,13 @@
         <span class="ident">cli</span>.<span class="ident">chunk_size</span>,
     )));
 
+    <span class="kw">let</span> <span class="ident">http_server_handle</span> <span class="op">=</span> <span class="ident">eiffelvis_http::Handle::new</span>();
     <span class="kw">let</span> <span class="ident">http_server</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="ident">eiffelvis_http::app</span>(
         <span class="ident">graph</span>.<span class="ident">clone</span>(),
-        <span class="ident">cli</span>.<span class="ident">address</span>,
+        <span class="ident">cli</span>.<span class="ident">address</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>(),
         <span class="ident">cli</span>.<span class="ident">port</span>,
-        <span class="ident">shutdown_signal</span>(),
+        <span class="ident">http_server_handle</span>.<span class="ident">clone</span>(),
+        <span class="ident">cli</span>.<span class="ident">tls_cert</span>.<span class="ident">zip</span>(<span class="ident">cli</span>.<span class="ident">tls_key</span>),
     ));
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">event_parser</span> <span class="op">=</span> <span class="ident">eiffelvis_stream::ampq::AmpqStream::new</span>(
@@ -197,15 +217,15 @@
         }
     });
 
-    <span class="kw">let</span> <span class="ident">event_parser</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
-        <span class="macro">tokio::select!</span> {
-            <span class="kw">_</span> <span class="op">=</span> <span class="ident">event_parser</span> =&gt; <span class="prelude-val">Err</span>(()),
-            () <span class="op">=</span> <span class="ident">shutdown_signal</span>() =&gt; <span class="prelude-val">Ok</span>(())
-        }
-    };
+    <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="ident">shutdown_signal</span>().<span class="kw">await</span>;
+        <span class="ident">http_server_handle</span>.<span class="ident">graceful_shutdown</span>(<span class="prelude-val">None</span>);
+    });
 
-    <span class="kw">let</span> (<span class="ident">res</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="macro">tokio::join!</span>(<span class="ident">http_server</span>, <span class="ident">event_parser</span>);
-    <span class="ident">res</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+    <span class="macro">tokio::select!</span> {
+        <span class="ident">res</span> <span class="op">=</span> <span class="ident">event_parser</span> =&gt; <span class="ident">res</span>.<span class="ident">unwrap</span>(),
+        <span class="ident">res</span> <span class="op">=</span> <span class="ident">http_server</span> =&gt; <span class="ident">res</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>(),
+    };
 }
 
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
