@@ -1,0 +1,9 @@
+/backend/target/
+/backend/.cargo/
+/backend/**/perf.data*
+/backend/**/*.json
+/frontend/node_modules/
+/frontend/public/build/
+.idea/
+.vscode/
+**/*.rs.bk
