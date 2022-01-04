@@ -75,13 +75,12 @@ async fn main() {
         cli.tls_cert.zip(cli.tls_key),
     ));
 
-    let mut event_parser = eiffelvis_stream::ampq::AmpqStream::new(
-        cli.rmq_uri.into(),
-        cli.rmq_queue.into(),
-        "eiffelvis".into(),
-    )
-    .await
-    .expect("Failed to connect to ampq server");
+    let ampqaddr: eiffelvis_stream::ampq::AMQPUri = cli.rmq_uri.parse().unwrap();
+
+    let mut event_parser =
+        eiffelvis_stream::ampq::AmpqStream::new(ampqaddr, cli.rmq_queue.into(), "eiffelvis".into())
+            .await
+            .expect("Failed to connect to ampq server");
 
     let timeout = cli.timeout;
     let event_parser = tokio::spawn(async move {

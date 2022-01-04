@@ -7,7 +7,7 @@
 //! ```no_run
 //! # async {
 //! let mut stream = eiffelvis_stream::ampq::AmpqStream::new(
-//!         "amqp://localhost:5672/%2f".into(),
+//!         "amqp://localhost:5672/%2f".parse().unwrap(),
 //!         "hello".into(),
 //!         "eiffelvis".into(),
 //!     )

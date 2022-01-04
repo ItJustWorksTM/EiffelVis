@@ -1,12 +1,15 @@
-use std::{borrow::Cow, str::FromStr};
+use std::borrow::Cow;
 
 use futures::StreamExt;
 
-use lapin::{tcp::TLSConfig, uri::AMQPUri, Connection, ConnectionProperties, Consumer};
+pub use lapin::uri::AMQPUri;
+use lapin::{tcp::TLSConfig, Connection, ConnectionProperties, Consumer};
 use tokio_amqp::LapinTokioExt;
 
+pub use lapin::auth::Credentials;
+
 pub struct AmpqStream {
-    addr: Cow<'static, str>,
+    addr: AMQPUri,
     queue: Cow<'static, str>,
     consumer_tag: Cow<'static, str>,
     consumer: Option<Consumer>,
@@ -14,7 +17,7 @@ pub struct AmpqStream {
 
 impl AmpqStream {
     pub async fn new(
-        addr: Cow<'static, str>,
+        addr: AMQPUri,
         queue: Cow<'static, str>,
         consumer_tag: Cow<'static, str>,
     ) -> Option<Self> {
@@ -45,9 +48,9 @@ impl AmpqStream {
     }
 }
 
-async fn make_ampq_consumer(addr: &str, queue: &str, consumer_tag: &str) -> Option<Consumer> {
+async fn make_ampq_consumer(addr: &AMQPUri, queue: &str, consumer_tag: &str) -> Option<Consumer> {
     let connection = Connection::connect_uri_with_identity(
-        AMQPUri::from_str(addr).ok()?,
+        addr.clone(),
         ConnectionProperties::default().with_tokio(),
         TLSConfig::default(),
     )

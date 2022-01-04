@@ -4,9 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lapin = "1.8"
-tokio-amqp = "1.0"
-tokio = { version = "1.0", features = ["full"]}
+lapin = { version = "1",  default-features = false, features = ["rustls-native-certs"] }
+tokio-amqp = { version = "1", default-features = false }
 futures = "0.3"
 eiffelvis_gen = { path = "../eiffelvis_gen", version = "0.1" }
 serde = { version="1.0", features=["derive"]}
