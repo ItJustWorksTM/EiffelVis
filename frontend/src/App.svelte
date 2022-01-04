@@ -11,9 +11,14 @@
 
 	let graph_elem: G6Graph | null;
 
-	const backendurl = process.env.EIFFELVIS_URL;
+	const backend_url = process.env.EIFFELVIS_URL.startsWith('@origin')
+			          ? `${window.location.host}${window.location.pathname}${process.env.EIFFELVIS_URL.replace('@origin', '')}`
+			          : process.env.EIFFELVIS_URL;
+	const backend_has_ssl = JSON.parse(process.env.EIFFELVIS_SSL);
+	const backend_proto_ws = backend_has_ssl ? 'wss' : 'ws';
+	const backend_proto_http = backend_has_ssl ? 'https' : 'http';
 
-	const conn = new EiffelVisConnection(`ws://${backendurl}/ws`);
+	const conn = new EiffelVisConnection(`${backend_proto_ws}://${backend_url}/ws`);
 	let stream = null;
 
 	let selected_node = null;
@@ -150,7 +155,7 @@
 	const onNodeSelected = async (e: any) => {
 		if (e.detail?.target) {
 			selected_node = await fetch(
-				`http://${backendurl}/get_event/${e.detail.target._cfg.model.id}`
+				`${backend_proto_http}://${backend_url}/get_event/${e.detail.target._cfg.model.id}`
 			).then((resp) => resp.json());
 		} else {
 			selected_node = null;
