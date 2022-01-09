@@ -33,6 +33,8 @@
 
 	let waiting = false;
 
+	let show_menu = false;
+
 	// TODO: make a real type
 	const newDefault = () => {
 		return {
@@ -183,6 +185,10 @@
 		consumeQuery();
 	};
 
+	const toggleMenu = () => {
+		show_menu = !show_menu;
+	};
+
 	const options = {
 		width: 400,
 		height: 400,
@@ -214,67 +220,135 @@
 
 <main class="m-0 h-screen bg-base-300">
 	<div
+		id="sideBar"
+		class="h-full w-0 fixed z-1 top-0 right-0 bg-base-100 overflow-x-hidden pt-10"
+		class:open={show_menu}
+	>
+		<div
+			class="form-control p-6 pt-10 overflow-y-auto w-100 bg-base-100 flex-col "
+		>
+			<h1 class="text-lg py-2">Graph Options</h1>
+			<label class="input-group input-group-sm mt-1">
+				<span class="span span-sm w-1/2 bg-base-100">Offset</span>
+				<input
+					type="number"
+					bind:value={graph_options.offset}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
+				<input
+					type="number"
+					bind:value={graph_options.time_diff}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
+				<input
+					type="number"
+					bind:value={graph_options.y_scale}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span class="span span-sm w-1/2 bg-base-100"
+					>X-axis Node Separation</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.x_sep}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span class="span span-sm w-1/2 bg-base-100"
+					>Y-axis Node Separation</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.y_sep}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<div class="btn-group w-full flex flex-row mt-2">
+				<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
+					>Update Graph</button
+				>
+				<button class="btn btn-xs grow bg-primary" on:click={resetGraphOptions}
+					>Reset Default</button
+				>
+			</div>
+		</div>
+	</div>
+
+	<div class="bottom-10 right-10 inline-block absolute">
+		<ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
+			<li>
+				<a on:click={toggleMenu}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						class="inline-block w-6 h-6 stroke-current"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
+						/>
+					</svg>
+				</a>
+			</li>
+			<li>
+				<a>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						class="inline-block w-6 h-6 stroke-current"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+						/>
+					</svg>
+				</a>
+			</li>
+			<li>
+				<a>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						class="inline-block w-6 h-6 stroke-current"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+						/>
+					</svg>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div
 		class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
 	>
 		<div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-			<!-- TODO: Remove Graph Options from filter tab-->>
-			<div class="form-control">
-				<h1 class="text-lg py-2">Graph Options</h1>
-				<!-- svelte-ignore a11y-label-has-associated-control -->
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Offset</span>
-					<input
-						type="number"
-						bind:value={graph_options.offset}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
-					<input
-						type="number"
-						bind:value={graph_options.time_diff}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
-					<input
-						type="number"
-						bind:value={graph_options.y_scale}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100"
-						>X-axis Node Separation</span
-					>
-					<input
-						type="number"
-						bind:value={graph_options.x_sep}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100"
-						>Y-axis Node Separation</span
-					>
-					<input
-						type="number"
-						bind:value={graph_options.y_sep}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<div class="btn-group w-full flex flex-row mt-2">
-					<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
-						>Update Graph</button
-					>
-					<button
-						class="btn btn-xs grow bg-primary"
-						on:click={resetGraphOptions}>Reset Default</button
-					>
-				</div>
-			</div>
 			<h1 class="text-lg py-2">Filter Options:</h1>
 			<div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
 				<p>Time: {selected_node?.meta.time}</p>
@@ -419,4 +493,8 @@
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
+
+	.open {
+		width: 30%;
+	}
 </style>
