@@ -107,13 +107,13 @@
 		for await (const event of iter) {
 			layout.apply(event, graph_options);
 			graph_elem.push(event);
-			legend = layout.getNodeColor();
 
 			// TODO: Find a better way to do this
 			if (once) {
 				graph_elem.focusNode(event.id);
 				once = false;
 			}
+			legend = layout.getNodeColor();
 		}
 	};
 
@@ -317,6 +317,7 @@
 					</svg>
 				</a>
 			</li>
+
 			<li>
 				<a>
 					<svg
@@ -373,13 +374,14 @@
 			</thead>
 			<tbody>
 				{#each colors as [event, color]}
-					<tr class="">
-						<td>{event}</td>
+					<tr class="hover">
+						<td class="h-15">{event}</td>
 						<td
-							><div class="avatar">
-								<div class={`mb-8 bg-[${color}] rounded-full w-5 h-5`}>
-									{color}
-								</div>
+							><div class="avatar h-15">
+								<div
+									class="mb-8 rounded-full w-5 h-5"
+									style="background-color: {color}"
+								/>
 							</div></td
 						>
 					</tr>
