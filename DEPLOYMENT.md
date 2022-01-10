@@ -63,7 +63,7 @@ Security-wise, do not run it as `root`, and use TLS certificates when `localhost
 
 ### Frontend-specifics
 
-Before building (with `npm run build` under `frontend/`),  you will want to edit [`frontend/.env`](`frontend/.env`).
+Before building (with `npm run build` under `frontend/`),  you will want to edit [`frontend/.env`](frontend/.env).
 There are currently two options to set:
 - `EIFFELVIS_URL` is the hostname, port and path at which the backend is deployed; the prefix `@origin` can be used
   to indicate that the backend is reachable on the same host as the frontend. Alternatively, the prefix `@hostname`
