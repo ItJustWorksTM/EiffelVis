@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import G6, { Graph } from "@antv/g6";
+    import G6, { Graph, GraphData } from "@antv/g6";
+    import type { TimeBarData } from "../apidefinition";
 
     import { createEventDispatcher } from "svelte";
 
@@ -12,10 +13,11 @@
     let container: HTMLElement;
 
     let graph: Graph | null;
+    let timeBarData:TimeBarData[] = [];
 
     export const reset = () => {
-        graph?.data({});
-        graph?.render();
+        graph?.changeData({});
+        timeBarData = [];
         dispatch("nodeselected", null);
     };
 
@@ -36,11 +38,70 @@
     };
 
     export const push = (ev: any) => {
+        ev.date = String(ev.time)
         graph.addItem("node", ev, false, false);
         for (const target of ev.edges) {
             graph.addItem("edge", { source: ev.id, target });
         }
+
+        timeBarData.push({
+            date: ev.date,
+            value: "1"
+        });
     };
+
+    export const updateTimeBar = (timeBarEnabled:boolean) => {
+        graph.removePlugin(graph.get("plugins")[0])
+        if(timeBarEnabled){
+            graph!.addPlugin(new G6.TimeBar({
+          className: 'g6TimeBar',
+          x: 0,
+          y: 0,
+          width: 900,
+          height: 110,
+          padding: 10,
+          type: 'trend',
+          changeData: false,
+          trend: {
+            data: timeBarData,
+            smooth: true,
+          },
+          tick:{
+            tickLabelFormatter: (timeBarData: any) => {
+                return "";
+            },
+            /*
+            tickLabelStyle: {
+                
+            },
+            */
+            tickLineStyle:{
+                fill: '#f28c18'
+            }
+          },
+          slider: {
+            backgroundStyle: {
+              fill: '#131616',
+            },
+            foregroundStyle: {
+              fill: '#ffffff',
+            },
+            handlerStyle:{
+                style:{
+                    fill: '#f28c18',
+                    stroke: '#f28c18'
+                }
+            }
+          },
+          controllerCfg: {
+            fill: '#131616',
+            stroke: '#131616',
+            timePointControllerText: ' Point',
+            timeRangeControllerText: ' Point',
+          },
+        }));
+        }
+    }
 
     onMount(() => {
         if (graph) {
@@ -54,8 +115,7 @@
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
-        graph.data(data);
-        graph.render();
+        graph.changeData(data);
         resizeGraph();
 
         return () => {
@@ -65,8 +125,7 @@
 
     $: {
         if (data && graph) {
-            graph.data(data);
-            graph.render();
+            graph.changeData(data);
         }
     }
 </script>
@@ -78,5 +137,12 @@
 <style global>
     .fuck {
         height: 100%;
+    }
+    .g6TimeBar {
+        background: #131616;
+        border-radius: 20px;
+        position: absolute !important;
+        left:30%;
+        bottom: 80px;
     }
 </style>

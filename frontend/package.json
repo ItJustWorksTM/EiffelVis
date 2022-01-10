@@ -24,7 +24,7 @@
     "validate": "svelte-check"
   },
   "dependencies": {
-    "@antv/g6": "^4.5.0",
+    "@antv/g6": "^4.5.1",
     "autoprefixer": "^10.4.0",
     "daisyui": "^1.16.4",
     "dotenv": "^10.0.0",

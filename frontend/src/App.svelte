@@ -9,7 +9,8 @@
   import G6Graph from './components/G6Graph.svelte';
   import { toggle_class } from 'svelte/internal';
 
-  let graph_elem: G6Graph | null;
+  let graph_elem: G6Graph | null
+  let timeBarEnabled = false;
 
   const backend_url = process.env.EIFFELVIS_URL.startsWith('@origin')
     ? `${window.location.host}${
@@ -172,10 +173,12 @@
       },
     ];
 
-    const newq = new QueryStream(conn, query);
-    stream = newq;
-    consumeQuery();
-  };
+    const newq = new QueryStream(conn, query)
+    stream = newq
+    consumeQuery()
+	timeBarEnabled = false;
+	graph_elem.updateTimeBar(timeBarEnabled);
+  }
 
   const onNodeSelected = async (e: any) => {
     if (e.detail?.target) {
@@ -534,6 +537,22 @@
           on:click={submitCurrentQuery}>submit</button
         >
       </div>
+	  <div>
+		<label
+			class="cursor-pointer label"
+		>
+			<span class="label-text">Time Bar</span>
+			<input
+				type="checkbox"
+				class="toggle toggle-primary"
+				bind:checked={timeBarEnabled}
+				on:click={() => (
+					console.log("TimeBar enabled:", !timeBarEnabled), // Checkbox bind value reversing since the on:click trigger before bind
+					graph_elem.updateTimeBar(!timeBarEnabled)
+					)}
+			/>
+		</label>
+	</div>
     </div>
   </div>
 
