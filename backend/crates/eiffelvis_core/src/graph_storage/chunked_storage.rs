@@ -1,4 +1,4 @@
-use crate::graph;
+use crate::graph::{self, Indexable};
 use ahash::RandomState;
 use indexmap::IndexMap;
 use std::{
@@ -98,7 +98,12 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
         }
     }
 
-    fn add_node(&mut self, key: K, data: N) -> ChunkedIndex {
+    fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
+        // TODO: decide if we want to be correct or not :/
+        if self.get(key).is_some() {
+            return None;
+        }
+
         if self.store[self.head_chunk()].len() >= self.max_elements() {
             self.newest_generation += 1;
             if self.chunks() < self.max_chunks() {
@@ -116,10 +121,10 @@ impl<K: graph::Key, N, E> ChunkedGraph<K, N, E> {
 
         self.store[head_chunk].insert(key, Element(NodeData { data }, Vec::default()));
 
-        ChunkedIndex::new(
+        Some(ChunkedIndex::new(
             self.newest_generation,
             (self.store[head_chunk].len() - 1) as u32,
-        )
+        ))
     }
 
     fn add_edge(&mut self, a: K, b: K, data: E) {
@@ -321,7 +326,7 @@ impl<'a, K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
 
 impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
     fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
-        Some(self.add_node(key, data))
+        self.add_node(key, data)
     }
 
     fn add_edge(&mut self, a: K, b: K, data: E) {

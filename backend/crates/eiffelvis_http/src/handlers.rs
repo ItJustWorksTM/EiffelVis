@@ -1,3 +1,5 @@
+use std::{collections::VecDeque, ops::Add};
+
 use crate::*;
 use serde::Serialize;
 
@@ -32,7 +34,7 @@ pub(crate) fn make_service<T: EiffelVisHttpApp>(app: App<T>) -> Router {
 pub async fn event_dump<T: EiffelVisHttpApp>(
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
-    let lk = app.read().await;
+    let lk = app.graph.read().await;
 
     let dump = lk.dump::<&BaseEvent>();
 
@@ -44,7 +46,7 @@ pub async fn get_event<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
-    let lk = app.read().await;
+    let lk = app.graph.read().await;
     if let Some(event) = lk.get_event(find_id) {
         Json(event).into_response()
     } else {
@@ -61,7 +63,7 @@ pub async fn events_with_root<T: EiffelVisHttpApp>(
     Path(find_id): Path<Uuid>,
     Extension(app): Extension<App<T>>,
 ) -> impl IntoResponse {
-    let lk = app.read().await;
+    let lk = app.graph.read().await;
     Json(lk.get_subgraph_with_roots::<&BaseEvent>(&[find_id])).into_response()
 }
 
@@ -86,6 +88,15 @@ pub async fn establish_websocket<T: EiffelVisHttpApp>(
     ws.on_upgrade(move |mut socket| async move {
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
 
+        interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+
+        let hist_max = 8;
+        let mut delta_hist = VecDeque::with_capacity(hist_max);
+        let mut last_heurstic = 0;
+        let mut heuristic_changed = false;
+
+        delta_hist.push_back(0);
+
         let mut req_handler: Option<TrackedQuery<_>> = None;
 
         while let Ok(()) = tokio::select! {
@@ -101,22 +112,42 @@ pub async fn establish_websocket<T: EiffelVisHttpApp>(
                         };
                         let res = QueryRes { repr: msg.clone(), error: res };
                         println!("Request {:?}", res);
+                        heuristic_changed = true;
                         socket.send(Message::Text(serde_json::to_string(&res).unwrap())).await.map_err(|_| ())
                     },
                     _ => Err(())
                 }
             },
             _ = interval.tick() => {
-                if let Some(handler) = req_handler.as_mut() {
-                    let events: Vec<LeanEvent> = handler.handle(&*app.read().await);
-                    if !events.is_empty() {
-                        socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Ok(())
+                let heuristic = app.heuristic.load(std::sync::atomic::Ordering::Relaxed);
+                let average = delta_hist.iter().fold(0, Add::add) / delta_hist.len() as u64;
+                let delta = heuristic - last_heurstic;
+
+                if last_heurstic != heuristic {
+                    // the delta might be too high for us to lock the graph so we need to remember
+                    heuristic_changed = true;
                 }
+
+                let mut res = Ok(());
+                if heuristic_changed && delta <= average  {
+                    if let Some(handler) = req_handler.as_mut() {
+                        info!("locking graph!");
+                        let events: Vec<LeanEvent> = handler.handle(&*app.graph.read().await);
+                        if !events.is_empty() {
+                            res = socket.send(Message::Text(serde_json::to_string(&events).unwrap())).await.map_err(|_| ())
+                        }
+                    }
+
+                    heuristic_changed = false;
+                }
+
+                if delta_hist.len() >= hist_max {
+                    delta_hist.pop_front();
+                }
+                delta_hist.push_back(delta);
+                last_heurstic = heuristic;
+
+                res
             }
         } {}
 

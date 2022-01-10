@@ -16,7 +16,7 @@ impl Key for Uuid {}
 
 pub trait EiffelVisApp: EiffelGraph {
     /// Inserts a new eiffel event into storage
-    fn push(&mut self, event: BaseEvent);
+    fn push(&mut self, event: BaseEvent) -> bool;
 
     /// Looks up the event of given id
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent>;
@@ -29,15 +29,14 @@ pub trait EiffelVisApp: EiffelGraph {
 }
 
 impl<G: EiffelGraph> EiffelVisApp for G {
-    fn push(&mut self, event: BaseEvent) {
+    fn push(&mut self, event: BaseEvent) -> bool {
         let links = event.links.clone();
         self.add_node_with_edges(
             event.meta.id,
             event,
             links.into_iter().map(|link| (link.target, link.link_type)),
-        );
-
-        println!("Graph size: {}", self.node_count());
+        )
+        .is_some()
     }
 
     fn get_event(&self, id: Uuid) -> Option<&BaseEvent> {
