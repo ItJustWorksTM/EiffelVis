@@ -35,6 +35,12 @@
 
 	let show_menu = false;
 
+	let show_legend = false;
+
+	let legend = new Map<string, string>();
+
+	let colors = new Array<[string, string]>();
+
 	// TODO: make a real type
 	const newDefault = () => {
 		return {
@@ -101,6 +107,7 @@
 		for await (const event of iter) {
 			layout.apply(event, graph_options);
 			graph_elem.push(event);
+			legend = layout.getNodeColor();
 
 			// TODO: Find a better way to do this
 			if (once) {
@@ -109,6 +116,10 @@
 			}
 		}
 	};
+
+	$: {
+		colors = [...legend.entries()];
+	}
 
 	const submitCurrentQuery = () => {
 		const query: Query = {
@@ -187,6 +198,10 @@
 
 	const toggleMenu = () => {
 		show_menu = !show_menu;
+	};
+
+	const toggleLegend = () => {
+		show_legend = !show_legend;
 	};
 
 	const options = {
@@ -320,7 +335,7 @@
 				</a>
 			</li>
 			<li>
-				<a>
+				<a on:click={toggleLegend}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -343,6 +358,34 @@
 				</a>
 			</li>
 		</ul>
+	</div>
+
+	<div
+		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-3/10 absolute"
+		class:show={show_legend}
+	>
+		<table class="table w-full">
+			<thead>
+				<tr>
+					<th>Event Type</th>
+					<th>Color</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each colors as [event, color]}
+					<tr class="">
+						<td>{event}</td>
+						<td
+							><div class="avatar">
+								<div class={`mb-8 bg-[${color}] rounded-full w-5 h-5`}>
+									{color}
+								</div>
+							</div></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
 
 	<div
@@ -496,5 +539,9 @@
 
 	.open {
 		width: 30%;
+	}
+
+	.show {
+		width: 20%;
 	}
 </style>

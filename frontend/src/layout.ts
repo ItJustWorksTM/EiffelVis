@@ -54,9 +54,13 @@ export class StatefulLayout {
 				(acc, char) => char.charCodeAt(0) + ((acc << 5) - acc),
 				2
 			);
-			const color = `hsl(${hash % 360}, 50%, 50%)`;
+			const color = `hsl(${hash % 360},50%,50%)`;
 			this.colors.set(eventType, color);
 		}
 		return this.colors.get(eventType);
+	}
+
+	getNodeColor() {
+		return this.colors;
 	}
 }
