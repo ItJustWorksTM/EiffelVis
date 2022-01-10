@@ -236,64 +236,65 @@
 <main class="m-0 h-screen bg-base-300">
 	<div
 		id="sideBar"
-		class="h-full w-0 fixed z-1 top-0 right-0 bg-base-100 overflow-x-hidden pt-10"
+		class="h-full w-0 fixed z-1 top-0 right-0 bg-base-100 overflow-x-hidden pt-0"
 		class:open={show_menu}
 	>
-		<div
-			class="form-control p-6 pt-10 overflow-y-auto w-100 bg-base-100 flex-col "
-		>
+		<div class="p-6 pt-5 overflow-y-auto w-100 flex-col">
 			<h1 class="text-lg py-2">Graph Options</h1>
-			<label class="input-group input-group-sm mt-1">
-				<span class="span span-sm w-1/2 bg-base-100">Offset</span>
-				<input
-					type="number"
-					bind:value={graph_options.offset}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
-				<input
-					type="number"
-					bind:value={graph_options.time_diff}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
-				<input
-					type="number"
-					bind:value={graph_options.y_scale}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span class="span span-sm w-1/2 bg-base-100"
-					>X-axis Node Separation</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.x_sep}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span class="span span-sm w-1/2 bg-base-100"
-					>Y-axis Node Separation</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.y_sep}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<div class="btn-group w-full flex flex-row mt-2">
-				<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
-					>Update Graph</button
-				>
-				<button class="btn btn-xs grow bg-primary" on:click={resetGraphOptions}
-					>Reset Default</button
-				>
+			<div class="border-2 rounded p-3">
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Offset</span>
+					<input
+						type="number"
+						bind:value={graph_options.offset}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
+					<input
+						type="number"
+						bind:value={graph_options.time_diff}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
+					<input
+						type="number"
+						bind:value={graph_options.y_scale}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100"
+						>X-axis Node Separation</span
+					>
+					<input
+						type="number"
+						bind:value={graph_options.x_sep}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<label class="input-group input-group-sm mt-1">
+					<span class="span span-sm w-1/2 bg-base-100"
+						>Y-axis Node Separation</span
+					>
+					<input
+						type="number"
+						bind:value={graph_options.y_sep}
+						class="input input-bordered input-sm w-1/2"
+					/>
+				</label>
+				<div class="btn-group w-full flex flex-row mt-2">
+					<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
+						>Update Graph</button
+					>
+					<button
+						class="btn btn-xs grow bg-primary"
+						on:click={resetGraphOptions}>Reset Default</button
+					>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -362,7 +363,7 @@
 	</div>
 
 	<div
-		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-3/10 absolute"
+		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-3/10 absolute rounded-box left-0 top-0 m-6"
 		class:show={show_legend}
 	>
 		<table class="table w-full">
