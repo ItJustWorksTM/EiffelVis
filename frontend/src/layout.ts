@@ -15,7 +15,7 @@ export class StatefulLayout {
 			this.curveSep = graphOptions.offset;
 		}
 		node.style = {
-			fill: this.nodeColor(node.event_type),
+			fill: this.nodeColor(node.event_type, graphOptions.hue),
 			lineWidth: 0.4,
 		};
 		node.size = 10;
@@ -48,13 +48,13 @@ export class StatefulLayout {
 		}
 	}
 
-	nodeColor(eventType: string) {
+	nodeColor(eventType: string, hue?: number) {
 		if (!this.colors.has(eventType)) {
 			const hash = [...eventType].reduce(
 				(acc, char) => char.charCodeAt(0) + ((acc << 5) - acc),
 				2
 			);
-			const color = `hsl(${hash % 360},50%,50%)`;
+			const color = `hsl(${hash % (hue ? hue : 360)},50%,50%)`;
 			this.colors.set(eventType, color);
 		}
 		return this.colors.get(eventType);

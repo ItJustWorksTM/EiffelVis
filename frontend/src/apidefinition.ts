@@ -17,6 +17,7 @@ export interface GraphSettings {
 	y_scale: number;
 	x_sep: number;
 	y_sep: number;
+	hue: number;
 }
 
 interface _Absolute {

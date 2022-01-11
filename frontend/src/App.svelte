@@ -88,6 +88,7 @@
 		y_scale: 0.99,
 		x_sep: 60,
 		y_sep: 60,
+		hue: 360,
 	};
 
 	$: {
@@ -193,6 +194,7 @@
 			y_scale: 0.99,
 			x_sep: 60,
 			y_sep: 60,
+			hue: 360,
 		};
 		consumeQuery();
 	};
@@ -305,6 +307,17 @@
 					class="input input-bordered input-sm w-1/2"
 				/>
 			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+					>Hue (Node Color)</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.hue}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
 			<div class="btn-group w-full flex flex-row mt-2">
 				<button class="btn btn-sm grow btn-primary" on:click={consumeQuery}
 					>Update Graph</button
@@ -317,7 +330,7 @@
 	</div>
 
 	<div
-		class="bottom-10 right-10 inline-block absolute"
+		class="right-6 bottom-0 mb-6 inline-block absolute"
 		class:move={show_legend || show_menu}
 	>
 		<ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
