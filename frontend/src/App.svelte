@@ -7,6 +7,7 @@
 	import type { GraphSettings, Query } from './apidefinition';
 	import { deep_copy } from './utils';
 	import G6Graph from './components/G6Graph.svelte';
+	import { toggle_class } from 'svelte/internal';
 
 	let graph_elem: G6Graph | null;
 
@@ -197,10 +198,16 @@
 	};
 
 	const toggleMenu = () => {
+		if (show_legend) {
+			toggleLegend();
+		}
 		show_menu = !show_menu;
 	};
 
 	const toggleLegend = () => {
+		if (show_menu) {
+			toggleMenu();
+		}
 		show_legend = !show_legend;
 	};
 
@@ -239,70 +246,83 @@
 		class="h-full w-0 fixed z-1 top-0 right-0 bg-base-100 overflow-x-hidden pt-0"
 		class:open={show_menu}
 	>
-		<div class="p-6 pt-5 overflow-y-auto w-100 flex-col">
+		<div
+			class=" border border-base-300 rounded-box p-6 pt-5 overflow-y-auto bg-base-200 flex-col shadow-lg bg-base-100"
+		>
 			<h1 class="text-lg py-2">Graph Options</h1>
-			<div class="border-2 rounded p-3">
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Offset</span>
-					<input
-						type="number"
-						bind:value={graph_options.offset}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Time Collapse</span>
-					<input
-						type="number"
-						bind:value={graph_options.time_diff}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100">Y-axis Scaling</span>
-					<input
-						type="number"
-						bind:value={graph_options.y_scale}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100"
-						>X-axis Node Separation</span
-					>
-					<input
-						type="number"
-						bind:value={graph_options.x_sep}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<label class="input-group input-group-sm mt-1">
-					<span class="span span-sm w-1/2 bg-base-100"
-						>Y-axis Node Separation</span
-					>
-					<input
-						type="number"
-						bind:value={graph_options.y_sep}
-						class="input input-bordered input-sm w-1/2"
-					/>
-				</label>
-				<div class="btn-group w-full flex flex-row mt-2">
-					<button class="btn btn-xs grow bg-primary" on:click={consumeQuery}
-						>Update Graph</button
-					>
-					<button
-						class="btn btn-xs grow bg-primary"
-						on:click={resetGraphOptions}>Reset Default</button
-					>
-				</div>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100"
+					>Offset</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.offset}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+					>Time Collapse</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.time_diff}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+					>Y-axis Scaling</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.y_scale}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+					>X-axis Node Separation</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.x_sep}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<label class="input-group input-group-sm mt-1">
+				<span
+					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+					>Y-axis Node Separation</span
+				>
+				<input
+					type="number"
+					bind:value={graph_options.y_sep}
+					class="input input-bordered input-sm w-1/2"
+				/>
+			</label>
+			<div class="btn-group w-full flex flex-row mt-2">
+				<button class="btn btn-sm grow btn-primary" on:click={consumeQuery}
+					>Update Graph</button
+				>
+				<button class="btn btn-sm grow btn-primary" on:click={resetGraphOptions}
+					>Reset Default</button
+				>
 			</div>
 		</div>
 	</div>
 
-	<div class="bottom-10 right-10 inline-block absolute">
+	<div
+		class="bottom-10 right-10 inline-block absolute"
+		class:move={show_legend || show_menu}
+	>
 		<ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
 			<li>
-				<a on:click={toggleMenu}>
+				<a class="" class:btn-active={show_menu} on:click={toggleMenu}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -318,26 +338,8 @@
 					</svg>
 				</a>
 			</li>
-
 			<li>
-				<a>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						class="inline-block w-6 h-6 stroke-current"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-						/>
-					</svg>
-				</a>
-			</li>
-			<li>
-				<a on:click={toggleLegend}>
+				<a class="" class:btn-active={show_legend} on:click={toggleLegend}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -363,7 +365,7 @@
 	</div>
 
 	<div
-		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-3/10 absolute rounded-box left-0 top-0 m-6"
+		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-100 absolute rounded-box right-0 bottom-0 m-6"
 		class:show={show_legend}
 	>
 		<table class="table w-full">
@@ -375,10 +377,11 @@
 			</thead>
 			<tbody>
 				{#each colors as [event, color]}
-					<tr class="hover">
-						<td class="h-15">{event}</td>
+					<tr class="">
+						<td>{event}</td>
 						<td
-							><div class="avatar h-15">
+							>&nbsp
+							<div class="avatar h-3">
 								<div
 									class="mb-8 rounded-full w-5 h-5"
 									style="background-color: {color}"
@@ -539,12 +542,13 @@
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
-
 	.open {
-		width: 30%;
+		width: 330px;
 	}
-
 	.show {
-		width: 20%;
+		width: 300px;
+	}
+	.move {
+		margin-right: 320px;
 	}
 </style>
