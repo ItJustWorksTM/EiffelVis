@@ -19,6 +19,7 @@ export class StatefulLayout {
 			lineWidth: 0.4,
 		};
 		node.size = 10;
+
 		const temp = node;
 		const tempTime: number = temp.time;
 		if (tempTime <= this.timee + graphOptions.time_diff) {
@@ -51,7 +52,7 @@ export class StatefulLayout {
 	nodeColor(eventType: string, hue?: number) {
 		if (!this.colors.has(eventType)) {
 			const hash = [...eventType].reduce(
-				(acc, char) => char.charCodeAt(0) + ((acc << 5) - acc),
+				(acc, char) => char.charCodeAt(0) + ((acc << 1) - acc),
 				2
 			);
 			const color = `hsl(${hash % (hue ? hue : 360)},50%,50%)`;

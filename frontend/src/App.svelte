@@ -244,94 +244,84 @@
 
 <main class="m-0 h-screen bg-base-300">
 	<div
-		id="sideBar"
-		class="h-full w-0 fixed z-1 top-0 right-0 bg-base-100 overflow-x-hidden pt-0"
-		class:open={show_menu}
+		class="p-3 shadow-lg bg-base-100 rounded-box h-fit right-0 top-0 fixed w-fit m-6"
+		class:hidden={!show_menu}
 	>
-		<div
-			class=" border border-base-300 rounded-box p-6 pt-5 overflow-y-auto bg-base-200 flex-col shadow-lg bg-base-100"
-		>
-			<h1 class="text-lg py-2">Graph Options</h1>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100"
-					>Offset</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.offset}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
-					>Time Collapse</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.time_diff}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
-					>Y-axis Scaling</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.y_scale}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
-					>X-axis Node Separation</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.x_sep}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
-					>Y-axis Node Separation</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.y_sep}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<label class="input-group input-group-sm mt-1">
-				<span
-					class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
-					>Hue (Node Color)</span
-				>
-				<input
-					type="number"
-					bind:value={graph_options.hue}
-					class="input input-bordered input-sm w-1/2"
-				/>
-			</label>
-			<div class="btn-group w-full flex flex-row mt-2">
-				<button class="btn btn-sm grow btn-primary" on:click={consumeQuery}
-					>Update Graph</button
-				>
-				<button class="btn btn-sm grow btn-primary" on:click={resetGraphOptions}
-					>Reset Default</button
-				>
-			</div>
+		<h1 class="text-lg py-2">Graph Options</h1>
+		<label class="input-group input-group-sm mt-1">
+			<span class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100"
+				>Offset</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.offset}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<label class="input-group input-group-sm mt-1">
+			<span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+				>Time Collapse</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.time_diff}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<label class="input-group input-group-sm mt-1">
+			<span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+				>Y-axis Scaling</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.y_scale}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<label class="input-group input-group-sm mt-1">
+			<span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+				>X-axis Node Separation</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.x_sep}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<label class="input-group input-group-sm mt-1">
+			<span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+				>Y-axis Node Separation</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.y_sep}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<label class="input-group input-group-sm mt-1">
+			<span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+				>Hue (Node Color)</span
+			>
+			<input
+				type="number"
+				bind:value={graph_options.hue}
+				class="input input-bordered input-sm w-1/2"
+			/>
+		</label>
+		<div class="btn-group w-full flex flex-row mt-2">
+			<button class="btn btn-sm grow btn-primary" on:click={consumeQuery}
+				>Update Graph</button
+			>
+			<button
+				class="btn btn-sm grow btn-primary btn-outline"
+				on:click={resetGraphOptions}>Reset Default</button
+			>
 		</div>
 	</div>
 
 	<div
-		class="right-6 bottom-0 mb-6 inline-block absolute"
-		class:move={show_legend || show_menu}
+		class="right-0 bottom-0 m-6 inline-block absolute"
+		class:move={show_legend}
 	>
 		<ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
 			<li>
@@ -378,7 +368,7 @@
 	</div>
 
 	<div
-		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-100 absolute rounded-box right-0 bottom-0 m-6"
+		class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit absolute rounded-box right-0 bottom-0 m-6"
 		class:show={show_legend}
 	>
 		<table class="table w-full">
@@ -411,7 +401,6 @@
 		class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
 	>
 		<div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-			<h1 class="text-lg py-2">Filter Options:</h1>
 			<div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
 				<p>Time: {selected_node?.meta.time}</p>
 				<p>Type: {selected_node?.meta.type}</p>
@@ -440,7 +429,7 @@
 					>
 				</div>
 			</div>
-
+			<h1 class="text-lg py-2">Filter Options:</h1>
 			<!-- TODO: Support range filter -->
 			{#each filters as filter, i}
 				<div
@@ -555,13 +544,10 @@
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
-	.open {
-		width: 330px;
-	}
 	.show {
 		width: 300px;
 	}
 	.move {
-		margin-right: 320px;
+		margin-right: 325px;
 	}
 </style>
