@@ -244,7 +244,7 @@
 
 <main class="m-0 h-screen bg-base-300">
   <div
-    class="p-3 shadow-lg bg-base-100 rounded-box h-fit right-0 top-0 fixed w-fit m-6"
+    class="p-3 shadow-lg bg-base-100 rounded-box h-fit right-0 bottom-0 fixed w-fit m-6"
     class:hidden={!show_menu}
   >
     <h1 class="text-lg py-2">Graph Options</h1>
@@ -321,7 +321,7 @@
 
   <div
     class="right-0 bottom-0 m-6 inline-block absolute"
-    class:move={show_legend}
+    class:move={show_legend || show_menu}
   >
     <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
       <li>
@@ -368,7 +368,7 @@
   </div>
 
   <div
-    class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit absolute rounded-box right-0 bottom-0 m-6"
+    class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg absolute rounded-box right-0 bottom-0 m-6"
     class:show={show_legend}
   >
     <table class="table w-full">
@@ -545,9 +545,9 @@
   @tailwind components;
   @tailwind utilities;
   .show {
-    width: 300px;
+    width: 320px;
   }
   .move {
-    margin-right: 325px;
+    margin-right: 350px;
   }
 </style>
