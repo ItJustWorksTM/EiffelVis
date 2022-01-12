@@ -52,12 +52,15 @@
 
     export const updateTimeBar = (timeBarEnabled:boolean) => {
         graph.removePlugin(graph.get("plugins")[0])
-        if(timeBarEnabled){
+        if(!timeBarEnabled){
+          //TO-DO Reset the graph if wanted later
+        }
+        else{
             graph!.addPlugin(new G6.TimeBar({
           className: 'g6TimeBar',
           x: 0,
           y: 0,
-          width: 900,
+          width: 500,
           height: 110,
           padding: 10,
           type: 'trend',
@@ -142,7 +145,7 @@
         background: #131616;
         border-radius: 20px;
         position: absolute !important;
-        left:30%;
+        left:35%;
         bottom: 80px;
     }
 </style>
