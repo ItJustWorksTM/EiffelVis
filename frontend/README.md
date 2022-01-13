@@ -21,7 +21,7 @@ npm run build
 
 ## **Graph Options**
 
-<img src="../assets/graph_menu.png" alt="GraphMenu" width="100"/>
+<img src="../assets/graph_menu.png" alt="GraphMenu" width="200"/>
 
 | Graph Option           | Description                                                                                                                                                                                                               | Default Value | Ideal Value Range |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-----------: | :---------------: |
