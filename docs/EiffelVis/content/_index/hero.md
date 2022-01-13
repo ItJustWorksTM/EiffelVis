@@ -17,12 +17,12 @@ subtitle = "Eiffel Event Visualization Stack."
 
 [[buttons]]
   text = "Download"
-  url = "https://github.com/ItJustWorksTM/EiffelVis/releases"
+  url = "https://github.com/ItJustWorksTM/EiffelVis/actions/runs/1676902610"
   color = "primary"
 
 [[buttons]]
   text = "Read More"
-  url = "https://github.com/ItJustWorksTM/EiffelVis/blob/update-docs/README.md#eiffelvis"
+  url = "https://github.com/ItJustWorksTM/EiffelVis/blob/master/README.md#eiffelvis"
   color = "primary"
 
 +++

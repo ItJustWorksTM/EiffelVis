@@ -16,6 +16,6 @@ subtitle= ""
   height = "50px"
 +++
 
-##### To begin using EiffelVis, please refer to the <a style="color:#00FFFF" href="https://github.com/ItJustWorksTM/EiffelVis/blob/update-docs/README.md#getting-started">Getting Started Guide</a> on the repository. It will provide a thorough explanation which includes prerequisites, project installation, and usage instructions.
+##### To begin using EiffelVis, please refer to the <a style="color:#00FFFF" href="https://github.com/ItJustWorksTM/EiffelVis/blob/master/README.md#getting-started">Getting Started Guide</a> on the repository. It will provide a thorough explanation which includes prerequisites, project installation, and usage instructions.
 
 ##### To download EiffelVis, please visit the <a style="color:#00FFFF" href="https://github.com/ItJustWorksTM/EiffelVis/releases">Releases page</a>. All future releases will also be available for downloading on this page.

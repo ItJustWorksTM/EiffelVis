@@ -5,5 +5,5 @@ date = "2021-11-25"
 weight = 1250
 background = "dark"
 
-copyright = "" # default: Copyright $Year .Site.params.name
+copyright = "Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™" 
 +++
