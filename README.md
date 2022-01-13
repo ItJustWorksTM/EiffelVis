@@ -53,7 +53,7 @@ These instructions are an example of how you may run EiffelVis locally.
    cargo run -- --help
    ```
 
-Now that the application is running in these 5 simple steps, your client should look something like this: [insert image]
+Now that the application is running in these 5 simple steps, your client should look something like this: ![sample image](./assets/sample_graph.png)
 
 # Usage
 
