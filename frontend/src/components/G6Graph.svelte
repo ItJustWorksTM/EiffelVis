@@ -147,5 +147,6 @@
         position: absolute !important;
         left:35%;
         bottom: 80px;
+        z-index: 0;
     }
 </style>

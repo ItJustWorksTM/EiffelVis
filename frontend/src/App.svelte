@@ -249,6 +249,7 @@
 <main class="m-0 h-screen bg-base-300">
   <div
     class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
+    style="z-index:1"
   >
     <div class="block m-6">
       <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
@@ -325,6 +326,7 @@
     </div>
     <div
       class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
+      style="z-index:1"
       class:hidden={!show_menu}
     >
       <h1 class="text-lg py-2">Graph Options</h1>
@@ -405,6 +407,7 @@
       </div>
     </div>
     <div
+      style="z-index:1"
       class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
       class:show={show_legend}
     >
@@ -436,6 +439,7 @@
   </div>
 
   <div
+    style="z-index:1"
     class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
   >
     <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
