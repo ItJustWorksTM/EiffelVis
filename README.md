@@ -59,13 +59,7 @@ Now that the application is running in these 5 simple steps, your client should 
 
 Additional information that will be useful in helping you utilize EiffelVis to it's maximum potential.
 
-## Client
-
-For usage instructions and information regarding the client/frontend, please see the [frontend guide](./frontend/README.md).
-
-## Backend
-
-For usage instructions and information regarding the backend, please see the [backend guide](./backend/README.md).
+For usage instructions and information regarding the client/frontend, please see the [frontend guide](./frontend/README.md), and for the backend, please see the [backend guide](./backend/README.md).
 
 # Deployment
 
@@ -78,3 +72,5 @@ The contents of this repository are licensed under the [Apache License 2.0](./LI
 To contribute to this repository, please see the [contribution guidelines](./CONTRIBUTING.md).
 
 If you would like to read more about the algorithm used by EiffelVis, please see the [algorithm concept](./frontend/README.md#layout-algorithm).
+
+Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™️.
