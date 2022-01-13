@@ -73,4 +73,4 @@ To contribute to this repository, please see the [contribution guidelines](./CON
 
 If you would like to read more about the algorithm used by EiffelVis, please see the [algorithm concept](./frontend/README.md#layout-algorithm).
 
-Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™️.
+Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
