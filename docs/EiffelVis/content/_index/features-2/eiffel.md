@@ -12,16 +12,8 @@ subtitle= "Eiffel protocol enables technology agnostic communication for CI/CD e
 [asset]
   image = "eiffel-protocol-logo.png"
   url = "https://eiffel-community.github.io/"
-  width = "200px"
-  height = "100px"
+  width = "100px"
+  height = "50px"
 +++
 
-Some more text to showcase the description capabilities:
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Curabitur a lorem urna.
-Quisque in neque malesuada, sollicitudin nunc porttitor, ornare est.
-Praesent ante enim, bibendum sed hendrerit et, iaculis laoreet felis.
-Morbi efficitur dui sit amet orci porttitor, nec tincidunt turpis elementum.
-Suspendisse rutrum, mi ac sollicitudin blandit, eros sem tincidunt enim, vitae feugiat turpis eros ut diam.
-Nunc hendrerit, nibh vitae dignissim pretium, magna nulla lacinia massa, et interdum lacus purus ultricies lacus.
-Nulla tincidunt quis lacus in posuere.
+##### To learn more about the Eiffel Protocol, visit the <a style="color:#00FFFF" href="https://eiffel-community.github.io/">Eiffel Community</a>.

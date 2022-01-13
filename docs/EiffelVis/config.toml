@@ -33,10 +33,10 @@ lastmod = ["lastmod", ":git", "date"]
   # Theme customizations
   # Assets relative to 'static/'
   [params.custom]
-    favicon = "favicon.ico"
-    favicon_ico_sizes = "16x16 32x32"
-    favicon_png = "favicon.png"
-    favicon_svg = "favicon.svg"
+    favicon = "images/favicon.ico"
+    favicon_ico_sizes = "24x16 40x32"
+    favicon_png = "images/favicon.png"
+    favicon_svg = "images/favicon.svg"
 
   # Piwik tracking
   [params.analytics.piwik]
@@ -71,8 +71,4 @@ lastmod = ["lastmod", ":git", "date"]
   name = "API Docs"
   weight = 10
 
-[[menu.main]]
-  url = "about/index.html"
-  name = "About"
-  weight = 20
 
