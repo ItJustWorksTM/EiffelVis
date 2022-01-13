@@ -10,7 +10,6 @@
   import { toggle_class } from 'svelte/internal';
 
   let graph_elem: G6Graph | null
-  let timeBarEnabled = false;
 
   const backend_url = process.env.EIFFELVIS_URL.startsWith('@origin')
     ? `${window.location.host}${
@@ -39,7 +38,9 @@
 
   let show_legend = false;
 
-  let legend = new Map<string, string>();
+  let show_timebar = false;
+
+  let legend = new Map<string, string>()
 
   let colors = new Array<[string, string]>();
 
@@ -176,8 +177,8 @@
     const newq = new QueryStream(conn, query)
     stream = newq
     consumeQuery()
-	timeBarEnabled = false;
-	graph_elem.updateTimeBar(timeBarEnabled);
+    show_timebar = false;
+    graph_elem.updateTimeBar(show_timebar);
   }
 
   const onNodeSelected = async (e: any) => {
@@ -287,6 +288,35 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a class="" 
+            class:btn-active={show_timebar}
+            on:click={() => (
+              show_timebar = !show_timebar,
+              graph_elem.updateTimeBar(show_timebar)
+            )}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21.5 12H12V2.5"
+              />
+              <circle
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                cx="12" cy="12" r="10"
               />
             </svg>
           </a>
@@ -537,22 +567,6 @@
           on:click={submitCurrentQuery}>submit</button
         >
       </div>
-	  <div>
-		<label
-			class="cursor-pointer label"
-		>
-			<span class="label-text">Time Bar</span>
-			<input
-				type="checkbox"
-				class="toggle toggle-primary"
-				bind:checked={timeBarEnabled}
-				on:click={() => (
-					console.log("TimeBar enabled:", !timeBarEnabled), // Checkbox bind value reversing since the on:click trigger before bind
-					graph_elem.updateTimeBar(!timeBarEnabled)
-					)}
-			/>
-		</label>
-	</div>
     </div>
   </div>
 
