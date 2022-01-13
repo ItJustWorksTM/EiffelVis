@@ -9,7 +9,7 @@
   import G6Graph from './components/G6Graph.svelte';
   import { toggle_class } from 'svelte/internal';
 
-  let graph_elem: G6Graph | null;
+  let graph_elem: G6Graph | null
 
   const backend_url = process.env.EIFFELVIS_URL.startsWith('@origin')
     ? `${window.location.host}${
@@ -38,7 +38,9 @@
 
   let show_legend = false;
 
-  let legend = new Map<string, string>();
+  let show_timebar = false;
+
+  let legend = new Map<string, string>()
 
   let colors = new Array<[string, string]>();
 
@@ -172,10 +174,12 @@
       },
     ];
 
-    const newq = new QueryStream(conn, query);
-    stream = newq;
-    consumeQuery();
-  };
+    const newq = new QueryStream(conn, query)
+    stream = newq
+    consumeQuery()
+    show_timebar = false;
+    graph_elem.updateTimeBar(show_timebar);
+  }
 
   const onNodeSelected = async (e: any) => {
     if (e.detail?.target) {
@@ -245,6 +249,7 @@
 <main class="m-0 h-screen bg-base-300">
   <div
     class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
+    style="z-index:1"
   >
     <div class="block m-6">
       <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
@@ -288,10 +293,40 @@
             </svg>
           </a>
         </li>
+        <li>
+          <a class="" 
+            class:btn-active={show_timebar}
+            on:click={() => (
+              show_timebar = !show_timebar,
+              graph_elem.updateTimeBar(show_timebar)
+            )}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21.5 12H12V2.5"
+              />
+              <circle
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                cx="12" cy="12" r="10"
+              />
+            </svg>
+          </a>
+        </li>
       </ul>
     </div>
     <div
       class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
+      style="z-index:1"
       class:hidden={!show_menu}
     >
       <h1 class="text-lg py-2">Graph Options</h1>
@@ -372,6 +407,7 @@
       </div>
     </div>
     <div
+      style="z-index:1"
       class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
       class:show={show_legend}
     >
@@ -403,6 +439,7 @@
   </div>
 
   <div
+    style="z-index:1"
     class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
   >
     <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
