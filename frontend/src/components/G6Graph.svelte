@@ -18,6 +18,7 @@
     export const reset = () => {
         graph?.changeData({});
         timeBarData = [];
+        graph?.render();
         dispatch("nodeselected", null);
     };
 
