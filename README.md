@@ -7,11 +7,11 @@
 [![Frontend CI](https://github.com/ItJustWorksTM/EiffelVis/actions/workflows/frontend_ci.yml/badge.svg)](https://github.com/ItJustWorksTM/EiffelVis/actions/workflows/frontend_ci.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 
-EiffelVis is a scallable Eiffel pipeline traffic visualization stack built on Rust & Svelte. Briefly, the Eiffel protocol is a tool which helps control multiple CI/CD Pipelines within or across multiple projects. To learn more about the Eiffel Protocol, please visit the [Eiffel Community](https://eiffel-community.github.io/).
+EiffelVis is a scalable Eiffel pipeline traffic visualization stack built on Rust & Svelte. Briefly, the Eiffel protocol is a tool which helps control multiple CI/CD Pipelines within or across multiple projects. To learn more about the Eiffel Protocol, please visit the [Eiffel Community](https://eiffel-community.github.io/).
 
 #### **Why should you use EiffelVis?**
 
-The Eiffel Protocol consists of multiple [Eiffel Events](https://github.com/eiffel-community/eiffel/tree/master/eiffel-vocabulary) which each have a defined purpose and structure. In a typical CI pipeline which uses the Eiffel Protocol, there can be hundereds of events which are generated over a short time period. Visualizing large amounts of data such as thousands of Eiffel Events can be difficult, and thats where EiffelVis stands out. EiffelVis is a data visualization and data manipulation tool for Eiffel Events.
+The Eiffel Protocol consists of multiple [Eiffel Events](https://github.com/eiffel-community/eiffel/tree/master/eiffel-vocabulary) which each have a defined purpose and structure. In a typical CI pipeline which uses the Eiffel Protocol, there can be hundreds of events which are generated over a short time period. Visualizing large amounts of data such as thousands of Eiffel Events can be difficult, and that's where EiffelVis stands out. EiffelVis is a data visualization and data manipulation tool for Eiffel Events.
 
 # Useful Links:
 
