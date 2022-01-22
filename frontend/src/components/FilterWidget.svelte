@@ -14,6 +14,7 @@
     const filter_types = ["Id", "Type", "Source", "Host", "Tag"];
     let active_filter = "Id";
 
+    // TODO: Maybe just fixed filter?
     export let ids: EventFilter<Id>;
     export let tags: EventFilter<Tag>;
     export let types: EventFilter<Type>;
