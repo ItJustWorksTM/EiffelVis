@@ -1,4 +1,12 @@
-import type { GraphSettings } from './apidefinition'
+
+export interface GraphSettings {
+  offset: number
+  time_diff: number
+  y_scale: number
+  x_sep: number
+  y_sep: number
+  hue: number
+}
 
 export class StatefulLayout {
   private timee = 0

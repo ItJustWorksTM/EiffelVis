@@ -87,14 +87,19 @@ export class QueryStream {
 export class EiffelVisConnection {
 
   private connection: WebSocket | null;
-  private uri: string;
+  private ws_uri: string;
+  private http_uri: string;
 
   // Current QueryStream that is using the connection
   private activestream: QueryStream | null = null;
 
   // Construct a new `EiffelVisConnection` with a websocket url (ws:// or wss://)
-  constructor(uri: string) {
-    this.uri = uri
+  constructor(backend_url: string, has_ssl: boolean) {
+    const backend_proto_ws = has_ssl ? "wss" : "ws";
+    const backend_proto_http = has_ssl ? "https" : "http";
+
+    this.ws_uri = `${backend_proto_ws}://${backend_url}/ws`
+    this.http_uri = `${backend_proto_http}://${backend_url}`
   }
 
   private pending: Promise<boolean> | null = null;
@@ -154,7 +159,7 @@ export class EiffelVisConnection {
 
   // Creates a new websocket and awaits the connection
   private async connect(): Promise<WebSocket | null> {
-    const conn = new WebSocket(this.uri)
+    const conn = new WebSocket(this.ws_uri)
     return new Promise((resolve, _) => {
       conn.onopen = () => {
         resolve(conn)
@@ -200,6 +205,11 @@ export class EiffelVisConnection {
     this.connection.send(data)
 
     return true
+  }
+
+  // TODO: add proper type
+  async fetch_node(id: string): Promise<any | null> {
+    return await fetch(`${this.http_uri}/get_event/${id}`).then((resp) => resp.json());
   }
 
 }
