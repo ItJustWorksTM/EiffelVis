@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import G6, { Graph, GraphData } from "@antv/g6";
-    import type { TimeBarData } from "../apidefinition";
-
+    import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
@@ -13,7 +12,7 @@
     let container: HTMLElement;
 
     let graph: Graph | null;
-    let timeBarData:TimeBarData[] = [];
+    let timeBarData: TimeBarData[] = [];
 
     export const reset = () => {
         graph?.changeData({});
@@ -39,7 +38,7 @@
     };
 
     export const push = (ev: any) => {
-        ev.date = String(ev.time)
+        ev.date = String(ev.time);
         graph.addItem("node", ev, false, false);
         for (const target of ev.edges) {
             graph.addItem("edge", { source: ev.id, target });
@@ -47,65 +46,66 @@
 
         timeBarData.push({
             date: ev.date,
-            value: "1"
+            value: "1",
         });
     };
 
-    export const updateTimeBar = (timeBarEnabled:boolean) => {
-        graph.removePlugin(graph.get("plugins")[0])
-        if(!timeBarEnabled){
-          //TO-DO Reset the graph if wanted later
-        }
-        else{
-            graph!.addPlugin(new G6.TimeBar({
-          className: 'g6TimeBar',
-          x: 0,
-          y: 0,
-          width: 500,
-          height: 110,
-          padding: 10,
-          type: 'trend',
-          changeData: false,
-          trend: {
-            data: timeBarData,
-            smooth: true,
-          },
-          tick:{
-            tickLabelFormatter: (timeBarData: any) => {
-                return "";
-            },
-            /*
+    export const updateTimeBar = (timeBarEnabled: boolean) => {
+        graph.removePlugin(graph.get("plugins")[0]);
+        if (!timeBarEnabled) {
+            //TO-DO Reset the graph if wanted later
+        } else {
+            graph!.addPlugin(
+                new G6.TimeBar({
+                    className: "g6TimeBar",
+                    x: 0,
+                    y: 0,
+                    width: 500,
+                    height: 110,
+                    padding: 10,
+                    type: "trend",
+                    changeData: false,
+                    trend: {
+                        data: timeBarData,
+                        smooth: true,
+                    },
+                    tick: {
+                        tickLabelFormatter: (timeBarData: any) => {
+                            return "";
+                        },
+                        /*
             tickLabelStyle: {
                 
             },
             */
-            tickLineStyle:{
-                fill: '#f28c18'
-            }
-          },
-          slider: {
-            backgroundStyle: {
-              fill: '#131616',
-            },
-            foregroundStyle: {
-              fill: '#ffffff',
-            },
-            handlerStyle:{
-                style:{
-                    fill: '#f28c18',
-                    stroke: '#f28c18'
-                }
-            }
-          },
-          controllerCfg: {
-            fill: '#131616',
-            stroke: '#131616',
-            timePointControllerText: ' Point',
-            timeRangeControllerText: ' Point',
-          },
-        }));
+                        tickLineStyle: {
+                            fill: "#f28c18",
+                        },
+                    },
+                    slider: {
+                        backgroundStyle: {
+                            fill: "#131616",
+                        },
+                        foregroundStyle: {
+                            fill: "#ffffff",
+                        },
+                        handlerStyle: {
+                            style: {
+                                fill: "#f28c18",
+                                stroke: "#f28c18",
+                            },
+                        },
+                    },
+                    controllerCfg: {
+                        fill: "#131616",
+                        stroke: "#131616",
+                        timePointControllerText: " Point",
+                        timeRangeControllerText: " Point",
+                    },
+                })
+            );
         }
-    }
+    };
 
     onMount(() => {
         if (graph) {
@@ -146,7 +146,7 @@
         background: #131616;
         border-radius: 20px;
         position: absolute !important;
-        left:35%;
+        left: 35%;
         bottom: 80px;
         z-index: 0;
     }

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { FixedQuery, RangeFilterBound } from "../apidefinition";
+    import type { RangeFilterBound } from "../apidefinition";
+    import type { FixedQuery } from "../uitypes";
 
     import FilterWidget from "./FilterWidget.svelte";
 

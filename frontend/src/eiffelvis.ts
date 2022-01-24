@@ -1,4 +1,11 @@
-import type { Query, QueryRes, ServerMessage, Event } from "./apidefinition";
+import type { Query, Event } from "./apidefinition";
+
+export interface QueryRes {
+  repl: string
+  error?: string
+}
+
+export type ServerMessage = QueryRes | Event[]
 
 // Resumable eifel event iterator received via the shared `EiffelVisConnection`
 export class QueryStream {

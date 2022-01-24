@@ -8,12 +8,12 @@
   import GraphOptions from "./components/GraphOptions.svelte";
   import ColorLegend from "./components/ColorLegend.svelte";
 
+  import { query_eq } from "./apidefinition";
   import {
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
-    query_eq,
-  } from "./apidefinition";
+  } from "./uitypes";
   import type { Query } from "./apidefinition";
   import { deep_copy } from "./utils";
   import G6Graph from "./components/G6Graph.svelte";
