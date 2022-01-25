@@ -1,4 +1,4 @@
-import type { Query, Event } from "./apidefinition";
+import type { Query, Event, FullEvent } from "./apidefinition";
 
 export interface QueryRes {
   repl: string
@@ -214,8 +214,7 @@ export class EiffelVisConnection {
     return true
   }
 
-  // TODO: add proper type
-  async fetch_node(id: string): Promise<any | null> {
+  async fetch_node(id: string): Promise<FullEvent | null> {
     return await fetch(`${this.http_uri}/get_event/${id}`).then((resp) => resp.json());
   }
 
