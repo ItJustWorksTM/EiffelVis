@@ -1,9 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import type { FullEvent } from "../apidefinition";
 
     const dispatch = createEventDispatcher();
 
-    export let selected_node;
+    export let selected_node: FullEvent | null;
 </script>
 
 <div>
