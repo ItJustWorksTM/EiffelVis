@@ -18,14 +18,16 @@ use eiffelvis_core::domain::{
 };
 use hyper::Response;
 
+use tower_http::cors::{Any, CorsLayer};
+
 pub(crate) fn make_service<T: EiffelVisHttpApp>(app: App<T>) -> Router {
     Router::new()
         .route("/", get(event_dump::<T>))
         .route("/get_event/:id", get(get_event::<T>))
         .route("/events_with_root/:id", get(events_with_root::<T>))
         .route("/ws", get(establish_websocket::<T>))
-        .layer(CorsLayer::new().allow_origin(any()).allow_methods(any()))
-        .layer(AddExtensionLayer::new(app))
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
+        .layer(Extension(app))
 }
 
 /// Dumps the entire event store into a json array

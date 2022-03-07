@@ -12,7 +12,6 @@ use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use rand::{thread_rng, Rng};
 use structopt::StructOpt;
-use tokio_amqp::LapinTokioExt;
 
 #[derive(StructOpt)]
 #[structopt(
@@ -63,7 +62,17 @@ async fn app() -> anyhow::Result<()> {
     let cli = Cli::from_args();
     let addr = cli.url.as_str();
 
-    let conn = Connection::connect(addr, ConnectionProperties::default().with_tokio()).await?;
+    let conn = Connection::connect(addr, {
+        let connection =
+            ConnectionProperties::default().with_executor(tokio_executor_trait::Tokio::current());
+
+        if cfg!(unix) {
+            connection.with_reactor(tokio_reactor_trait::Tokio)
+        } else {
+            connection
+        }
+    })
+    .await?;
 
     let channel_a = conn.create_channel().await?;
 
@@ -113,7 +122,7 @@ async fn app() -> anyhow::Result<()> {
                     cli.exchange.as_str(),
                     cli.routing_key.as_str(),
                     BasicPublishOptions::default(),
-                    ev,
+                    ev.as_slice(),
                     BasicProperties::default(),
                 )
                 .await?
