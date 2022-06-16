@@ -2,8 +2,7 @@ use std::{borrow::Cow, str::FromStr};
 
 use futures::StreamExt;
 
-use lapin::{tcp::TLSConfig, uri::AMQPUri, Connection, ConnectionProperties, Consumer};
-use tokio_amqp::LapinTokioExt;
+use lapin::{tcp::OwnedTLSConfig, uri::AMQPUri, Connection, ConnectionProperties, Consumer};
 
 pub struct AmpqStream {
     addr: Cow<'static, str>,
@@ -33,7 +32,7 @@ impl AmpqStream {
             self.consumer = make_ampq_consumer(&self.addr, &self.queue, &self.consumer_tag).await;
         }
         if let Some(consumer) = &mut self.consumer {
-            if let Some(Ok((_, delivery))) = consumer.next().await {
+            if let Some(Ok(delivery)) = consumer.next().await {
                 Some(delivery.data)
             } else {
                 None
@@ -46,10 +45,12 @@ impl AmpqStream {
 }
 
 async fn make_ampq_consumer(addr: &str, queue: &str, consumer_tag: &str) -> Option<Consumer> {
-    let connection = Connection::connect_uri_with_identity(
+    let connection = Connection::connect_uri_with_config(
         AMQPUri::from_str(addr).ok()?,
-        ConnectionProperties::default().with_tokio(),
-        TLSConfig::default(),
+        ConnectionProperties::default()
+            .with_executor(tokio_executor_trait::Tokio::current())
+            .with_reactor(tokio_reactor_trait::Tokio),
+        OwnedTLSConfig::default(),
     )
     .await
     .ok()?;

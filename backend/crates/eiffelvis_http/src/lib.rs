@@ -6,7 +6,7 @@ mod handlers;
 
 use handlers::*;
 
-use axum::{routing::get, AddExtensionLayer, Router};
+use axum::{routing::get, Router};
 pub use axum_server::Handle;
 use axum_server::{self, tls_rustls::RustlsConfig};
 use tracing::info;
@@ -17,7 +17,7 @@ use std::{
     sync::Arc,
 };
 
-use tower_http::cors::{any, CorsLayer};
+use tower_http::cors::{Any, CorsLayer};
 
 use uuid::Uuid;
 

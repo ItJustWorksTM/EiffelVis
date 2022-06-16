@@ -10,45 +10,41 @@ use eiffelvis_gen::{
 };
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
+use clap::Parser;
 use rand::{thread_rng, Rng};
-use structopt::StructOpt;
-use tokio_amqp::LapinTokioExt;
 
-#[derive(StructOpt)]
-#[structopt(
-    name = "Eiffel Event Sender",
-    about = "Generates random events and sends them over ampq"
-)]
+#[derive(Parser)]
+#[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
     /// Total amount of events to be sent (note: multiplied with the `burst` option)
-    #[structopt(default_value = "1", short, long)]
+    #[clap(default_value = "1", short, long)]
     count: usize,
 
     /// URL to amqp server
-    #[structopt(default_value = "amqp://127.0.0.1:5672/%2f", short, long)]
+    #[clap(default_value = "amqp://127.0.0.1:5672/%2f", short, long)]
     url: String,
 
     /// Ampq exchange to send events to
-    #[structopt(default_value = "amq.fanout", short, long)]
+    #[clap(default_value = "amq.fanout", short, long)]
     exchange: String,
 
     /// Routing key used for ampq connections
-    #[structopt(short, long)]
+    #[clap(short, long)]
     routing_key: String,
 
     /// Random seed used to create event data
-    #[structopt(long)]
+    #[clap(long)]
     seed: Option<usize>,
 
     /// Time in milliseconds to sleep before emitting a new burst of events
-    #[structopt(default_value = "0", short, long)]
+    #[clap(default_value = "0", short, long)]
     latency: usize,
 
     /// Amount of events to send before introducing another delay (defined with the latency option)
-    #[structopt(default_value = "1", short, long)]
+    #[clap(default_value = "1", short, long)]
     burst: usize,
 
-    #[structopt(long)]
+    #[clap(long)]
     replay: Option<String>,
 }
 
@@ -63,7 +59,13 @@ async fn app() -> anyhow::Result<()> {
     let cli = Cli::from_args();
     let addr = cli.url.as_str();
 
-    let conn = Connection::connect(addr, ConnectionProperties::default().with_tokio()).await?;
+    let conn = Connection::connect(
+        addr,
+        ConnectionProperties::default()
+            .with_executor(tokio_executor_trait::Tokio::current())
+            .with_reactor(tokio_reactor_trait::Tokio),
+    )
+    .await?;
 
     let channel_a = conn.create_channel().await?;
 
@@ -113,7 +115,7 @@ async fn app() -> anyhow::Result<()> {
                     cli.exchange.as_str(),
                     cli.routing_key.as_str(),
                     BasicPublishOptions::default(),
-                    ev,
+                    ev.as_slice(),
                     BasicProperties::default(),
                 )
                 .await?
