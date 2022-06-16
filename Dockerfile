@@ -1,8 +1,8 @@
-FROM rust:alpine as backend-builder
+FROM rust:bullseye as backend-builder
 MAINTAINER ItJustWorksTM ItJustWorksTM@aerostun.dev
 ADD ./backend /opt/EiffelVis
 WORKDIR /opt/EiffelVis
-RUN apk add --no-cache musl-dev openssl openssl-dev
+RUN apt update && apt install -y musl-dev
 RUN cargo install --root ./dist/ --path .
 
 FROM node:alpine as frontend-builder
@@ -15,7 +15,7 @@ RUN echo 'EIFFELVIS_URL = "@origin/api"' > .env \
  && npm run build
 
 
-FROM nginx:alpine
+FROM nginx:stable
 MAINTAINER ItJustWorksTM ItJustWorksTM@aerostun.dev
 RUN mv docker-entrypoint.sh docker-entrypoint-nginx.sh
 ADD ./deployment/nginx/eiffelvis.conf /etc/nginx/conf.d/default.conf
