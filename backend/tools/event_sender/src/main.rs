@@ -61,9 +61,12 @@ async fn app() -> anyhow::Result<()> {
 
     let conn = Connection::connect(
         addr,
+        #[cfg(unix)]
         ConnectionProperties::default()
             .with_executor(tokio_executor_trait::Tokio::current())
             .with_reactor(tokio_reactor_trait::Tokio),
+        #[cfg(not(unix))]
+        ConnectionProperties::default().with_executor(tokio_executor_trait::Tokio::current()),
     )
     .await?;
 

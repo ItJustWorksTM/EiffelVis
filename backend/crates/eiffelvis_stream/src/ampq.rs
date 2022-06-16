@@ -47,9 +47,12 @@ impl AmpqStream {
 async fn make_ampq_consumer(addr: &str, queue: &str, consumer_tag: &str) -> Option<Consumer> {
     let connection = Connection::connect_uri_with_config(
         AMQPUri::from_str(addr).ok()?,
+        #[cfg(unix)]
         ConnectionProperties::default()
             .with_executor(tokio_executor_trait::Tokio::current())
             .with_reactor(tokio_reactor_trait::Tokio),
+        #[cfg(not(unix))]
+        ConnectionProperties::default().with_executor(tokio_executor_trait::Tokio::current()),
         OwnedTLSConfig::default(),
     )
     .await
