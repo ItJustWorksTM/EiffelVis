@@ -7,8 +7,9 @@
 use std::{sync::Arc, time::Duration};
 
 use eiffelvis_core::{domain::app::EiffelVisApp, graph_storage::ChunkedGraph};
+use eiffelvis_http::AppData;
 use structopt::StructOpt;
-use tracing::info;
+use tracing::{info, warn};
 
 /// Command line options
 #[derive(StructOpt, Debug)]
@@ -61,10 +62,10 @@ async fn main() {
 
     let cli = Cli::from_args();
 
-    let graph = Arc::new(tokio::sync::RwLock::new(ChunkedGraph::new(
-        cli.max_chunks,
-        cli.chunk_size,
-    )));
+    let graph = Arc::new(AppData {
+        heuristic: 0.into(),
+        graph: tokio::sync::RwLock::new(ChunkedGraph::new(cli.max_chunks, cli.chunk_size)),
+    });
 
     let http_server_handle = eiffelvis_http::Handle::new();
     let http_server = tokio::spawn(eiffelvis_http::app(
@@ -88,12 +89,20 @@ async fn main() {
         loop {
             if let Some(bytes) = event_parser.next().await {
                 if let Ok(des) = serde_json::from_slice(&bytes) {
-                    EiffelVisApp::push(&mut *graph.write().await, des);
+                    let mut lk = graph.graph.write().await;
+                    if EiffelVisApp::push(&mut *lk, des) {
+                        graph
+                            .heuristic
+                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        info!("size: {}", lk.node_count());
+                    } else {
+                        warn!("Failed to push graph! maybe a duplicate event?")
+                    }
                 } else {
-                    info!("Received new message but failed to deserialize");
+                    warn!("Received new message but failed to deserialize");
                 }
             } else {
-                info!("Event stream failed, sleeping for 5 seconds to retry");
+                warn!("Event stream failed, sleeping for 5 seconds to retry");
                 tokio::time::sleep(Duration::from_secs(timeout)).await;
             }
         }

@@ -14,7 +14,7 @@ use tracing::info;
 use std::{
     io,
     net::{IpAddr, SocketAddr},
-    sync::Arc,
+    sync::{atomic::AtomicU64, Arc},
 };
 
 use tower_http::cors::{any, CorsLayer};
@@ -26,7 +26,15 @@ use eiffelvis_core::domain::{app::EiffelVisApp, types::BaseEvent};
 pub trait EiffelVisHttpApp: EiffelVisApp + Send + Sync + 'static {}
 impl<T> EiffelVisHttpApp for T where T: EiffelVisApp + Send + Sync + 'static {}
 
-type App<T> = Arc<tokio::sync::RwLock<T>>;
+pub struct AppData<T> {
+    /// Graph to serve to the web
+    pub graph: tokio::sync::RwLock<T>,
+    /// Heuristic used to determine when locking of graph should occur,
+    /// library consumers should increment this counter on a succesful push to the graph.
+    pub heuristic: AtomicU64,
+}
+
+type App<T> = Arc<AppData<T>>;
 
 /// Takes an eiffelvis app and binds the http server on the given address.
 /// This is likely the only function you'll ever need to call.
