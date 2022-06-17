@@ -85,7 +85,7 @@
 
 <span class="kw">use</span> <span class="ident">handlers</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">axum</span>::{<span class="ident">routing::get</span>, <span class="ident">AddExtensionLayer</span>, <span class="ident">Router</span>};
+<span class="kw">use</span> <span class="ident">axum</span>::{<span class="ident">routing::get</span>, <span class="ident">Router</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">axum_server::Handle</span>;
 <span class="kw">use</span> <span class="ident">axum_server</span>::{<span class="self">self</span>, <span class="ident">tls_rustls::RustlsConfig</span>};
 <span class="kw">use</span> <span class="ident">tracing::info</span>;
@@ -96,7 +96,7 @@
     <span class="ident">sync::Arc</span>,
 };
 
-<span class="kw">use</span> <span class="ident">tower_http::cors</span>::{<span class="ident">any</span>, <span class="ident">CorsLayer</span>};
+<span class="kw">use</span> <span class="ident">tower_http::cors</span>::{<span class="ident">Any</span>, <span class="ident">CorsLayer</span>};
 
 <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
 
