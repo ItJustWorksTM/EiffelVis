@@ -6,48 +6,47 @@
 
 use std::{sync::Arc, time::Duration};
 
+use clap::Parser;
 use eiffelvis_core::{domain::app::EiffelVisApp, graph_storage::ChunkedGraph};
-use structopt::StructOpt;
 use tracing::info;
 
 /// Command line options
-#[derive(StructOpt, Debug)]
-#[structopt(name = "EiffelVis")]
+#[derive(Parser, Debug)]
 struct Cli {
     /// HTTP host address
-    #[structopt(short, long, default_value = "127.0.0.1")]
+    #[clap(short, long, default_value = "127.0.0.1")]
     address: String,
 
     /// HTTP host port
-    #[structopt(short, long, default_value = "3001")]
+    #[clap(short, long, default_value = "3001")]
     port: u16,
 
     /// AMQP URI
-    #[structopt(short = "r", long, default_value = "amqp://localhost:5672/%2f")]
+    #[clap(short = 'r', long, default_value = "amqp://localhost:5672/%2f")]
     rmq_uri: String,
 
     /// AMQP queue
-    #[structopt(short = "q", long, default_value = "hello")]
+    #[clap(short = 'q', long, default_value = "hello")]
     rmq_queue: String,
 
     /// AMQP reconnect timeout
-    #[structopt(short = "t", long, default_value = "3001")]
+    #[clap(short = 't', long, default_value = "3001")]
     timeout: u64,
 
     /// Maximum amount of chunks stored in memory
-    #[structopt(long, default_value = "8")]
+    #[clap(long, default_value = "8")]
     max_chunks: usize,
 
     /// Maximum amount of events a single chunk will hold
-    #[structopt(long, default_value = "128")]
+    #[clap(long, default_value = "128")]
     chunk_size: u32,
 
     /// Path to TLS certificate pem file
-    #[structopt(long)]
+    #[clap(long)]
     tls_cert: Option<String>,
 
     /// Path to TLS private key pem file
-    #[structopt(long)]
+    #[clap(long)]
     tls_key: Option<String>,
 }
 
