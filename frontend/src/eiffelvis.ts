@@ -23,7 +23,6 @@ export class QueryStream {
   constructor(sharedcon: EiffelVisConnection, query: Query) {
     this.sharedcon = sharedcon
     this.query = query
-    console.log("New query stream with ", query)
   }
 
   // Calling `.iter()` and awaiting it will take over the connection and submit a query request to the backend
@@ -145,17 +144,14 @@ export class EiffelVisConnection {
         }
       })
 
-      console.log(res)
-
       // Fail if the backend reported failure
       if (res.error) {
-        console.log("failed to make query: ", res.error)
         return false
       }
 
       this.activestream = querystream
 
-      // Delegate any new messages to the QueryStream, they are guarenteed to be events 
+      // Delegate any new messages to the QueryStream, they are guaranteed to be events 
       conn.onmessage = (ev) => this.activestream.onmessage(JSON.parse(ev.data))
       this.pending = null
       return true
@@ -190,7 +186,7 @@ export class EiffelVisConnection {
         break
     }
 
-    // Handle connection closure by reseting the consumer and explicitly closing the websocket
+    // Handle connection closure by resetting the consumer and explicitly closing the websocket
     this.connection.onclose = () => {
       if (this.activestream)
         this.activestream.onclose()

@@ -39,8 +39,6 @@
         (end_mode = mode ? mode.type : "None");
     $: set_end_range_mode(query.range_filter.end);
 
-    $: console.log(query);
-
     const floopydoop = (val: any) =>
         val != "None" ? mkk(val, val != "Ids" ? "0" : "") : null;
 

@@ -73,11 +73,7 @@
                         tickLabelFormatter: (timeBarData: any) => {
                             return "";
                         },
-                        /*
-            tickLabelStyle: {
-                
-            },
-            */
+
                         tickLineStyle: {
                             fill: "#f28c18",
                         },
@@ -136,10 +132,10 @@
 
 <svelte:window on:resize={resizeGraph} />
 
-<div bind:this={container} class="fuck" />
+<div bind:this={container} class="container" />
 
 <style global>
-    .fuck {
+    .container {
         height: 100%;
     }
     .g6TimeBar {
