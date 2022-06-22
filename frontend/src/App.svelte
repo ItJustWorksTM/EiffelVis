@@ -50,8 +50,6 @@
       fixed_query_to_norm(qhistory[qhistory.length - 1])
     );
 
-  $: console.log("CHANGED?", current_query_changed, current_query, qhistory);
-
   let graph_options: GraphSettings = {
     offset: 0,
     time_diff: 1000,
@@ -92,8 +90,6 @@
     }
   };
 
-  $: console.log("HISTORY", qhistory);
-
   const submit_state_query = () => submit_query(current_query);
 
   const submit_query = (fquery: FixedQuery) => {
@@ -103,7 +99,6 @@
         query_eq(new_query, fixed_query_to_norm(v.query))
       );
       if (cached) {
-        console.log("Cache hit for", fquery);
         return cached.stream;
       } else {
         const ret = new QueryStream(connection, deep_copy(new_query));
