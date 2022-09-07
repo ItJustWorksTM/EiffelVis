@@ -13,7 +13,7 @@ EiffelVis is a scalable Eiffel pipeline traffic visualization stack built on Rus
 
 The Eiffel Protocol consists of multiple [Eiffel Events](https://github.com/eiffel-community/eiffel/tree/master/eiffel-vocabulary) which each have a defined purpose and structure. In a typical CI pipeline which uses the Eiffel Protocol, there can be hundreds of events which are generated over a short time period. Visualizing large amounts of data such as thousands of Eiffel Events can be difficult, and that's where EiffelVis stands out. EiffelVis is a data visualization and data manipulation tool for Eiffel Events.
 
-# Useful Links:
+# Useful Links
 
 - [How to contribute](./CONTRIBUTING.md)
 - [Issue tracker](https://github.com/ItJustWorksTM/EiffelVis/issues)
@@ -33,21 +33,28 @@ These instructions are an example of how you may run EiffelVis locally.
 ## Installation
 
 1. Clone the repository using SSH (or HTTP)
+
    ```bash
    git clone git@github.com:ItJustWorksTM/EiffelVis.git
    ```
+
 2. After going to the root folder where the repository was cloned, install dependencies for the frontend
+
    ```bash
    cd EiffelVis/frontend
    npm install
    ```
+
 3. Compile and run the frontend
+
    ```bash
    npm run dev
    ```
+
 4. The frontend will now be running on port `localhost:8080`. If you go to this address in your browser, you should be able to view the EiffelVis client. As you will see, there are no events and there is no graph. To see events we need to set up the backend through which we will also load the graph data.
 
 5. As the client will be running in the current terminal, open a new terminal to run the backend. Go to the root directory of EiffelVis and run the commands
+
    ```bash
    cd EiffelVis/backend
    cargo run -- --help
@@ -74,3 +81,10 @@ To contribute to this repository, please see the [contribution guidelines](./CON
 If you would like to read more about the algorithm used by EiffelVis, please see the [algorithm concept](./frontend/README.md#layout-algorithm).
 
 Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
+
+# set-up instruction
+
+1. pull all the code from test-running branch
+2. install a rabbitMQ broker(server) locally at localhost:5672(you can follow the guide from RabbitMQ docker installation instruction). And run the RabbitMQ server.
+3. start eiffelvis frontend and backend with the code on test-running branch.
+4. go to the fold /backend/tools/event_sender, run cargo run commend. It will generate 3 mock event on every run, now you should have the nodes/graph updated in your frontend.
