@@ -8,7 +8,7 @@ use eiffelvis_gen::{
     event_set::{Event, EventSet, Link},
     generator::EventGenerator,
 };
-use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
+use lapin::{options::*, BasicProperties, Connection, ConnectionProperties, types::FieldTable};
 
 use clap::Parser;
 use rand::{thread_rng, Rng};
@@ -17,7 +17,7 @@ use rand::{thread_rng, Rng};
 #[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
     /// Total amount of events to be sent (note: multiplied with the `burst` option)
-    #[clap(default_value = "1", short, long)]
+    #[clap(default_value = "3", short, long)]
     count: usize,
 
     /// URL to amqp server
@@ -25,11 +25,11 @@ struct Cli {
     url: String,
 
     /// Ampq exchange to send events to
-    #[clap(default_value = "amq.fanout", short, long)]
+    #[clap(default_value = "", short, long)]
     exchange: String,
 
     /// Routing key used for ampq connections
-    #[clap(short, long)]
+    #[clap(default_value="hello",short, long)]
     routing_key: String,
 
     /// Random seed used to create event data
@@ -37,7 +37,7 @@ struct Cli {
     seed: Option<usize>,
 
     /// Time in milliseconds to sleep before emitting a new burst of events
-    #[clap(default_value = "0", short, long)]
+    #[clap(default_value = "5", short, long)]
     latency: usize,
 
     /// Amount of events to send before introducing another delay (defined with the latency option)
@@ -72,6 +72,15 @@ async fn app() -> anyhow::Result<()> {
 
     let channel_a = conn.create_channel().await?;
 
+    let queue = channel_a
+            .queue_declare(
+                "hello",
+                QueueDeclareOptions::default(),
+                FieldTable::default(),
+            )
+            .await?;
+
+        // println!(?queue, "Declared queue");
     println!("Connected to broker.");
 
     let gen = EventGenerator::new(
