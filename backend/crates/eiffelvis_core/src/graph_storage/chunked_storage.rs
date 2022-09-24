@@ -266,7 +266,7 @@ impl<'a, K: graph::Key, N, E> graph::HasNodeRangeIter<'a> for ChunkedGraph<K, N,
     type NodeRangeIterType = Take<NodeIter<'a, K, N, E>>;
 }
 
-impl<'a, K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
+impl<K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
     fn items(&self) -> graph::NodeIterType<'_, Self> {
         NodeIter {
             chunks: (self.oldest_generation()..self.newest_generation + 1),
@@ -319,7 +319,7 @@ impl<'a, K: graph::Key, N, E> graph::ItemIter for ChunkedGraph<K, N, E> {
     }
 }
 
-impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
+impl<K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
     fn add_node(&mut self, key: K, data: N) -> Option<ChunkedIndex> {
         Some(self.add_node(key, data))
     }
@@ -333,7 +333,7 @@ impl<'a, K: graph::Key, N, E> graph::Graph for ChunkedGraph<K, N, E> {
     }
 }
 
-impl<'a, K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K, N, E> {
+impl<K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K, N, E> {
     fn get(&self, index: ChunkedIndex) -> Option<graph::NodeType<'_, Self>> {
         self.store
             .get(self.to_chunk_index(index.gen()))
@@ -342,13 +342,13 @@ impl<'a, K: graph::Key, N, E> graph::Indexable<ChunkedIndex> for ChunkedGraph<K,
     }
 }
 
-impl<'a, K: graph::Key, N, E> graph::Indexable<K> for ChunkedGraph<K, N, E> {
+impl<K: graph::Key, N, E> graph::Indexable<K> for ChunkedGraph<K, N, E> {
     fn get(&self, index: K) -> Option<graph::NodeType<'_, Self>> {
         self.to_index(index).map(|i| self.index(i))
     }
 }
 
-impl<'a, K: graph::Key, N, E> graph::Indexable<usize> for ChunkedGraph<K, N, E> {
+impl<K: graph::Key, N, E> graph::Indexable<usize> for ChunkedGraph<K, N, E> {
     /// Indexes the graph as if it was a linear storage like [Vec]
     fn get(&self, index: usize) -> Option<graph::NodeType<'_, Self>> {
         if index < self.node_count() {
