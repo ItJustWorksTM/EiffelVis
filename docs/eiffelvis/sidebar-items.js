@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main","Starts all the services that make up EiffelVis."]],"struct":[["Cli","Command line options"]]});
+window.SIDEBAR_ITEMS = {"fn":[["main","Starts all the services that make up EiffelVis."]],"struct":[["Cli","Command line options"]]};

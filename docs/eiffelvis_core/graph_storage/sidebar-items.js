@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["chunked_storage","A storage type that employs the chunked fixed-size ringbuffer strategy"]]});
+window.SIDEBAR_ITEMS = {"mod":[["chunked_storage","A storage type that employs the chunked fixed-size ringbuffer strategy"]]};

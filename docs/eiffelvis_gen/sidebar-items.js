@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["event_set","Types that are used to describe Events."],["generator","Generator that stamps out events."]]});
+window.SIDEBAR_ITEMS = {"mod":[["event_set","Types that are used to describe Events."],["generator","Generator that stamps out events."]]};

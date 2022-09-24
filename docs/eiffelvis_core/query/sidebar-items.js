@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["SubGraphs","An iterator that takes graph nodes and yields the subgraph with given nodes as root."]],"trait":[["GraphQuery",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["SubGraphs","An iterator that takes graph nodes and yields the subgraph with given nodes as root."]],"trait":[["GraphQuery",""]]};

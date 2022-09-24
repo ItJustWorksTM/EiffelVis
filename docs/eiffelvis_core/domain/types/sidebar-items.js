@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BaseData",""],["BaseEvent",""],["BaseLink",""],["BaseMeta",""],["LeanEvent",""],["MetaSource",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["BaseData",""],["BaseEvent",""],["BaseLink",""],["BaseMeta",""],["LeanEvent",""],["MetaSource",""]]};

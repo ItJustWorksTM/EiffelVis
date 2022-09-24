@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["app",""],["main",""]],"struct":[["Cli",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["app",""],["main",""]],"struct":[["Cli",""]]};

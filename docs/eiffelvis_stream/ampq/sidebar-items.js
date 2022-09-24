@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["AmpqStream",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["AmpqStream",""]]};

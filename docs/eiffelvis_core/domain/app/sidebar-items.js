@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["EiffelGraph",""],["EiffelVisApp",""]]});
+window.SIDEBAR_ITEMS = {"trait":[["EiffelGraph",""],["EiffelVisApp",""]]};
