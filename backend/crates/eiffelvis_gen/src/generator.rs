@@ -217,6 +217,17 @@ impl Iterator for Iter<'_> {
             .borrow_mut()
             .gen_range(0..self.inner.max_links - generated_links.len());
 
+
+        // List of possible eiffel events 
+        let event_types: [&str; 23] = ["ActC", "ActF", "ActS", "ActT", "AnnP", "ArtC", "ArtP", "ArtR", "TCC", "TCF", "TCS",
+            "TCT", "TERCC", "TSF", "TSS", "CD", "CLM", "ED", "FCD", "ID", "IV", "SCC", "SCS"];
+            
+        // Random number generator used to select a random index of the above
+        fn random_num() -> usize{
+            let mut rng = rand::thread_rng();
+            return rng.gen_range(0..22);
+        }
+
         // Randomly pick a link and select an event for it until we reach our target or we exhaust possible events
         while let Some((i, (link, _))) = {
             let ret = generatable_events
@@ -241,7 +252,7 @@ impl Iterator for Iter<'_> {
             }
         }
 
-        event.meta.event_type = meta_event.name().to_string();
+        event.meta.event_type = event_types[random_num()].to_string();
         event.meta.id = Uuid::from_bytes(self.rng.get_mut().gen());
 
         event.meta.time = SystemTime::now()
