@@ -129,6 +129,18 @@
     }
   };
 
+  //method to display popup with readable time when hovering
+  const on_node_hovered = function (e: any) {
+    console.log(e)
+    console.log(e.detail.item._cfg.model.time)
+    console.log(e.detail.item._cfg.model.date)
+    let date = new Date(e.detail.item._cfg.model.date)
+    console.log(date)
+    console.log(date.toLocaleTimeString())
+    //TODO fix this so it does display converts the date correctly. 
+  }
+
+
   const use_selected_as_root = () => {
     current_query.collection = { type: "AsRoots" };
     current_query.range_filter = { begin: null, end: null };
@@ -332,9 +344,11 @@
       </div>
     </div>
   </div>
-
+  <!-- Graph with listeners -->
   <G6Graph
     on:nodeselected={on_node_selected}
+    on:nodeHovered={on_node_hovered} 
+    on:nodeExited={() => console.log("Node exited")}
     bind:this={graph_elem}
     {options}
     data={{}}
