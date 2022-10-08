@@ -129,15 +129,17 @@
     }
   };
 
-  //method to display popup with readable time when hovering
+  //method to use for custom behaviour when a node is mouseover. 
+  // Take the event as an argument (contain ID for querying the DB for instance)
   const on_node_hovered = function (e: any) {
-    console.log(e)
-    console.log(e.detail.item._cfg.model.time)
-    console.log(e.detail.item._cfg.model.date)
-    let date = new Date(e.detail.item._cfg.model.date)
-    console.log(date)
-    console.log(date.toLocaleTimeString())
-    //TODO fix this so it does display converts the date correctly. 
+    //TODO: TBD if needed 
+  }
+
+  //method to use for custom behaviour when a node is exited with the mouse (mouseleave). 
+  // Take the event as an argument (contain ID for querying the DB for instance)
+  // useful if we want to stop a behaviour when the node is not hovered anymore. Like stop a timer for instance.
+  const on_node_exited = function (e: any) {
+    //TODO: TBD if needed
   }
 
 
@@ -345,10 +347,11 @@
     </div>
   </div>
   <!-- Graph with listeners -->
+  <!-- TODO: Define if it is needed to have the external listeners when hovering a node. Either we modify the backend to register more info in edges like the type for instance, either we query the DB for retrieving types of edges. -->
   <G6Graph
     on:nodeselected={on_node_selected}
-    on:nodeHovered={on_node_hovered} 
-    on:nodeExited={() => console.log("Node exited")}
+    on:nodeHovered={on_node_hovered}      
+    on:nodeExited={on_node_exited}
     bind:this={graph_elem}
     {options}
     data={{}}

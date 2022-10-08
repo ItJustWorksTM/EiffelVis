@@ -4,116 +4,142 @@
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
     const graph_translation: number = 50;
 
     export let options = {};
     export let data = {};
 
-    let container: HTMLElement;
+  let container: HTMLElement;
 
-    let graph: Graph | null;
-    let timeBarData: TimeBarData[] = [];
+  let graph: Graph | null;
+  let timeBarData: TimeBarData[] = [];
 
-    export const reset = () => {
-        graph?.changeData({});
-        timeBarData = [];
-        graph?.render();
-        dispatch("nodeselected", null);
-    };
+  export const reset = () => {
+    graph?.changeData({});
+    timeBarData = [];
+    graph?.render();
+    dispatch("nodeselected", null);
+  };
 
-    export const resizeGraph = () => {
-        if (graph && container) {
-            const width = Number(
-                window.getComputedStyle(container).width.replace("px", "")
-            );
-            const height = Number(
-                window.getComputedStyle(container).height.replace("px", "")
-            );
-            graph.changeSize(width, height);
-        }
-    };
+  export const resizeGraph = () => {
+    if (graph && container) {
+      const width = Number(
+        window.getComputedStyle(container).width.replace("px", "")
+      );
+      const height = Number(
+        window.getComputedStyle(container).height.replace("px", "")
+      );
+      graph.changeSize(width, height);
+    }
+  };
 
-    export const focusNode = (id: any) => {
-        graph.focusItem(id);
-    };
+  export const focusNode = (id: any) => {
+    graph.focusItem(id);
+  };
 
-    export const push = (ev: any) => {
-        ev.date = String(ev.time);
-        graph.addItem("node", ev, false, false);
-        for (const target of ev.edges) {
-            graph.addItem("edge", { source: ev.id, target });
-        }
+  export const push = (ev: any) => {
+    ev.date = String(ev.time);
+    graph.addItem("node", ev, false, false);
+    for (const target of ev.edges) {
+      graph.addItem("edge", { source: ev.id, target });
+    }
 
-        timeBarData.push({
-            date: ev.date,
-            value: "1",
-        });
-    };
+    timeBarData.push({
+      date: ev.date,
+      value: "1",
+    });
+  };
 
-    export const updateTimeBar = (timeBarEnabled: boolean) => {
-        graph.removePlugin(graph.get("plugins")[0]);
-        if (!timeBarEnabled) {
-            //TO-DO Reset the graph if wanted later
-        } else {
-            graph!.addPlugin(
-                new G6.TimeBar({
-                    className: "g6TimeBar",
-                    x: 0,
-                    y: 0,
-                    width: 500,
-                    height: 110,
-                    padding: 10,
-                    type: "trend",
-                    changeData: false,
-                    trend: {
-                        data: timeBarData,
-                        smooth: true,
-                    },
-                    tick: {
-                        tickLabelFormatter: (timeBarData: any) => {
-                            return "";
-                        },
+  export const updateTimeBar = (timeBarEnabled: boolean) => {
+    graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
+    if (!timeBarEnabled) {
+      //TO-DO Reset the graph if wanted later
+    } else {
+      graph!.addPlugin(
+        new G6.TimeBar({
+          className: "g6TimeBar",
+          x: 0,
+          y: 0,
+          width: 500,
+          height: 110,
+          padding: 10,
+          type: "trend",
+          changeData: false,
+          trend: {
+            data: timeBarData,
+            smooth: true,
+          },
+          tick: {
+            tickLabelFormatter: (timeBarData: any) => {
+              return "";
+            },
 
-                        tickLineStyle: {
-                            fill: "#f28c18",
-                        },
-                    },
-                    slider: {
-                        backgroundStyle: {
-                            fill: "#131616",
-                        },
-                        foregroundStyle: {
-                            fill: "#ffffff",
-                        },
-                        handlerStyle: {
-                            style: {
-                                fill: "#f28c18",
-                                stroke: "#f28c18",
-                            },
-                        },
-                    },
-                    controllerCfg: {
-                        fill: "#131616",
-                        stroke: "#131616",
-                        timePointControllerText: " Point",
-                        timeRangeControllerText: " Point",
-                    },
-                })
-            );
-        }
-    };
+            tickLineStyle: {
+              fill: "#f28c18",
+            },
+          },
+          slider: {
+            backgroundStyle: {
+              fill: "#131616",
+            },
+            foregroundStyle: {
+              fill: "#ffffff",
+            },
+            handlerStyle: {
+              style: {
+                fill: "#f28c18",
+                stroke: "#f28c18",
+              },
+            },
+          },
+          controllerCfg: {
+            fill: "#131616",
+            stroke: "#131616",
+            timePointControllerText: " Point",
+            timeRangeControllerText: " Point",
+          },
+        })
+      );
+    }
+  };
 
-    onMount(() => {
-        if (graph) {
-            graph.destroy();
-        }
+  // Declare the tooltip. Styling happens below in the .g6tooltip section
+  // doc: https://g6.antv.vision/en/examples/tool/tooltip#tooltipPlugin 
+  const tooltip = new G6.Tooltip({
+  className: "g6tooltip",
+  offsetX: 10,
+  offsetY: 10,
+  // the types of items that allow the tooltip show up
+  itemTypes: ['node'],
+  // custom the tooltip's content
+  getContent: (e) => {
+    const outDiv = document.createElement('div'); // create a new div to contain the info within the tootip. 
+     // style the content
+    outDiv.style.width = 'fit-content';          
+    outDiv.style.color = '#ffffff'
+    outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
+    return outDiv;
+  },
+});
 
-        graph = new G6.Graph({
-            ...options,
-            container,
-        });
+// Method that returns the local time contained in a node. The path to the time has been checked so it corresponds to the time when the node has been received by the rabbitMQ broker. 
+  const getNodeLocalTime = (e: any) => {
+    let time = new Date(e.item._cfg.model.time); // create a new date from the timestamp in the node
+    return time.toLocaleTimeString();            // return the converted date to local time with a precision to the second. 
+  }
+
+  onMount(() => {
+    if (graph) {
+      graph.destroy();
+    }
+
+    graph = new G6.Graph({
+      ...options,
+      container,
+      plugins: [tooltip]  // add tooltip as plugin to the graph. 
+    });
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
@@ -129,22 +155,21 @@
          //TODO : Add a listener when entering and exiting the nodes
          graph.on("node:mouseenter", (e) => dispatch("nodeHovered", e));  // emit an event when the node is entered with the mouse
 
-         graph.on("node:mouseout", (e) => dispatch("nodeExited", e));      // emit an event when the node is exited with the mouse.
 
 
         graph.changeData(data);
         resizeGraph();
 
-        return () => {
-            graph.destroy();
-        };
-    });
+    return () => {
+      graph.destroy();
+    };
+  });
 
-    $: {
-        if (data && graph) {
-            graph.changeData(data);
-        }
+  $: {
+    if (data && graph) {
+      graph.changeData(data);
     }
+  }
 </script>
 
 <svelte:window on:resize={resizeGraph} />
@@ -152,15 +177,22 @@
 <div bind:this={container} class="container" />
 
 <style global>
-    .container {
-        height: 100%;
-    }
-    .g6TimeBar {
-        background: #131616;
-        border-radius: 20px;
-        position: absolute !important;
-        left: 35%;
-        bottom: 80px;
-        z-index: 0;
-    }
+  .container {
+    height: 100%;
+  }
+  .g6TimeBar {
+    background: #131616;
+    border-radius: 20px;
+    position: absolute !important;
+    left: 35%;
+    bottom: 80px;
+    z-index: 0;
+  }
+
+  .g6tootip {
+    background-color: #000000;
+    border: 0px;
+    padding: 1px;
+  }
+
 </style>
