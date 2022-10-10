@@ -14,7 +14,7 @@ use tracing::info;
 #[derive(Parser, Debug)]
 struct Cli {
     /// HTTP host address
-    #[clap(short, long, default_value = "127.0.0.1")]
+    #[clap(short, long, default_value = "0.0.0.0")]
     address: String,
 
     /// HTTP host port
