@@ -119,7 +119,7 @@
   getContent: (e) => {
     const outDiv = document.createElement('div'); // create a new div to contain the info within the tootip. 
      // style the content
-    outDiv.classList.add("g6tooltip") //to link it to the style class but did not work
+    /* outDiv.classList.add("g6tooltip") //to link it to the style class but did not work
     outDiv.style.backgroundColor = 'rgba(248,248,240, 0.7)';  
     outDiv.style.borderRadius= '13px'
     outDiv.style.alignContent = 'centre'
@@ -130,7 +130,7 @@
     outDiv.style.height = '60px'; 
     outDiv.style.width = '100px'; 
     outDiv.style.textShadow='2px 2px #6a5acd'         
-    outDiv.style.color = '#fff'
+    outDiv.style.color = '#fff' */
     outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
     return outDiv;
   },
@@ -201,17 +201,17 @@
     z-index: 0;
   }
 
-  .g6tootip {
-    background-color: rgba(248,248,240, 0.7);  
-    border-radius: 13px;
+  .g6tooltip {
+    background-image: linear-gradient(to right, rgb(33, 33, 33, 0.3), rgb(100, 100, 100));
+    border-radius: 8px;
     align-items: center;
-    border-color: rgb(106, 90, 205);
-    border-width: 2px;
-    padding: 12px 5px 4px 12px;
-    box-shadow: rgb(106, 90, 205) 2px 4px 12px;
-    height: 60px; 
-    width :100px; 
-    text-shadow:2px 2px #000000;         
+    border-color: rgb(83, 83, 83);
+    border-width: 1px;
+    padding: 0.5px;
+    box-shadow: rgb(61, 61, 61) 2px 4px 12px;
+    height: 30px; 
+    width :fit-content; 
+    text-shadow:2px 2px #444a5a;         
     color: #fff;
     font-family:'Major Mono Display';
   }
