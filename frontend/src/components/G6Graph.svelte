@@ -114,6 +114,17 @@
         });
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+        graph.on("keydown", (e) => {
+            if (e.key === "ArrowRight") {
+                graph.translate(-50, 0);
+            } else if (e.key === "ArrowLeft") {
+                graph.translate(50, 0);
+            } else if (e.key === "ArrowUp") {
+                graph.translate(0, 50);
+            } else if (e.key === "ArrowDown") {
+                graph.translate(0, -50);
+            }
+        })
 
         graph.changeData(data);
         resizeGraph();
