@@ -17,9 +17,18 @@ use rand::{thread_rng, Rng};
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
-    /// Total amount of events to be sent (note: multiplied with the `burst` option)
-    #[clap(default_value = "300", short, long)]
+
+    // NOTE: The number of events along with the total duration, min lacency and latency max is to be used for stress testing.
+    // When setting these values, keep in mind that the generator process will stop at whichever value is reached first (between the count and total duration).
+    // The defaut settings on these variables represent roughly 30,000 events sent per hour.
+ 
+    // Total amount of events to be sent (note: multiplied with the `burst` option)
+    #[clap(default_value = "30000", short, long)]
     count: usize,
+
+    // Total duration to run the event generator
+    #[clap(default_value = "3600000", short, long)]
+    total_duration: usize,
 
     /// URL to amqp server
     #[clap(default_value = "amqp://127.0.0.1:5672/%2f", short, long)]
@@ -37,9 +46,13 @@ struct Cli {
     #[clap(long)]
     seed: Option<usize>,
 
-    /// Time in milliseconds to sleep before emitting a new burst of events
-    #[clap(default_value = "0", short, long)]
-    latency: usize,
+    /// Starting latency value for the random interval between events
+    #[clap(default_value = "5", short, long)]
+    min_latency: usize,
+
+    /// Ending latency value for the random interval between events
+    #[clap(default_value = "220", short, long)]
+    latency_max: usize,
 
     /// Amount of events to send before introducing another delay (defined with the latency option)
     #[clap(default_value = "1", short, long)]
@@ -74,7 +87,6 @@ async fn app() -> anyhow::Result<()> {
     let channel_a = conn.create_channel().await?;
 
     println!("Connected to broker.");
-    let type_Array = ["Event1","Event2","Event3","Event4","Event5"];
     
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
@@ -84,7 +96,7 @@ async fn app() -> anyhow::Result<()> {
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-                Event::new(type_Array[rand::thread_rng().gen_range(0..4)] , "1.0.0")
+                Event::new("Event" , "1.0.0")
                     .with_link("Link0")
                     .with_link("Link1"),
             )
@@ -112,26 +124,21 @@ async fn app() -> anyhow::Result<()> {
     }
 
     println!(
-        "Sending out a maximum of {} events, over a maximum duration of {} seconds. \nEvents sent at random intervals between 5-220ms. \nProcess will stop at whichever comes first.\n",
-        target, ((target*120) / 1000)
+        "\nSending out a maximum of {} events, over a maximum duration of {} seconds. \nProcess will stop at whichever comes first. \nEvents sent at random intervals between {}-{}ms. \n",
+        target, (cli.total_duration / 1000), cli.min_latency, cli.latency_max
     );
 
     let mut sent = 0;
     // Used for a time reference staring point
     let start = Instant::now();
-    // Factor to calculate the total duration from the event count
-    let factor = 120;
-    // Total duration is = to the count multiplied by 120 (30000 events will be sent over and hour)
-    let total_duration = cli.count * factor;
     // Decalred as mut in order to allow the value to change
     let mut duration = start.elapsed();
 
         for _ in 0..(target) {
             // Loop until the elapsed time has reached the calculated total duration or event count has been reached
-            while duration.as_millis() < total_duration.try_into().unwrap() && sent < cli.count{
+            while duration.as_millis() < cli.total_duration.try_into().unwrap() && sent < cli.count{
                 // Generate a random delay between 5 and 220ms
-                let pause_duration = Duration::from_millis(random_num(5, 215) as u64);
-                //println!("Pause duration: {:?}", pause_duration); 
+                let pause_duration = Duration::from_millis(random_num(cli.min_latency, cli.latency_max) as u64);
 
                 let mut taken = 0;
                 for ev in (&mut iter).take(cli.burst) {
