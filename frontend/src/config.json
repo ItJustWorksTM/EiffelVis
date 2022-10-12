@@ -1,0 +1,123 @@
+{
+    "Theme": {
+        // Rainbow corlor: Red #FF0000, Orange#FF7F00, Yellow#FFFF00, Green#00FF00,Indigo#00FFFF, Blue#0000FF, Voilet#9400D3
+        //Shape: Circle square, circle, triangle star pentagon 
+        "Rainbow": {
+            "EiffelActivityStartedEvent": {
+                "Color": "FF0000", //Red
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityTriggeredEvent": {
+                "Color": "FF7F00", //Orange
+                "Shape": "Circle",
+                "Acronym": "ActT"
+            },
+            "EiffelActivityCanceledEvent": {
+                "Color": "FFFF00", //Yellow
+                "Shape": "Circle",
+                "Acronym": "ActC"
+            },
+            "EiffelActivityFinishedEvent": {
+                "Color": "00FF00", //Green
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelArtifactCreatedEvent": {
+                "Color": "0000FF", //Blue
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event6": {
+                "Color": "Red", //Indigo
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event7": {
+                "Color": "Red", //Voilet
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityStartedEvent": {
+                "Color": "FF0000", //Red
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityCanceledEvent": {
+                "Color": "Red", //Orange
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityStartedEvent": {
+                "Color": "Red", //Yellow
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityFinishedEvent": {
+                "Color": "Red", //Green
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelArtifactCreatedEvent": {
+                "Color": "Red", //Blue
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event6": {
+                "Color": "Red", //Indigo
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event7": {
+                "Color": "Red", //Voilet
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityStartedEvent": {
+                "Color": "FF0000", //Red
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityCanceledEvent": {
+                "Color": "Red", //Orange
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityStartedEvent": {
+                "Color": "Red", //Yellow
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityFinishedEvent": {
+                "Color": "Red", //Green
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelArtifactCreatedEvent": {
+                "Color": "Red", //Blue
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event6": {
+                "Color": "Red", //Indigo
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "Event7": {
+                "Color": "Red", //Voilet
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityStartedEvent": {
+                "Color": "FF0000", //Red
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityCanceledEvent": {
+                "Color": "Red", //Orange
+                "Shape": "Circle",
+                "Acronym": "ActS"
+            }
+        }
+    }
+}
