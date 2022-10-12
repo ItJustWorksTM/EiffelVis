@@ -1,123 +1,127 @@
 {
     "Theme": {
-        // Rainbow corlor: Red #FF0000, Orange#FF7F00, Yellow#FFFF00, Green#00FF00,Indigo#00FFFF, Blue#0000FF, Voilet#9400D3
-        //Shape: Circle square, circle, triangle star pentagon 
         "Rainbow": {
             "EiffelActivityStartedEvent": {
-                "Color": "FF0000", //Red
-                "Shape": "Circle",
+                "Color": "FF0000",
+                "Shape": "circle",
                 "Acronym": "ActS"
             },
             "EiffelActivityTriggeredEvent": {
-                "Color": "FF7F00", //Orange
-                "Shape": "Circle",
+                "Color": "FF7F00",
+                "Shape": "circle",
                 "Acronym": "ActT"
             },
             "EiffelActivityCanceledEvent": {
-                "Color": "FFFF00", //Yellow
-                "Shape": "Circle",
+                "Color": "FFFF00",
+                "Shape": "circle",
                 "Acronym": "ActC"
             },
             "EiffelActivityFinishedEvent": {
-                "Color": "00FF00", //Green
-                "Shape": "Circle",
-                "Acronym": "ActS"
+                "Color": "00FF00",
+                "Shape": "circle",
+                "Acronym": "ActF"
             },
             "EiffelArtifactCreatedEvent": {
-                "Color": "0000FF", //Blue
-                "Shape": "Circle",
-                "Acronym": "ActS"
+                "Color": "00FFFF",
+                "Shape": "rect",
+                "Acronym": "ArtC"
             },
-            "Event6": {
-                "Color": "Red", //Indigo
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelArtifactPublishedEvent": {
+                "Color": "0000FF",
+                "Shape": "rect",
+                "Acronym": "ArtP"
             },
-            "Event7": {
-                "Color": "Red", //Voilet
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelArtifactReusedEvent": {
+                "Color": "9400D3",
+                "Shape": "rect",
+                "Acronym": "ArtR"
             },
-            "EiffelActivityStartedEvent": {
-                "Color": "FF0000", //Red
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestCaseStartedEvent": {
+                "Color": "FF0000",
+                "Shape": "triangle",
+                "Acronym": "TCS"
             },
-            "EiffelActivityCanceledEvent": {
-                "Color": "Red", //Orange
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestCaseTriggeredEvent": {
+                "Color": "FF7F00",
+                "Shape": "triangle",
+                "Acronym": "TCT"
             },
-            "EiffelActivityStartedEvent": {
-                "Color": "Red", //Yellow
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestCaseCanceledEvent": {
+                "Color": "FFFF00",
+                "Shape": "triangle",
+                "Acronym": "TCC"
             },
-            "EiffelActivityFinishedEvent": {
-                "Color": "Red", //Green
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestCaseFinishedEvent": {
+                "Color": "00FF00",
+                "Shape": "triangle",
+                "Acronym": "TCF"
             },
-            "EiffelArtifactCreatedEvent": {
-                "Color": "Red", //Blue
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestSuiteStartedEvent": {
+                "Color": "00FFFF",
+                "Shape": "triangle",
+                "Acronym": "TSS"
             },
-            "Event6": {
-                "Color": "Red", //Indigo
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestExecutionRecipeCollectionCreatedEvent": {
+                "Color": "0000FF",
+                "Shape": "triangle",
+                "Acronym": "TERCC"
             },
-            "Event7": {
-                "Color": "Red", //Voilet
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelTestSuiteFinishedEvent": {
+                "Color": "9400D3",
+                "Shape": "triangle",
+                "Acronym": "TSF"
             },
-            "EiffelActivityStartedEvent": {
-                "Color": "FF0000", //Red
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelAnnouncementPublishedEvent": {
+                "Color": "FF0000",
+                "Shape": "star",
+                "Acronym": "AnnP"
             },
-            "EiffelActivityCanceledEvent": {
-                "Color": "Red", //Orange
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelCompositionDefinedEvent": {
+                "Color": "FF7F00",
+                "Shape": "star",
+                "Acronym": "CD"
             },
-            "EiffelActivityStartedEvent": {
-                "Color": "Red", //Yellow
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelConfidenceLevelModifiedEvent": {
+                "Color": "FFFF00",
+                "Shape": "star",
+                "Acronym": "CLM"
             },
-            "EiffelActivityFinishedEvent": {
-                "Color": "Red", //Green
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelEnvironmentDefinedEvent": {
+                "Color": "00FF00",
+                "Shape": "star",
+                "Acronym": "ED"
             },
-            "EiffelArtifactCreatedEvent": {
-                "Color": "Red", //Blue
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelFlowContextDefinedEvent": {
+                "Color": "00FFFF",
+                "Shape": "star",
+                "Acronym": "FCD"
             },
-            "Event6": {
-                "Color": "Red", //Indigo
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelIssueDefinedEvent": {
+                "Color": "0000FF",
+                "Shape": "pentagon",
+                "Acronym": "ID"
             },
-            "Event7": {
-                "Color": "Red", //Voilet
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelIssueVerifiedEvent": {
+                "Color": "9400D3",
+                "Shape": "pentagon",
+                "Acronym": "IV"
             },
-            "EiffelActivityStartedEvent": {
-                "Color": "FF0000", //Red
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelSourceChangeCreatedEvent": {
+                "Color": "FF0000",
+                "Shape": "diamond",
+                "Acronym": "SCC"
             },
-            "EiffelActivityCanceledEvent": {
-                "Color": "Red", //Orange
-                "Shape": "Circle",
-                "Acronym": "ActS"
+            "EiffelSourceChangeSubmittedEvent": {
+                "Color": "FF7F00",
+                "Shape": "diamond",
+                "Acronym": "SCS"
             }
+        },
+        "Link": {
+            "PRECURSOR": "ff1744",
+            "CAUSE": "2979ff",
+            "CONTEXT": "00e676",
+            "FLOW_CONTEXT": "ff9100"
         }
     }
 }
