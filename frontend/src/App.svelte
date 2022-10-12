@@ -27,7 +27,7 @@
   let selected_node = null;
 
   let show_menu = false;
-  let show_legend = false;
+  let show_legend = true;
   let show_timebar = false;
 
   let legend = new Map<string, string>();
@@ -220,29 +220,6 @@
           </a>
         </li>
         <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
           <a
             class=""
             class:btn-active={show_timebar}
@@ -287,13 +264,6 @@
         on:apply={consume_query}
       />
     </div>
-    <div
-      style="z-index:1"
-      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
-      class:show={show_legend}
-    >
-      <ColorLegend {colors} />
-    </div>
   </div>
 
   <div
@@ -332,7 +302,36 @@
       </div>
     </div>
   </div>
+  <div
 
+    class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 top-0 fixed w-fit m-6">
+    <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="inline-block w-6 h-6 stroke-current"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+      </svg>
+    </a>
+    <div
+      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 rounded-box mb-6"
+      class:show={show_legend}>
+      <ColorLegend {colors} />
+    </div>
+  </div>
   <G6Graph
     on:nodeselected={on_node_selected}
     bind:this={graph_elem}
