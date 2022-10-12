@@ -1,4 +1,3 @@
-
 export interface GraphSettings {
   offset: number
   time_diff: number
