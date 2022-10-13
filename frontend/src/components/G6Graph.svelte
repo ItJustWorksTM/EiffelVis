@@ -40,10 +40,11 @@
   };
 
   export const push = (ev: any) => {
+    console.log(ev);
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
-    for (const target of ev.edges) {
-      graph.addItem("edge", { source: ev.id, target });
+    for (const edge of ev.edges) {
+      graph.addItem("edge", { source: ev.id, target: edge.target, label: edge.type }); // the type of link is connected to the label of the edge here. 
     }
 
     timeBarData.push({

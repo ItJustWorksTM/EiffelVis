@@ -186,6 +186,9 @@
     workerEnabled: false,
     fitView: true,
     defaultEdge: {
+      labelCfg: {
+      position: 'middle' // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+    },
       style: {
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
