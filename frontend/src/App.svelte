@@ -187,7 +187,13 @@
     fitView: true,
     defaultEdge: {
       labelCfg: {
-      position: 'middle' // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+        refY: 3,
+        position: 'left', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+        style:{
+          fill: '#ffffff',
+          opacity: 0, 
+          
+        }
     },
       style: {
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
@@ -196,8 +202,8 @@
     nodeStateStyles: {
       selected: {
         fill: "#ffffff",
-        lineWidth: 0.4,
       },
+
     },
     modes: {
       default: [
@@ -208,7 +214,7 @@
           enableOptimize: true,
         },
       ],
-    },
+    }
   };
 </script>
 

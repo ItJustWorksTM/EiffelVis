@@ -119,21 +119,11 @@
   // custom the tooltip's content
   getContent: (e) => {
     const outDiv = document.createElement('div'); // create a new div to contain the info within the tootip. 
-     // style the content
-    /* outDiv.classList.add("g6tooltip") //to link it to the style class but did not work
-    outDiv.style.backgroundColor = 'rgba(248,248,240, 0.7)';  
-    outDiv.style.borderRadius= '13px'
-    outDiv.style.alignContent = 'centre'
-    outDiv.style.borderColor= 'rgb(106, 90, 205)';
-    outDiv.style.borderWidth= '2px'
-    outDiv.style.padding = '12px 5px 4px 12px';
-    outDiv.style.boxShadow= 'rgb(106, 90, 205) 2px 4px 12px';
-    outDiv.style.height = '60px'; 
-    outDiv.style.width = '100px'; 
-    outDiv.style.textShadow='2px 2px #6a5acd'         
-    outDiv.style.color = '#fff' */
-    outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
-    return outDiv;
+
+    if (e.item.getType() === 'node') {
+        outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
+    }
+        return outDiv;
   },
 });
 
@@ -141,6 +131,18 @@
   const getNodeLocalTime = (e: any) => {
     let time = new Date(e.item._cfg.model.time); // create a new date from the timestamp in the node
     return time.toLocaleTimeString();            // return the converted date to local time with a precision to the second. 
+  }
+
+
+  const clearAllStates = (e: any) =>{
+    graph.getNodes().forEach(function (node) {
+    graph.clearItemStates(node);
+    });
+    // this was causing an error  
+    //graph.getEdges().forEach(function (edge) { 
+    //graph.clearItemStates(edge);
+   // });
+    graph.paint();
   }
 
   onMount(() => {
@@ -156,6 +158,79 @@
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
+
+           // Listeners that highlight the nodes when they are hovered.
+    graph.on("node:mouseenter", (e) => { //test
+        const item = e.item;
+        graph.getNodes().forEach(function (node) {
+            graph.clearItemStates(node);
+            graph.setItemState(node, 'dark', true);
+            graph.setItemState(node, 'hover', true); //to have the hover effect fully functioning
+        });
+        graph.setItemState(item, 'dark', false);
+        graph.setItemState(item, 'highlight', true);
+        graph.getEdges().forEach(function (edge) {
+            if (edge.getSource() === item) {
+            graph.setItemState(edge.getTarget(), 'dark', false);
+            graph.setItemState(edge.getTarget(), 'highlight', true);
+            graph.setItemState(edge, 'highlight', true);
+            graph.setItemState(edge, 'dark', false);         
+            edge.toFront();
+            } else if (edge.getTarget() === item) {
+            graph.setItemState(edge.getSource(), 'dark', false);
+            graph.setItemState(edge.getSource(), 'highlight', true);
+            graph.setItemState(edge, 'dark', false);
+            graph.setItemState(edge, 'highlight', true);
+            edge.toFront();
+            } else {
+            graph.setItemState(edge, 'highlight', false);
+            graph.setItemState(edge, 'dark', true);
+            }
+             graph.updateItem(edge, {
+                stateStyles:{
+                    highlight:{
+                        'edge-label': {
+                            opacity: 1
+                        }
+                    },
+                    dark:{
+                        'edge-label': {
+                            opacity: 0
+                        }
+                    }
+            }} 
+        )//end of updateItem
+    });
+});
+      
+graph.on('node:mouseleave', clearAllStates);
+graph.on('canvas:click', clearAllStates);
+graph.on("node:mouseleave", (e) => {
+    graph.getNodes().forEach(function (node) {
+            graph.clearItemStates(node);
+            graph.setItemState(node, 'dark', true);
+            graph.setItemState(node, 'hover', false); //to have the hover effect fully functioning
+        });
+      graph.clearItemStates(e.item);
+      graph.getEdges().forEach(function (edge) {
+      //  graph.clearItemStates(edge);
+      graph.updateItem(edge, {
+                stateStyles:{
+                    highlight:{
+                        labelCfg:{ 
+                            opacity: 0
+                        }
+                    },
+                    dark:{
+                        'label':{ // this should be like this.  when I changed it, it got buggy
+                            opacity: 0
+                        }
+                }
+            }
+        } 
+        )//end of updateItem
+        });
+     });
         // Enable keyboard manipulation
         graph.on("keydown", (e: IG6GraphEvent) => {
             let weight: Function = (k1: string, k2: string) => e.key == k1 ? -1 : e.key == k2 ? 1 : 0
@@ -183,6 +258,8 @@
       graph.changeData(data);
     }
   }
+  reset();
+
 </script>
 
 <svelte:window on:resize={resizeGraph} />
