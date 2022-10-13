@@ -6,7 +6,7 @@
     const options = {
         container: "mountNode",
         width: 280,
-        height: 200,
+        height: 210,
         workerEnabled: false,
     };
 
@@ -28,7 +28,7 @@
                     style: {
                         fill: event[1].Color,
                     },
-                    position: "right",
+                    position: "bottom",
                 },
             };
             array.push(node);
