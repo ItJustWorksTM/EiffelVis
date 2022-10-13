@@ -81,7 +81,6 @@ export class StatefulLayout {
     //   )
     //   const color = `hsl(${hash % (hue ? hue : 360)},50%,50%)`
     //   this.colors.set(eventType, color)
-    console.log(this.defaultColor)
     return this.themeMap.get(eventType).Color
   }
 
@@ -90,6 +89,10 @@ export class StatefulLayout {
   }
   getNodeShape() {
     return this.shapes
+  }
+
+  getNodeStyle() {
+    return this.themeMap
   }
   nodeShape(eventType: string) {
     // if a new event type are created, we generate a random integer between 0-4 as the index of shape array.
@@ -107,7 +110,6 @@ export class StatefulLayout {
     //   console.log(shape)
     //   this.shapes.set(eventType, shape)
     // }
-    console.log(eventType)
     return this.themeMap.get(eventType).Acronym
   }
 
