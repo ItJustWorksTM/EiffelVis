@@ -16,6 +16,7 @@
   } from "./uitypes";
   import { deep_copy } from "./utils";
   import G6Graph from "./components/G6Graph.svelte";
+  import config from "./config.json";
 
   let graph_elem: G6Graph | null;
 
@@ -30,8 +31,10 @@
   let show_legend = true;
   let show_timebar = false;
 
-  let legend = new Map<string, string>();
-  $: colors = [...legend.entries()];
+  let rainbowTheme = config.Theme.Rainbow;
+  let themeMap = new Map(Object.entries(rainbowTheme));
+  let legend = themeMap;
+  $: styles = [...legend.entries()];
 
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
 
@@ -86,7 +89,7 @@
         once = false;
       }
 
-      legend = layout.getNodeColor();
+      legend = layout.getNodeStyle();
     }
   };
 
@@ -302,9 +305,7 @@
       </div>
     </div>
   </div>
-  <div
-
-    class="p-3 bg-base-300 rounded-box h-fit left-0 top-0 fixed m-6">
+  <div class="p-3 bg-base-300 rounded-box h-fit left-0 top-0 fixed m-6">
     <a class="btn" class:btn-active={show_legend} on:click={toggleLegend}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -328,8 +329,9 @@
     </a>
     <div
       class="overflow-x-auto overflow-y-auto bg-base-100 w-0 rounded-box mb-6"
-      class:show={show_legend}>
-      <ColorLegend {colors} />
+      class:show={show_legend}
+    >
+      <ColorLegend {styles} />
     </div>
   </div>
   <G6Graph
