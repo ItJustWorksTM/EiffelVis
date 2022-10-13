@@ -1,28 +1,42 @@
 <script lang="ts">
-    export let colors;
+    export let styles;
+    import G6, { Graph } from "@antv/g6";
+    import { onMount } from "svelte";
+    import G6Component from "svelte-g6";
+    const options = {
+        container: "mountNode",
+        width: 280,
+        height: 200,
+        workerEnabled: false,
+    };
+
+    let data = {};
+    let counter = 0;
+    onMount(() => {
+        let array = [];
+
+        styles.forEach((event) => {
+            let node = {
+                id: event[0],
+                size: 10,
+                type: event[1].Shape,
+                style: {
+                    fill: event[1].Color,
+                },
+                label: event[1].Acronym,
+                labelCfg: {
+                    style: {
+                        fill: event[1].Color,
+                    },
+                    position: "right",
+                },
+            };
+            array.push(node);
+        });
+        data = { nodes: array };
+    });
 </script>
 
 <table class="table w-full h-fit">
-    <thead>
-        <tr>
-            <th>Event Type</th>
-            <th>Color</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each colors as [event, color]}
-            <tr class="">
-                <td>{event}</td>
-                <td
-                    >&nbsp
-                    <div class="avatar h-3">
-                        <div
-                            class="mb-8 rounded-full w-5 h-5"
-                            style="background-color: {color}"
-                        />
-                    </div></td
-                >
-            </tr>
-        {/each}
-    </tbody>
+    <G6Component {G6} {options} {data} />
 </table>
