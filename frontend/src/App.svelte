@@ -304,8 +304,8 @@
   </div>
   <div
 
-    class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 top-0 fixed w-fit m-6">
-    <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
+    class="p-3 bg-base-300 rounded-box h-fit left-0 top-0 fixed m-6">
+    <a class="btn" class:btn-active={show_legend} on:click={toggleLegend}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

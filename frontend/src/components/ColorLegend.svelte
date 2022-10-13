@@ -2,7 +2,7 @@
     export let colors;
 </script>
 
-<table class="table w-full">
+<table class="table w-full h-fit">
     <thead>
         <tr>
             <th>Event Type</th>
