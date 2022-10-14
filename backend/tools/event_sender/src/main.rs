@@ -99,8 +99,8 @@ async fn app() -> anyhow::Result<()> {
     
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        4,
-        8,
+        10,
+        11,
         EventSet::build()
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
