@@ -80,7 +80,7 @@ export class QueryStream {
       this.tick()
   }
 
-  // Internal callback handler for when `EiffelVisConnection` closes our connection 
+  // Internal callback handler for when `EiffelVisConnection` closes our connection
   onclose() {
     this.closed = true
     if (this.tick)
@@ -151,7 +151,7 @@ export class EiffelVisConnection {
 
       this.activestream = querystream
 
-      // Delegate any new messages to the QueryStream, they are guaranteed to be events 
+      // Delegate any new messages to the QueryStream, they are guaranteed to be events
       conn.onmessage = (ev) => this.activestream.onmessage(JSON.parse(ev.data))
       this.pending = null
       return true
@@ -176,7 +176,7 @@ export class EiffelVisConnection {
 
   // Returns a websocket connection, by either making a new one or using the existing one
   private async acquire_aconnection(): Promise<WebSocket> {
-    while (true) {
+    for (;;) {
       if (!this.connection) {
         this.connection = await this.connect()
         // Wait 1000ms before trying again

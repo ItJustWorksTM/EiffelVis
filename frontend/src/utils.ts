@@ -1,8 +1,7 @@
 export const deep_copy = (o: object) => {
-    let out, v, key;
-    out = Array.isArray(o) ? [] : {};
-    for (key in o) {
-        v = o[key];
+    const out = Array.isArray(o) ? [] : {};
+    for (const key in o) {
+        const v = o[key];
         out[key] = (typeof v === "object" && v !== null) ? deep_copy(v) : v;
     }
     return out;

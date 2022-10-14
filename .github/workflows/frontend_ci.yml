@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [16.x, 18.x]
         
     steps:
     - name: Checkout repository
@@ -41,8 +41,8 @@ jobs:
     - name: Install dependencies
       run: npm install
       
-    # - name: lint
-    #   run: npm run lint --fix
+    - name: lint
+      run: npm run lint
       
     - name: Build
       run: npm run build
