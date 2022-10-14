@@ -17,11 +17,10 @@ use rand::{thread_rng, Rng};
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
-
     // NOTE: The number of events along with the total duration, min lacency and latency max is to be used for stress testing.
     // When setting these values, keep in mind that the generator process will stop at whichever value is reached first (between the count and total duration).
     // The defaut settings on these variables represent roughly 30,000 events sent per hour.
- 
+
     // Total amount of events to be sent (note: multiplied with the `burst` option)
     #[clap(default_value = "30000", short, long)]
     count: usize,
@@ -94,18 +93,18 @@ async fn app() -> anyhow::Result<()> {
         )
         .await?;
 
-        // println!(?queue, "Declared queue");
+    // println!(?queue, "Declared queue");
     println!("Connected to broker.");
-    
+
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        10,
-        11,
+        6,
+        8,
         EventSet::build()
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-                Event::new("Event" , "1.0.0")
+                Event::new("Event", "1.0.0")
                     .with_link("Link0")
                     .with_link("Link1"),
             )
@@ -126,10 +125,10 @@ async fn app() -> anyhow::Result<()> {
 
     let target = cli.count * cli.burst;
 
-    // Random number generator used to product random intervals 
-    fn random_num(from:usize, to:usize) -> usize{
+    // Random number generator used to product random intervals
+    fn random_num(from: usize, to: usize) -> usize {
         let mut rng = rand::thread_rng();
-        return rng.gen_range(from..to);
+        rng.gen_range(from..to)
     }
 
     println!(
@@ -143,39 +142,43 @@ async fn app() -> anyhow::Result<()> {
     // Decalred as mut in order to allow the value to change
     let mut duration = start.elapsed();
 
-        for _ in 0..(target) {
-            // Loop until the elapsed time has reached the calculated total duration or event count has been reached
-            while duration.as_millis() < cli.total_duration.try_into().unwrap() && sent < cli.count{
-                // Generate a random delay between 5 and 220ms
-                let pause_duration = Duration::from_millis(random_num(cli.min_latency, cli.latency_max) as u64);
+    for _ in 0..(target) {
+        // Loop until the elapsed time has reached the calculated total duration or event count has been reached
+        while duration.as_millis() < cli.total_duration.try_into().unwrap() && sent < cli.count {
+            // Generate a random delay between 5 and 220ms
+            let pause_duration =
+                Duration::from_millis(random_num(cli.min_latency, cli.latency_max) as u64);
 
-                let mut taken = 0;
-                for ev in (&mut iter).take(cli.burst) {
-                    let _ = channel_a
-                        .basic_publish(
-                            cli.exchange.as_str(),
-                            cli.routing_key.as_str(),
-                            BasicPublishOptions::default(),
-                            ev.as_slice(),
-                            BasicProperties::default(),
-                        )
-                        .await?
-                        .await?;
-                    taken += 1;
-                }
-                if cli.burst > taken {
-                    println!("Exhausted source, stopping early!");
-                    break;
-                }
-                sent += taken;
+            let mut taken = 0;
+            for ev in (&mut iter).take(cli.burst) {
+                let _ = channel_a
+                    .basic_publish(
+                        cli.exchange.as_str(),
+                        cli.routing_key.as_str(),
+                        BasicPublishOptions::default(),
+                        ev.as_slice(),
+                        BasicProperties::default(),
+                    )
+                    .await?
+                    .await?;
+                taken += 1;
+            }
+            if cli.burst > taken {
+                println!("Exhausted source, stopping early!");
+                break;
+            }
+            sent += taken;
 
-                // Sleep for a randomly selected time
-                tokio::time::sleep(pause_duration).await;
-                // Stores the amount of time elapsed from the start.
-                duration = start.elapsed();
+            // Sleep for a randomly selected time
+            tokio::time::sleep(pause_duration).await;
+            // Stores the amount of time elapsed from the start.
+            duration = start.elapsed();
         }
     }
-    println!("Done! Total events sent: {}, total duration: {:?}", sent, duration);
+    println!(
+        "Done! Total events sent: {}, total duration: {:?}",
+        sent, duration
+    );
 
     Ok(())
 }

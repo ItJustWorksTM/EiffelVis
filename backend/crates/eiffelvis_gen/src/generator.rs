@@ -217,17 +217,18 @@ impl Iterator for Iter<'_> {
             .borrow_mut()
             .gen_range(0..self.inner.max_links - generated_links.len());
 
+        // List of possible eiffel events
+        let event_types: [&str; 23] = [
+            "ActC", "ActF", "ActS", "ActT", "AnnP", "ArtC", "ArtP", "ArtR", "TCC", "TCF", "TCS",
+            "TCT", "TERCC", "TSF", "TSS", "CD", "CLM", "ED", "FCD", "ID", "IV", "SCC", "SCS",
+        ];
 
-        // List of possible eiffel events 
-        let event_types: [&str; 23] = ["ActC", "ActF", "ActS", "ActT", "AnnP", "ArtC", "ArtP", "ArtR", "TCC", "TCF", "TCS",
-            "TCT", "TERCC", "TSF", "TSS", "CD", "CLM", "ED", "FCD", "ID", "IV", "SCC", "SCS"];
-            
         // Random number generator used to select a random index of the above
-        fn random_num(min: usize, max: usize) -> usize{
+        fn random_num(min: usize, max: usize) -> usize {
             let mut rng = rand::thread_rng();
-            return rng.gen_range(min..max);
+            rng.gen_range(min..max)
         }
-        
+
         // Randomly pick a link and select an event for it until we reach our target or we exhaust possible events
         while let Some((i, (link, _))) = {
             let ret = generatable_events
@@ -236,10 +237,9 @@ impl Iterator for Iter<'_> {
                 .choose(&mut *self.rng.borrow_mut());
             ret
         } {
-            
             if generated_links.len() >= target_amount {
                 break;
-            }         
+            }
 
             let exhausted = if let Some(bl) = select_event(*link) {
                 generated_links.push(bl);
