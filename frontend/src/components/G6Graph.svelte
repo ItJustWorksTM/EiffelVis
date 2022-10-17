@@ -21,6 +21,8 @@
         dispatch("nodeselected", null);
     };
 
+    // This is a hack to get the graph to render properly
+    // and not be cut off prematurely in width
     export const resizeGraph = () => {
         if (graph && container) {
             const width = Number(
