@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import G6, { Graph, GraphData } from "@antv/g6";
+    import G6, { Graph, GraphData, IG6GraphEvent } from "@antv/g6";
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
@@ -116,7 +116,7 @@
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
         // Enable keyboard manipulation
-        graph.on("keydown", (e) => {
+        graph.on("keydown", (e: IG6GraphEvent) => {
             if (e.key === "ArrowRight") {
                 graph.translate(-50, 0);
             } else if (e.key === "ArrowLeft") {
