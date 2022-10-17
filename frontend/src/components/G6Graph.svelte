@@ -6,6 +6,8 @@
 
     const dispatch = createEventDispatcher();
 
+    const graph_translation = 50;
+
     export let options = {};
     export let data = {};
 
@@ -120,13 +122,13 @@
         // Enable keyboard manipulation
         graph.on("keydown", (e: IG6GraphEvent) => {
             if (e.key === "ArrowRight") {
-                graph.translate(-50, 0);
+                graph.translate(-graph_translation, 0);
             } else if (e.key === "ArrowLeft") {
-                graph.translate(50, 0);
+                graph.translate(graph_translation, 0);
             } else if (e.key === "ArrowUp") {
-                graph.translate(0, 50);
+                graph.translate(0, graph_translation);
             } else if (e.key === "ArrowDown") {
-                graph.translate(0, -50);
+                graph.translate(0, -graph_translation);
             }
         })
 
