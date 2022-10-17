@@ -24,10 +24,10 @@
     export const resizeGraph = () => {
         if (graph && container) {
             const width = Number(
-                window.getComputedStyle(container).width.replace("px", "")
+                window.innerWidth
             );
             const height = Number(
-                window.getComputedStyle(container).height.replace("px", "")
+                window.innerHeight
             );
             graph.changeSize(width, height);
         }
@@ -114,6 +114,19 @@
         });
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+
+        // Enable keyboard manipulation
+        graph.on("keydown", (e) => {
+            if (e.key === "ArrowRight") {
+                graph.translate(-50, 0);
+            } else if (e.key === "ArrowLeft") {
+                graph.translate(50, 0);
+            } else if (e.key === "ArrowUp") {
+                graph.translate(0, 50);
+            } else if (e.key === "ArrowDown") {
+                graph.translate(0, -50);
+            }
+        })
 
         graph.changeData(data);
         resizeGraph();
