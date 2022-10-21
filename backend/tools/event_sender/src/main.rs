@@ -120,8 +120,8 @@ async fn app() -> anyhow::Result<()> {
 
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        16,
-        18,
+        8,
+        10,
         builder
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
@@ -142,12 +142,6 @@ async fn app() -> anyhow::Result<()> {
 
     let target = cli.count * cli.burst;
 
-    // Random number generator used to product random intervals
-    fn random_num(from: usize, to: usize) -> usize {
-        let mut rng = rand::thread_rng();
-        rng.gen_range(from..to)
-    }
-
     println!(
         "\nSending out a maximum of {} events, over a maximum duration of {} seconds. \nProcess will stop at whichever comes first. \nEvents sent at random intervals between {}-{}ms. \n",
         target, (cli.total_duration / 1000), cli.min_latency, cli.latency_max
@@ -157,15 +151,17 @@ async fn app() -> anyhow::Result<()> {
     // Used for a time reference staring point
     let start = Instant::now();
     // Decalred as mut in order to allow the value to change
-    let mut duration = start.elapsed();
+    let mut run_duration = start.elapsed();
+
+    let t_duration = cli.total_duration.try_into().unwrap();
 
     for _ in 0..(target) {
-        // Loop until the elapsed time has reached the calculated total duration or event count has been reached
-        while duration.as_millis() < cli.total_duration.try_into().unwrap() && sent < cli.count {
+        // Additional duration condition to break out of the loop if total duration has been reached
+        if run_duration.as_millis() < t_duration {
             // Generate a random delay between 5 and 220ms
-            let pause_duration =
-                Duration::from_millis(random_num(cli.min_latency, cli.latency_max) as u64);
-
+            let pause_duration = Duration::from_millis(
+                rand::thread_rng().gen_range(cli.min_latency..cli.latency_max) as u64,
+            );
             let mut taken = 0;
             for ev in (&mut iter).take(cli.burst) {
                 let _ = channel_a
@@ -185,16 +181,17 @@ async fn app() -> anyhow::Result<()> {
                 break;
             }
             sent += taken;
-
             // Sleep for a randomly selected time
             tokio::time::sleep(pause_duration).await;
             // Stores the amount of time elapsed from the start.
-            duration = start.elapsed();
+            run_duration = start.elapsed();
+        } else {
+            break;
         }
     }
     println!(
         "Done! Total events sent: {}, total duration: {:?}",
-        sent, duration
+        sent, run_duration
     );
 
     Ok(())
