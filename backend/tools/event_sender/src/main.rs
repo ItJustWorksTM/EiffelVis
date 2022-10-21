@@ -14,6 +14,11 @@ use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 use clap::Parser;
 use rand::{thread_rng, Rng};
 
+const EVENT_TYPES: [&str; 23] = [
+    "ActC", "ActF", "ActS", "ActT", "AnnP", "ArtC", "ArtP", "ArtR", "TCC", "TCF", "TCS", "TCT",
+    "TERCC", "TSF", "TSS", "CD", "CLM", "ED", "FCD", "ID", "IV", "SCC", "SCS",
+];
+
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
@@ -96,18 +101,23 @@ async fn app() -> anyhow::Result<()> {
     // println!(?queue, "Declared queue");
     println!("Connected to broker.");
 
+    let mut builder = EventSet::build();
+
+    for i in EVENT_TYPES {
+        builder = builder.add_event(
+            Event::new(i.to_string(), "1.0.0")
+                .with_link("Link0")
+                .with_link("Link1"),
+        );
+    }
+
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
         6,
         8,
-        EventSet::build()
+        builder
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
-            .add_event(
-                Event::new("Event", "1.0.0")
-                    .with_link("Link0")
-                    .with_link("Link1"),
-            )
             .build()
             .expect("This should work"),
     );
