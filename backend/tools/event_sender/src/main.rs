@@ -103,18 +103,25 @@ async fn app() -> anyhow::Result<()> {
 
     let mut builder = EventSet::build();
 
-    for i in EVENT_TYPES {
-        builder = builder.add_event(
-            Event::new(i.to_string(), "1.0.0")
-                .with_link("Link0")
-                .with_link("Link1"),
-        );
+    for eventtype in EVENT_TYPES {
+        // Initialize and create the event variable
+        let mut event = Event::new(eventtype.to_string(), "1.0.0");
+
+        // Create the random number generate for the links
+        let _randomrange = rand::thread_rng().gen_range(1..3);
+
+        // Loop and add the links to the event
+        for linknumber in 0.._randomrange {
+            event = event.with_link(format!("Link{linknumber}"));
+        }
+
+        builder = builder.add_event(event);
     }
 
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
-        6,
-        8,
+        16,
+        18,
         builder
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
