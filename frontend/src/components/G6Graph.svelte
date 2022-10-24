@@ -40,7 +40,6 @@
   };
 
   export const push = (ev: any) => {
-    console.log(ev);
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
     for (const edge of ev.edges) {
@@ -133,18 +132,6 @@
     return time.toLocaleTimeString();            // return the converted date to local time with a precision to the second. 
   }
 
-
-  const clearAllStates = (e: any) =>{
-    graph.getNodes().forEach(function (node) {
-    graph.clearItemStates(node);
-    });
-    // this was causing an error  
-    //graph.getEdges().forEach(function (edge) { 
-    //graph.clearItemStates(edge);
-   // });
-    graph.paint();
-  }
-
   onMount(() => {
     if (graph) {
       graph.destroy();
@@ -159,20 +146,32 @@
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
 
-           // Listeners that highlight the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => { //test
-      const item = e.item;
-      if(item instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
-        graph.updateItem(item, {
-          //update the node here (ref to doc for styling) 
-        });
-        const edges = item.getEdges();
+    // Listeners that highlight the nodes when they are hovered.
+    graph.on("node:mouseenter", (e) => {
+      const node = e.item;
+      if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+        const edges = node.getEdges();
         edges.forEach(edge => {
-          graph.updateItem(edge, {
-            // update edges here
+          graph.updateItem(edge, { //update the edges of the node 
             labelCfg: {
               style: {
-                opacity:1
+                opacity:1 // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+              }
+            }
+          });
+        });
+      }
+});
+
+graph.on("node:mouseleave", (e) => {
+  const node = e.item;
+  if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+        const edges = node.getEdges();
+        edges.forEach(edge => {
+          graph.updateItem(edge, {
+            labelCfg: {
+              style: {
+                opacity:0 // make the link lable invisible again, as the mouse moves away from the node
               }
             }
           });
@@ -229,18 +228,21 @@
   }
 
   .g6tooltip {
-    background-image: linear-gradient(to right, rgb(33, 33, 33, 0.3), rgb(100, 100, 100));
+    background-color: rgb(32, 33, 33, 0.8) ;
     border-radius: 8px;
     align-items: center;
-    border-color: rgb(83, 83, 83);
+    border-color: #555555;
     border-width: 1px;
-    padding: 0.5px;
-    box-shadow: rgb(61, 61, 61) 2px 4px 12px;
-    height: 30px; 
-    width :fit-content; 
-    text-shadow:2px 2px #444a5a;         
-    color: #fff;
-    font-family:'Major Mono Display';
+    box-shadow: rgb(35, 34, 34) 2px 2px 2px;
+    height: fit-content; 
+    align-items: center;
+    width :fit-content;  
+    font-size: 14px;       
+    color: #ffffff;
+    font-family:'ui-sans-serif', "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto",
+     "Helvetica Neue"," Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
+
+
 
 </style>

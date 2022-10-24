@@ -199,12 +199,6 @@
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
     },
-    nodeStateStyles: {
-      selected: {
-        fill: "#ffffff",
-      },
-
-    },
     modes: {
       default: [
         "click-select",
