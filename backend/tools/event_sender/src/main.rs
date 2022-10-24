@@ -155,39 +155,44 @@ async fn app() -> anyhow::Result<()> {
 
     let t_duration = cli.total_duration.try_into().unwrap();
 
-    for _ in 0..(target) {
-        // Additional duration condition to break out of the loop if total duration has been reached
-        if run_duration.as_millis() < t_duration {
-            // Generate a random delay between 5 and 220ms
-            let pause_duration = Duration::from_millis(
-                rand::thread_rng().gen_range(cli.min_latency..cli.latency_max) as u64,
-            );
-            let mut taken = 0;
-            for ev in (&mut iter).take(cli.burst) {
-                let _ = channel_a
-                    .basic_publish(
-                        cli.exchange.as_str(),
-                        cli.routing_key.as_str(),
-                        BasicPublishOptions::default(),
-                        ev.as_slice(),
-                        BasicProperties::default(),
-                    )
-                    .await?
-                    .await?;
-                taken += 1;
-            }
-            if cli.burst > taken {
-                println!("Exhausted source, stopping early!");
+    // Condition check to ensure min-latency is not greater than latency-max
+    if cli.min_latency <= cli.latency_max {
+        for _ in 0..(target) {
+            // Additional duration condition to break out of the loop if total duration has been reached
+            if run_duration.as_millis() < t_duration {
+                // Generate a random delay between 5 and 220ms
+                let pause_duration = Duration::from_millis(
+                    rand::thread_rng().gen_range(cli.min_latency..=cli.latency_max) as u64,
+                );
+                let mut taken = 0;
+                for ev in (&mut iter).take(cli.burst) {
+                    let _ = channel_a
+                        .basic_publish(
+                            cli.exchange.as_str(),
+                            cli.routing_key.as_str(),
+                            BasicPublishOptions::default(),
+                            ev.as_slice(),
+                            BasicProperties::default(),
+                        )
+                        .await?
+                        .await?;
+                    taken += 1;
+                }
+                if cli.burst > taken {
+                    println!("Exhausted source, stopping early!");
+                    break;
+                }
+                sent += taken;
+                // Sleep for a randomly selected time
+                tokio::time::sleep(pause_duration).await;
+                // Stores the amount of time elapsed from the start.
+                run_duration = start.elapsed();
+            } else {
                 break;
             }
-            sent += taken;
-            // Sleep for a randomly selected time
-            tokio::time::sleep(pause_duration).await;
-            // Stores the amount of time elapsed from the start.
-            run_duration = start.elapsed();
-        } else {
-            break;
         }
+    } else {
+        println!("Stopping early! - min-latency can not be greater than latency-max.\nTo have a fixed latency enter both as the same value\n");
     }
     println!(
         "Done! Total events sent: {}, total duration: {:?}",
