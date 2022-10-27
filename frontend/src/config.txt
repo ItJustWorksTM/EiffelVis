@@ -1,6 +1,6 @@
 Theme:   
-    Rainbow corlors: Red #FF0000, Orange#FF7F00, Yellow#FFFF00, Green#00FF00,Indigo#00FFFF, Blue#0000FF, Voilet#9400D3
-    Shapes: circle rect, triangle star pentagon diamond
+    Rainbow corlors: change to color blind colors.
+    Shapes: circle rect, triangle star circle diamond
     Links:
     based on https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=2979FF respected color A400 primary
             "PRECURSOR": "ff1744", Red
