@@ -2,41 +2,93 @@
     export let styles;
     import G6, { Graph } from "@antv/g6";
     import { onMount } from "svelte";
-    import G6Component from "svelte-g6";
+    import { createEventDispatcher } from "svelte";
+
     const options = {
         container: "mountNode",
         width: 280,
-        height: 210,
-        workerEnabled: false,
+        height: 220,
+        workerEnabled: true,
+        nodeSize: 20,
     };
+    const dispatch = createEventDispatcher();
 
     let data = {};
-    let counter = 0;
-    onMount(() => {
-        let array = [];
-
-        styles.forEach((event) => {
-            let node = {
-                id: event[0],
-                size: 10,
-                type: event[1].Shape,
+    let array = [];
+    styles.map((event) => {
+        let node = {
+            id: event[0],
+            size: 10,
+            type: event[1].Shape,
+            style: {
+                fill: event[1].Color,
+                stroke: event[1].Color,
+            },
+            label: event[1].Acronym,
+            labelCfg: {
                 style: {
                     fill: event[1].Color,
                 },
-                label: event[1].Acronym,
-                labelCfg: {
-                    style: {
-                        fill: event[1].Color,
-                    },
-                    position: "bottom",
-                },
-            };
-            array.push(node);
+                position: "bottom",
+                offset: 10,
+            },
+        };
+        array.push(node);
+    });
+    data = { nodes: array };
+
+    let container: HTMLElement;
+    let graph: Graph | null;
+    export const reset = () => {
+        graph?.changeData({});
+        graph?.render();
+        dispatch("nodeselected", null);
+    };
+
+    export const resizeGraph = () => {
+        if (graph && container) {
+            const width = Number(
+                window.getComputedStyle(container).width.replace("px", "")
+            );
+            const height = Number(
+                window.getComputedStyle(container).height.replace("px", "")
+            );
+            graph.changeSize(width, height);
+        }
+    };
+    export const focusNode = (id: any) => {
+        graph.focusItem(id);
+        console.log(id);
+    };
+
+    onMount(() => {
+        if (graph) {
+            graph.destroy();
+        }
+        graph = new G6.Graph({
+            ...options,
+            container,
         });
-        data = { nodes: array };
+        graph.on("nodeselectchange", (e) => {
+            dispatch("nodeselected", e), console.log(e);
+        });
+        graph.changeData(data);
+        resizeGraph();
+
+        return () => {
+            graph.destroy();
+        };
     });
 </script>
 
-<table class="table w-full h-fit">
-    <G6Component {G6} {options} {data} />
-</table>
+<div class="flex flex-col w-full">
+    <div class="grid h-10 btn-primary place-items-center">Legend</div>
+    <div bind:this={container} class="legend" />
+</div>
+
+<style>
+    .legend {
+        margin: 10px;
+        padding: 10px;
+    }
+</style>
