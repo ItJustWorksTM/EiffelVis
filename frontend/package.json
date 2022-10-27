@@ -32,7 +32,6 @@
     "postcss-loader": "^6.2.1",
     "precss": "^4.0.0",
     "style-loader": "^3.3.1",
-    "svelte-g6": "0.0.4",
     "tailwindcss": "^3.0.12"
   }
 }
