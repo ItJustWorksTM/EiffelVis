@@ -82,7 +82,7 @@
 </script>
 
 <div class="flex flex-col w-full">
-    <div class="grid h-10 btn-primary place-items-center">Legend</div>
+    <div class="bg-primary grid h-10   place-items-center">Legend</div>
     <div bind:this={container} class="legend" />
 </div>
 
