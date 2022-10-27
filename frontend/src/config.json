@@ -2,117 +2,117 @@
     "Theme": {
         "Rainbow": {
             "EiffelActivityStartedEvent": {
-                "Color": "#FF0000",
+                "Color": "#D86EB3",
                 "Shape": "circle",
                 "Acronym": "ActS"
             },
             "EiffelActivityTriggeredEvent": {
-                "Color": "#FF7F00",
+                "Color": "#2DA9E7",
                 "Shape": "circle",
                 "Acronym": "ActT"
             },
             "EiffelActivityCanceledEvent": {
-                "Color": "#FFFF00",
+                "Color": "#F1F422",
                 "Shape": "circle",
                 "Acronym": "ActC"
             },
             "EiffelActivityFinishedEvent": {
-                "Color": "#00FF00",
+                "Color": "#93ACB5",
                 "Shape": "circle",
                 "Acronym": "ActF"
             },
             "EiffelArtifactCreatedEvent": {
-                "Color": "#00FFFF",
+                "Color": "#F6DDA4",
                 "Shape": "rect",
                 "Acronym": "ArtC"
             },
             "EiffelArtifactPublishedEvent": {
-                "Color": "#0000FF",
+                "Color": "#D9850D",
                 "Shape": "rect",
                 "Acronym": "ArtP"
             },
             "EiffelArtifactReusedEvent": {
-                "Color": "#9400D3",
+                "Color": "#8E8757",
                 "Shape": "rect",
                 "Acronym": "ArtR"
             },
             "EiffelTestCaseStartedEvent": {
-                "Color": "#FF0000",
+                "Color": "#D86EB3",
                 "Shape": "triangle",
                 "Acronym": "TCS"
             },
             "EiffelTestCaseTriggeredEvent": {
-                "Color": "#FF7F00",
+                "Color": "#2DA9E7",
                 "Shape": "triangle",
                 "Acronym": "TCT"
             },
             "EiffelTestCaseCanceledEvent": {
-                "Color": "#FFFF00",
+                "Color": "#F1F422",
                 "Shape": "triangle",
                 "Acronym": "TCC"
             },
             "EiffelTestCaseFinishedEvent": {
-                "Color": "#00FF00",
+                "Color": "#93ACB5",
                 "Shape": "triangle",
                 "Acronym": "TCF"
             },
             "EiffelTestSuiteStartedEvent": {
-                "Color": "#00FFFF",
+                "Color": "#F6DDA4",
                 "Shape": "triangle",
                 "Acronym": "TSS"
             },
             "EiffelTestExecutionRecipeCollectionCreatedEvent": {
-                "Color": "#0000FF",
+                "Color": "#D9850D",
                 "Shape": "triangle",
                 "Acronym": "TERCC"
             },
             "EiffelTestSuiteFinishedEvent": {
-                "Color": "#9400D3",
+                "Color": "#8E8757",
                 "Shape": "triangle",
                 "Acronym": "TSF"
             },
             "EiffelAnnouncementPublishedEvent": {
-                "Color": "#FF0000",
+                "Color": "#D86EB3",
                 "Shape": "star",
                 "Acronym": "AnnP"
             },
             "EiffelCompositionDefinedEvent": {
-                "Color": "#FF7F00",
+                "Color": "#2DA9E7",
                 "Shape": "star",
                 "Acronym": "CD"
             },
             "EiffelConfidenceLevelModifiedEvent": {
-                "Color": "#FFFF00",
+                "Color": "#F1F422",
                 "Shape": "star",
                 "Acronym": "CLM"
             },
             "EiffelEnvironmentDefinedEvent": {
-                "Color": "#00FF00",
+                "Color": "#93ACB5",
                 "Shape": "star",
                 "Acronym": "ED"
             },
             "EiffelFlowContextDefinedEvent": {
-                "Color": "#00FFFF",
+                "Color": "#F6DDA4",
                 "Shape": "star",
                 "Acronym": "FCD"
             },
             "EiffelIssueDefinedEvent": {
-                "Color": "#0000FF",
-                "Shape": "pentagon",
+                "Color": "#D9850D",
+                "Shape": "circle",
                 "Acronym": "ID"
             },
             "EiffelIssueVerifiedEvent": {
-                "Color": "#9400D3",
-                "Shape": "pentagon",
+                "Color": "#8E8757",
+                "Shape": "circle",
                 "Acronym": "IV"
             },
             "EiffelSourceChangeCreatedEvent": {
-                "Color": "#FF0000",
+                "Color": "#D86EB3",
                 "Shape": "diamond",
                 "Acronym": "SCC"
             },
             "EiffelSourceChangeSubmittedEvent": {
-                "Color": "#FF7F00",
+                "Color": "#2DA9E7",
                 "Shape": "diamond",
                 "Acronym": "SCS"
             }
