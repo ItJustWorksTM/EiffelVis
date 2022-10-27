@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import G6, { Graph, GraphAnimateConfig, IG6GraphEvent } from "@antv/g6";
+    import G6, { Graph, GraphData, TimeBar } from "@antv/g6";
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
@@ -12,7 +12,7 @@
     export let data = {};
 
     let container: HTMLElement;
-
+    let previousTimebar = new TimeBar({}); //init previousTimebar as a placeholder
     let graph: Graph | null;
     let timeBarData: TimeBarData[] = [];
 
@@ -53,55 +53,58 @@
     };
 
     export const updateTimeBar = (timeBarEnabled: boolean) => {
-        graph.removePlugin(graph.get("plugins")[0]);
+        // remove registered timebar
+        graph.removePlugin(previousTimebar);
         if (!timeBarEnabled) {
             //TO-DO Reset the graph if wanted later
         } else {
-            graph!.addPlugin(
-                new G6.TimeBar({
-                    className: "g6TimeBar",
-                    x: 0,
-                    y: 0,
-                    width: 500,
-                    height: 110,
-                    padding: 10,
-                    type: "trend",
-                    changeData: false,
-                    trend: {
-                        data: timeBarData,
-                        smooth: true,
+            // init timebar
+            let newTimebar = new G6.TimeBar({
+                className: "g6TimeBar",
+                x: 0,
+                y: 0,
+                width: 500,
+                height: 110,
+                padding: 10,
+                type: "trend",
+                changeData: false,
+                trend: {
+                    data: timeBarData,
+                    smooth: true,
+                },
+                tick: {
+                    tickLabelFormatter: (timeBarData: any) => {
+                        return "";
                     },
-                    tick: {
-                        tickLabelFormatter: (timeBarData: any) => {
-                            return "";
-                        },
 
-                        tickLineStyle: {
-                            fill: "#f28c18",
-                        },
+                    tickLineStyle: {
+                        fill: "#f28c18",
                     },
-                    slider: {
-                        backgroundStyle: {
-                            fill: "#131616",
-                        },
-                        foregroundStyle: {
-                            fill: "#ffffff",
-                        },
-                        handlerStyle: {
-                            style: {
-                                fill: "#f28c18",
-                                stroke: "#f28c18",
-                            },
-                        },
-                    },
-                    controllerCfg: {
+                },
+                slider: {
+                    backgroundStyle: {
                         fill: "#131616",
-                        stroke: "#131616",
-                        timePointControllerText: " Point",
-                        timeRangeControllerText: " Point",
                     },
-                })
-            );
+                    foregroundStyle: {
+                        fill: "#ffffff",
+                    },
+                    handlerStyle: {
+                        style: {
+                            fill: "#f28c18",
+                            stroke: "#f28c18",
+                        },
+                    },
+                },
+                controllerCfg: {
+                    fill: "#131616",
+                    stroke: "#131616",
+                    timePointControllerText: " Point",
+                    timeRangeControllerText: " Point",
+                },
+            });
+            // updata previousTimebar with newTimebar
+            previousTimebar = newTimebar;
+            graph!.addPlugin(newTimebar);
         }
     };
 
