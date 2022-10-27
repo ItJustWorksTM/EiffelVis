@@ -36,14 +36,15 @@ export class StatefulLayout {
     }
     node.size = 10
     node.type = this.nodeShape(node.event_type)
-    node.label = this.nodeLabel(node.event_type)
-    node.labelCfg = {
-      style: {
-        fill: this.nodeColor(node.event_type),
-        fontSize: 10,
-      },
-      position: 'right',
-    }
+    // comment out labels for the node on the graph
+    // node.label = this.nodeLabel(node.event_type)
+    // node.labelCfg = {
+    //   style: {
+    //     fill: this.nodeColor(node.event_type),
+    //     fontSize: 10,
+    //   },
+    //   position: 'right',
+    // }
 
     const temp = node
     const tempTime: number = temp.time
