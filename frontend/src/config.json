@@ -1,6 +1,6 @@
 {
     "Theme": {
-        "Rainbow": {
+        "ColorBlind": {
             "EiffelActivityStartedEvent": {
                 "Color": "#D86EB3",
                 "Shape": "circle",

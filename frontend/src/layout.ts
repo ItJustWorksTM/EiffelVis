@@ -19,8 +19,8 @@ export class StatefulLayout {
   private colors = new Map<string, string>()
   private shapes = new Map<string, string>()
   private shapeArray = ["circle", "rect", "ellipse", "diamond", "star"]
-  private rainbowTheme = config.Theme.Rainbow
-  private themeMap = new Map(Object.entries(this.rainbowTheme));
+  private customTheme = config.Theme.ColorBlind
+  private themeMap = new Map(Object.entries(this.customTheme));
   private defaultColor = this.themeMap.get("EiffelSourceChangeSubmittedEvent").Color
 
 

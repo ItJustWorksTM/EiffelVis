@@ -31,8 +31,8 @@
   let show_legend = true;
   let show_timebar = false;
 
-  let rainbowTheme = config.Theme.Rainbow;
-  let themeMap = new Map(Object.entries(rainbowTheme));
+  let customTheme = config.Theme.ColorBlind;
+  let themeMap = new Map(Object.entries(customTheme));
   let legend = themeMap;
   $: styles = [...legend.entries()];
 
