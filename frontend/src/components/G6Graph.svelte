@@ -174,21 +174,20 @@
             graph.updateItem(edge, { //update the edges of the node 
               labelCfg: {
                 style: {
-                  background: { //there is a problem with this atm: it only works for the first time we hover on it. There is no way to set the background to none when  the mouse leaves the node. //TODO
+                /*   background: { //there is a problem with this atm: it only works for the first time we hover on it. There is no way to set the background to none when  the mouse leaves the node. //TODO
                     fill: '#151517',
                     padding: [3, 2, 3, 2],
                     radius: 2,
                     lineWidth: 10,
-                    },
-                  fontSize: 12,
-                  fill: '#ffffff',
-                  opacity:1, // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+                    }, */
+                  fillOpacity:1,
+                    // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
                   
                 }
               }, 
-              style:{
-                lineWidth: 2, 
-                opacity: 1
+              style:{ 
+                opacity: 1,
+                lineWidth: 1.5 
               }
             }
           });
@@ -205,12 +204,12 @@
             graph.updateItem(edge, {
               labelCfg: {
                 style: {
-                  opacity:0 // make the link lable invisible again, as the mouse moves away from the node
+                  fillOpacity:0, // make the link lable invisible again, as the mouse moves away from the node
                 }
               }, 
               style:{
-                lineWidth: 1, 
-                opacity: 0.15
+                opacity: 0.15,
+                lineWidth: 1
               },
             
             });
@@ -277,7 +276,7 @@
     height: fit-content; 
     align-items: center;
     width :fit-content;  
-    font-size: 14px;       
+    font-size: 0.875rem;       
     color: #ffffff;
     font-family:'ui-sans-serif', "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto",
      "Helvetica Neue"," Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
