@@ -44,6 +44,7 @@
     graph.addItem("node", ev, false, false);
     for (const edge of ev.edges) {
       graph.addItem("edge", { source: ev.id, target: edge.target, label: edge.type }); // the type of link is connected to the label of the edge here. 
+      edgesToBack(ev);      // put all edges attached to the node behond the nodes (needed when using groupByTypes: false);
     }
 
     timeBarData.push({
@@ -51,6 +52,23 @@
       value: "1",
     });
   };
+
+  /**
+   * Helper method that will rearrange the order of items on the z-index (edges behind the nodes) 
+   * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
+   * This allows to only manipulate the nodes newly pushed into the graph.
+   * @param event containing a node and its edges. 
+   */
+   const edgesToBack = (event) => {
+      const node = graph.findById(event.id);
+      if (node instanceof Node){
+        const edges = node.getEdges();
+        edges.forEach(edge => {
+          edge.toBack();
+        })
+      }
+      graph.paint();
+  }
 
   export const updateTimeBar = (timeBarEnabled: boolean) => {
     graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
@@ -147,15 +165,30 @@
 
 
     // Listeners that highlight the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => {
-      const node = e.item;
-      if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
-        const edges = node.getEdges();
-        edges.forEach(edge => {
-          graph.updateItem(edge, { //update the edges of the node 
-            labelCfg: {
-              style: {
-                opacity:1 // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+      graph.on("node:mouseenter", (e) => {
+        const node = e.item;
+        if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+          const edges = node.getEdges();
+          edges.forEach(edge => {
+            edge.toFront();          // put edge on top of the nodes (to see lables)
+            graph.updateItem(edge, { //update the edges of the node 
+              labelCfg: {
+                style: {
+                  background: { //there is a problem with this atm: it only works for the first time we hover on it. There is no way to set the background to none when  the mouse leaves the node. //TODO
+                    fill: '#151517',
+                    padding: [3, 2, 3, 2],
+                    radius: 2,
+                    lineWidth: 10,
+                    },
+                  fontSize: 12,
+                  fill: '#ffffff',
+                  opacity:1, // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+                  
+                }
+              }, 
+              style:{
+                lineWidth: 2, 
+                opacity: 1
               }
             }
           });
@@ -163,17 +196,24 @@
       }
 });
 
-graph.on("node:mouseleave", (e) => {
-  const node = e.item;
-  if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
-        const edges = node.getEdges();
-        edges.forEach(edge => {
-          graph.updateItem(edge, {
-            labelCfg: {
-              style: {
-                opacity:0 // make the link lable invisible again, as the mouse moves away from the node
-              }
-            }
+  graph.on("node:mouseleave", (e) => {
+    const node = e.item;
+    if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+          const edges = node.getEdges();
+          edges.forEach(edge => {
+            edge.toBack();       // put edge back behond the node
+            graph.updateItem(edge, {
+              labelCfg: {
+                style: {
+                  opacity:0 // make the link lable invisible again, as the mouse moves away from the node
+                }
+              }, 
+              style:{
+                lineWidth: 1, 
+                opacity: 0.15
+              },
+            
+            });
           });
         });
      }});
