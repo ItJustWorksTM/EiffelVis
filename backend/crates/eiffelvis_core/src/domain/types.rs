@@ -49,7 +49,7 @@ impl From<&BaseEvent> for LeanEvent {
             id: ev.meta.id,
             time: ev.meta.time,
             event_type: ev.meta.event_type.clone(),
-            edges: ev.links.clone()
+            edges: ev.links.clone(),
         }
     }
 }
