@@ -163,26 +163,17 @@
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
-
-    // Listeners that highlight the nodes when they are hovered.
+    // Listeners that manipulates the nodes when they are hovered.
       graph.on("node:mouseenter", (e) => {
         const node = e.item;
         if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
           const edges = node.getEdges();
           edges.forEach(edge => {
             edge.toFront();          // put edge on top of the nodes (to see lables)
-            graph.updateItem(edge, { //update the edges of the node 
-              labelCfg: {
+            graph.updateItem(edge, { //update the edges of the node (used here to style labels and edge)
+              labelCfg: {             
                 style: {
-                /*   background: { //there is a problem with this atm: it only works for the first time we hover on it. There is no way to set the background to none when  the mouse leaves the node. //TODO
-                    fill: '#151517',
-                    padding: [3, 2, 3, 2],
-                    radius: 2,
-                    lineWidth: 10,
-                    }, */
-                  fillOpacity:1,
-                    // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
-                  
+                  fillOpacity:1, // change the opacity to 1(make it visible), as the default opacity is set to 0(invisible).                  
                 }
               }, 
               style:{ 

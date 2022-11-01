@@ -129,20 +129,6 @@
     }
   };
 
-  //method to use for custom behaviour when a node is mouseover. 
-  // Take the event as an argument (contain ID for querying the DB for instance)
-  const on_node_hovered = function (e: any) {
-    //TODO: TBD if needed 
-  }
-
-  //method to use for custom behaviour when a node is exited with the mouse (mouseleave). 
-  // Take the event as an argument (contain ID for querying the DB for instance)
-  // useful if we want to stop a behaviour when the node is not hovered anymore. Like stop a timer for instance.
-  const on_node_exited = function (e: any) {
-    //TODO: TBD if needed
-  }
-
-
   const use_selected_as_root = () => {
     current_query.collection = { type: "AsRoots" };
     current_query.range_filter = { begin: null, end: null };
@@ -188,9 +174,8 @@
     groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
-        refY: 3,
-        position: 'left', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
-        style:{
+        position: 'center', 
+        style:{           // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
           fontSize: 10,
           fill: '#ffffff',
           fillOpacity: 0,
@@ -200,7 +185,11 @@
           shadowBlur: 10
         }
     },
-      style: {
+      style: {          // default styling for the edge should come here
+        lineWidth: 1, 
+        opacity: 0.15,
+        fill: '#fff',
+        position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
     },
@@ -358,8 +347,6 @@
   <!-- TODO: Define if it is needed to have the external listeners when hovering a node. Either we modify the backend to register more info in edges like the type for instance, either we query the DB for retrieving types of edges. -->
   <G6Graph
     on:nodeselected={on_node_selected}
-    on:nodeHovered={on_node_hovered}      
-    on:nodeExited={on_node_exited}
     bind:this={graph_elem}
     {options}
     data={{}}
