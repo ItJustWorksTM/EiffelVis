@@ -7,10 +7,6 @@
     const dispatch = createEventDispatcher();
 
     const graph_translation: number = 50;
-    const animation_cfg: GraphAnimateConfig = {
-        duration: 75, 
-        easing: "easeLinear"
-    }
 
     export let options = {};
     export let data = {};
@@ -127,8 +123,6 @@
                 graph.translate(
                     weight("ArrowRight", "ArrowLeft") * graph_translation,
                     weight("ArrowDown", "ArrowUp") * graph_translation,
-                    true,
-                    animation_cfg
                 )
         })
         
