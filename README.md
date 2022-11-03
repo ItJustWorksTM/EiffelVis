@@ -83,6 +83,7 @@ TODO
 
 1. start your rabbitmq server 
   `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac. 
+2. If not activated, activate the management pluggin by running `rabbitmq-plugins enable rabbitmq_management`
 2. go to `http://localhost:15672`to enter the rabbitMQ management page. (default credentials are username & password: `guest`)
 3. go to the queue panel and create a new queue. The queue has to use the same name as the one you are going to use with the backend (default `hello`)
 4 go to the exchange panel and select `amq.fanout`in the list.
