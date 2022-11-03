@@ -90,4 +90,4 @@ TODO
 6. go into `EiffelVis/backend/tools/event_sender`and run the command `cargo run -- -r <any_routing_key>` (you can also add other options, run to `cargo run -- --help`for more info)
 7. go into `EiffelVis/backend`and run `cargo run`
 8. go into `EiffelVis/frontend`and run `npm run dev`
-9. open your browser to `localhost:8000`and you should have nodes coming and being displayed on the graph. 
+9. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph. 
