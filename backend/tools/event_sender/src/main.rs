@@ -9,6 +9,7 @@ use eiffelvis_gen::{
     event_set::{Event, EventSet, Link},
     generator::EventGenerator,
 };
+
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use clap::Parser;
@@ -43,6 +44,7 @@ struct Cli {
     exchange: String,
 
     /// Routing key used for ampq connections
+
     #[clap(short, long)]
     routing_key: String,
 
@@ -89,14 +91,6 @@ async fn app() -> anyhow::Result<()> {
     .await?;
 
     let channel_a = conn.create_channel().await?;
-
-    channel_a
-        .queue_declare(
-            "hello",
-            QueueDeclareOptions::default(),
-            FieldTable::default(),
-        )
-        .await?;
 
     // println!(?queue, "Declared queue");
     println!("Connected to broker.");
