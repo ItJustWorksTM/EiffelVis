@@ -74,7 +74,7 @@ async fn app() -> anyhow::Result<()> {
     let channel_a = conn.create_channel().await?;
 
     println!("Connected to broker.");
-    let type_Array = ["Event1","Event2","Event3","Event4","Event5"];
+    let type_array = ["Event1","Event2","Event3","Event4","Event5"];
     
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
@@ -84,11 +84,7 @@ async fn app() -> anyhow::Result<()> {
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-<<<<<<< HEAD
-                Event::new(type_Array[rand::thread_rng().gen_range(0..4)] , "1.0.0")
-=======
                 Event::new(type_array[rand::thread_rng().gen_range(0..4)] , "1.0.0")
->>>>>>> e883938 (backend/event_sender: fix clippy warning)
                     .with_link("Link0")
                     .with_link("Link1"),
             )
