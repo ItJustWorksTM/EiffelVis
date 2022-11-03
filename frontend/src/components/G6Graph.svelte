@@ -1,10 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import G6, { Graph, GraphData } from "@antv/g6";
+    import G6, { Graph, GraphAnimateConfig, IG6GraphEvent } from "@antv/g6";
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
+
+    const graph_translation: number = 50;
 
     export let options = {};
     export let data = {};
@@ -114,6 +116,16 @@
         });
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+
+        // Enable keyboard manipulation
+        graph.on("keydown", (e: IG6GraphEvent) => {
+            let weight: Function = (k1: string, k2: string) => e.key == k1 ? -1 : e.key == k2 ? 1 : 0
+                graph.translate(
+                    weight("ArrowRight", "ArrowLeft") * graph_translation,
+                    weight("ArrowDown", "ArrowUp") * graph_translation,
+                )
+        })
+        
 
         graph.changeData(data);
         resizeGraph();

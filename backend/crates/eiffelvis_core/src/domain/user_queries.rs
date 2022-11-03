@@ -114,7 +114,8 @@ impl<I> TrackedQuery<I> {
                         .map(|d| Some(d.id())),
                     RangeFilterBound::Absolute { val } => {
                         let val = if val < 0 {
-                            (graph.node_count() - (val.abs() as usize).min(graph.node_count()))
+                            (graph.node_count()
+                                - (val.unsigned_abs() as usize).min(graph.node_count()))
                                 as usize
                         } else {
                             val as usize
@@ -164,7 +165,7 @@ impl<I> TrackedQuery<I> {
         });
 
         match self.collector {
-            Collector::Forward => iter.map(|v| R::from(&*v.data())).collect(),
+            Collector::Forward => iter.map(|v| R::from(v.data())).collect(),
             Collector::SubGraph(ref mut sub) => {
                 iter.for_each(|v| sub.add_id(v.id()));
                 sub.handle(graph).map(|v| R::from(v.data())).collect()
