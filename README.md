@@ -84,11 +84,11 @@ TODO
 1. start your rabbitmq server 
   `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac. 
 2. If not activated, activate the management pluggin by running `rabbitmq-plugins enable rabbitmq_management`
-2. go to `http://localhost:15672`to enter the rabbitMQ management page. (default credentials are username & password: `guest`)
-3. go to the queue panel and create a new queue. The queue has to use the same name as the one you are going to use with the backend (default `hello`)
-4 go to the exchange panel and select `amq.fanout`in the list.
-5. Click on `Bindings`and add the binding of this exchange to the queue using the same name as step 3. 
-6. go into `EiffelVis/backend/tools/event_sender`and run the command `cargo run -- -r <any_routing_key>` (you can also add other options, run to `cargo run -- --help`for more info)
-7. go into `EiffelVis/backend`and run `cargo run`
-8. go into `EiffelVis/frontend`and run `npm run dev`
-9. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph. 
+3. go to `http://localhost:15672`to enter the rabbitMQ management page. (default credentials are username & password: `guest`)
+4. go to the queue panel and create a new queue. The queue has to use the same name as the one you are going to use with the backend (default `hello`)
+5 go to the exchange panel and select `amq.fanout`in the list.
+6. Click on `Bindings`and add the binding of this exchange to the queue using the same name as step 3. 
+7. go into `EiffelVis/backend/tools/event_sender`and run the command `cargo run -- -r <any_routing_key>` (you can also add other options, run to `cargo run -- --help`for more info)
+8. go into `EiffelVis/backend`and run `cargo run`
+9. go into `EiffelVis/frontend`and run `npm run dev`
+10. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph. 
