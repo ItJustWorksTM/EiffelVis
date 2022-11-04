@@ -16,8 +16,11 @@ use clap::Parser;
 use rand::{thread_rng, Rng};
 
 const EVENT_TYPES: [&str; 23] = [
-    "ActC", "ActF", "ActS", "ActT", "AnnP", "ArtC", "ArtP", "ArtR", "TCC", "TCF", "TCS", "TCT",
-    "TERCC", "TSF", "TSS", "CD", "CLM", "ED", "FCD", "ID", "IV", "SCC", "SCS",
+    "EiffelActivityStartedEvent", "EiffelActivityTriggeredEvent", "EiffelActivityCanceledEvent", "EiffelActivityFinishedEvent", "EiffelArtifactCreatedEvent", 
+    "EiffelArtifactPublishedEvent", "EiffelArtifactReusedEvent", "EiffelTestCaseStartedEvent", "EiffelTestCaseTriggeredEvent", "EiffelTestCaseCanceledEvent", 
+    "EiffelTestCaseFinishedEvent", "EiffelTestSuiteStartedEvent", "EiffelTestExecutionRecipeCollectionCreatedEvent", "EiffelTestSuiteFinishedEvent", 
+    "EiffelAnnouncementPublishedEvent", "EiffelCompositionDefinedEvent", "EiffelConfidenceLevelModifiedEvent", "EiffelEnvironmentDefinedEvent", 
+    "EiffelFlowContextDefinedEvent", "EiffelIssueDefinedEvent", "EiffelIssueVerifiedEvent", "EiffelSourceChangeCreatedEvent", "EiffelSourceChangeSubmittedEvent",
 ];
 
 #[derive(Parser)]
