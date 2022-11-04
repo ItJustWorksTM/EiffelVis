@@ -155,16 +155,16 @@ impl<I> TrackedQuery<I> {
                         EventFilter::Id { ids } =>
                             ids.iter().any(|id| graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)),
                         EventFilter::Tag { tags } =>
-                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.to_lowercase().contains(tag.to_lowercase())).unwrap_or(false)),
+                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)),
                         EventFilter::SourceHost { hosts } =>
                             hosts.iter().any(|host|node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h.to_lowercase().contains(&host.to_lowercase())).unwrap_or(false)),
                         EventFilter::SourceName { names } =>
-                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n.to_lowercase().contains(name.to_lowercase())).unwrap_or(false)),
+                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n.to_lowercase().contains(&name.to_lowercase())).unwrap_or(false)),
                     } ^ filter.rev)
                 })
             }
         });
-        
+
         match self.collector {
             Collector::Forward => iter.map(|v| R::from(v.data())).collect(),
             Collector::SubGraph(ref mut sub) => {
