@@ -5,7 +5,7 @@ type TypeTag<T, K> = K & { type: T }
 export type Uuid = string
 
 export interface FullEvent {
-  meta: { id: Uuid, type: string, version: string, time: number, tags: string[], source: { host: string, name: string } }
+  meta: { id: Uuid, type: string, version: string, time: number, tags?: string[], source?: { host: string, name: string } }
   data: {}
   links: { type: string, target: Uuid }[]
 }
