@@ -23,13 +23,14 @@
         dispatch("nodeselected", null);
     };
 
+    // This is a hack to get the graph to render the entire window width
     export const resizeGraph = () => {
         if (graph && container) {
             const width = Number(
-                window.getComputedStyle(container).width.replace("px", "")
+                window.innerWidth
             );
             const height = Number(
-                window.getComputedStyle(container).height.replace("px", "")
+                window.innerHeight
             );
             graph.changeSize(width, height);
         }
