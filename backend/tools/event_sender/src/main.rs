@@ -5,41 +5,12 @@ use std::{
     time::Instant,
 };
 
-use eiffelvis_gen::{
-    event_set::{Event, EventSet, Link},
-    generator::EventGenerator,
-};
+use eiffelvis_gen::{eiffel_vocabulary::EiffelVocabulary, generator::EventGenerator};
 
 use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use clap::Parser;
 use rand::{thread_rng, Rng};
-
-const EVENT_TYPES: [&str; 23] = [
-    "EiffelActivityStartedEvent",
-    "EiffelActivityTriggeredEvent",
-    "EiffelActivityCanceledEvent",
-    "EiffelActivityFinishedEvent",
-    "EiffelArtifactCreatedEvent",
-    "EiffelArtifactPublishedEvent",
-    "EiffelArtifactReusedEvent",
-    "EiffelTestCaseStartedEvent",
-    "EiffelTestCaseTriggeredEvent",
-    "EiffelTestCaseCanceledEvent",
-    "EiffelTestCaseFinishedEvent",
-    "EiffelTestSuiteStartedEvent",
-    "EiffelTestExecutionRecipeCollectionCreatedEvent",
-    "EiffelTestSuiteFinishedEvent",
-    "EiffelAnnouncementPublishedEvent",
-    "EiffelCompositionDefinedEvent",
-    "EiffelConfidenceLevelModifiedEvent",
-    "EiffelEnvironmentDefinedEvent",
-    "EiffelFlowContextDefinedEvent",
-    "EiffelIssueDefinedEvent",
-    "EiffelIssueVerifiedEvent",
-    "EiffelSourceChangeCreatedEvent",
-    "EiffelSourceChangeSubmittedEvent",
-];
 
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
@@ -116,32 +87,11 @@ async fn app() -> anyhow::Result<()> {
     // println!(?queue, "Declared queue");
     println!("Connected to broker.");
 
-    let mut builder = EventSet::build();
-
-    for eventtype in EVENT_TYPES {
-        // Initialize and create the event variable
-        let mut event = Event::new(eventtype.to_string(), "1.0.0");
-
-        // Create the random number generate for the links
-        let _randomrange = rand::thread_rng().gen_range(1..3);
-
-        // Loop and add the links to the event
-        for linknumber in 0.._randomrange {
-            event = event.with_link(format!("Link{linknumber}"));
-        }
-
-        builder = builder.add_event(event);
-    }
-
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
+        4,
         8,
-        10,
-        builder
-            .add_link(Link::new("Link0", true))
-            .add_link(Link::new("Link1", true))
-            .build()
-            .expect("This should work"),
+        EiffelVocabulary.into(),
     );
 
     let mut iter: Box<dyn Iterator<Item = Vec<u8>>> = if let Some(replay_path) = cli.replay.as_ref()
