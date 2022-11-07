@@ -23,17 +23,18 @@
     dispatch("nodeselected", null);
   };
 
-  export const resizeGraph = () => {
-    if (graph && container) {
-      const width = Number(
-        window.getComputedStyle(container).width.replace("px", "")
-      );
-      const height = Number(
-        window.getComputedStyle(container).height.replace("px", "")
-      );
-      graph.changeSize(width, height);
-    }
-  };
+    // This is a hack to get the graph to render the entire window width
+    export const resizeGraph = () => {
+        if (graph && container) {
+            const width = Number(
+                window.innerWidth
+            );
+            const height = Number(
+                window.innerHeight
+            );
+            graph.changeSize(width, height);
+        }
+    };
 
   export const focusNode = (id: any) => {
     graph.focusItem(id);
