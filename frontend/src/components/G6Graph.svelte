@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Graph, GraphAnimateConfig, IG6GraphEvent, Node } from "@antv/g6";
+  import G6, { Graph, IG6GraphEvent, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
