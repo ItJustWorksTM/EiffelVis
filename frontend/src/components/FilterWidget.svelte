@@ -20,9 +20,39 @@
     export let types: EventFilter<Type>;
     export let sourcehosts: EventFilter<SourceHost>;
     export let sourcenames: EventFilter<SourceName>;
+    let filterFields = ["Id", "Type", "Source", "Host", "Tag"];
+    let selected;
+    let inputValue;
+    let tag = tags;
+    let typess = types;
+    let sourcehostss = sourcehosts;
+    let sourcenamess = sourcenames;
 </script>
 
 <div class="w-full h-full">
+    <div>
+        <LineInputList
+            placeholder={selected}
+            bind:values={ids.pred.ids}
+            active="True"
+            exclude="True"
+        />
+        <select class="select select-primary max-w-xs" bind:value={selected}>
+            {#each filter_types as type}
+                <option>{type}</option>
+            {/each}
+        </select>
+        <input
+            type="text"
+            placeholder={selected}
+            class="input input-sm input-bordered basis-full"
+        />
+        <button
+            class="btn btn-xs"
+            on:click={() => (ids.pred.ids = [...ids.pred.ids, ""])}>+</button
+        >
+    </div>
+    <!-- 
     <div class="tabs tabs-boxed">
         {#each filter_types as type}
             <a
@@ -140,7 +170,7 @@
             on:click={() => (tags.pred.tags = [...tags.pred.tags, ""])}
             >+</button
         >
-    </div>
+    </div> -->
 </div>
 
 <style lang="postcss" global>
