@@ -1,11 +1,29 @@
 <script lang="ts">
     export let values;
     export let placeholder;
+    export let exclude;
+    export let active;
 </script>
 
 <div class="form-control">
+    <div class="flex flex-row px-1.5" />
     {#each values as value, i}
-        <div class="flex flex-row  mb-1">
+        <div class="flex flex-row px-1.5">
+            <input
+                type="text"
+                {placeholder}
+                bind:value
+                class="input input-sm input-bordered flex-1 w-40"
+            /><input
+                type="checkbox"
+                class="toggle toggle-md toggle-primary flex-none "
+                bind:checked={exclude}
+            />
+            <input
+                type="checkbox"
+                class="toggle toggle-md toggle-primary flex-none "
+                bind:checked={active}
+            />
             <button
                 class="btn btn-circle btn-xs my-auto mr-1"
                 on:click={() => {
@@ -27,12 +45,6 @@
                     />
                 </svg>
             </button>
-            <input
-                type="text"
-                {placeholder}
-                bind:value
-                class="input input-sm input-bordered basis-full"
-            />
         </div>
     {/each}
 </div>
