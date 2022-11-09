@@ -11,7 +11,10 @@
   export let options = {};
   export let data = {};
 
-  let container: HTMLElement;
+    let graphScroll = 0;
+    let interactiveMode = false;   
+
+    let container: HTMLElement;
 
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
@@ -51,13 +54,18 @@
       }); // the type of link is connected to the label of the edge here.
     }
 
-    edgesToBack(ev); // put all edges attached to the node behind the nodes (needed when using groupByTypes: false);
+        let oldDistance = graphScroll;
+        graphScroll = ev.x - container.scrollWidth;
+        if(graphScroll != oldDistance && interactiveMode == false){
+            let scrollD = graphScroll - oldDistance;
+            graph.translate(-scrollD,0);
+        }
 
-    timeBarData.push({
-      date: ev.date,
-      value: "1",
-    });
-  };
+        timeBarData.push({
+            date: ev.date,
+            value: "1",
+        });
+    };
 
   /**
    * Helper method that will rearrange the order of items on the z-index (edges behind the nodes)
