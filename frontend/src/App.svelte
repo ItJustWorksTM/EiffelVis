@@ -344,7 +344,6 @@
     </div>
   </div>
   <!-- Graph with listeners -->
-  <!-- TODO: Define if it is needed to have the external listeners when hovering a node. Either we modify the backend to register more info in edges like the type for instance, either we query the DB for retrieving types of edges. -->
   <G6Graph
     on:nodeselected={on_node_selected}
     bind:this={graph_elem}
