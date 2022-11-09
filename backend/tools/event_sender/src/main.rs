@@ -84,7 +84,6 @@ async fn app() -> anyhow::Result<()> {
 
     let channel_a = conn.create_channel().await?;
 
-    // println!(?queue, "Declared queue");
     println!("Connected to broker.");
 
     let gen = EventGenerator::new(
