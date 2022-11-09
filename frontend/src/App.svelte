@@ -71,6 +71,50 @@
     }
   }
 
+
+                                                               // non-interactive mode variables
+  let time = new Date();
+  let show_message = false; 
+  let dayToDisplay = null; 
+  let minLastEventRecieved = 0; 
+  let hourLastEventRecieved = 0; 
+  let dayLastEventRecieved = 0; 
+  let monthLastEventRecieved = 0; 
+  let yearLastEventRecieved = 0; 
+  let recievedNewNode = false; 
+  let currentDay = 0; 
+  
+
+const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
+  let time = new Date();
+  currentDay = time.getDate();
+  if (currentDay = dayLastEventRecieved){
+      dayToDisplay = "TODAY"; 
+      
+  }else if (currentDay - dayLastEventRecieved == 1){
+    
+      dayToDisplay = "YESTERDAY"; 
+  }else if (currentDay - dayLastEventRecieved> 1){
+      dayToDisplay = yearLastEventRecieved.toString() + "-"+ monthLastEventRecieved.toString()+ "-" +dayLastEventRecieved.toString();
+  }
+  
+  if (recievedNewNode==false && dayToDisplay != null  ){
+    show_message = true; 
+    console.log("recieved no new node")
+  }else{
+    show_message = false;
+  }
+  
+}
+
+  let ms = 60000;
+ let interval= setInterval( displayInfoMessage, ms);
+
+ const startTimer = () =>{
+  clearInterval(interval);
+  interval= setInterval( displayInfoMessage, ms);
+}
+
   const consume_query = async () => {
     const layout = new StatefulLayout();
     awaiting_query_request = true;
@@ -83,6 +127,15 @@
       layout.apply(event, graph_options);
       graph_elem.push(event);
 
+      //every time a node is pushed to the graph the variables are updated
+      recievedNewNode = true;
+      show_message = false; 
+      dayLastEventRecieved = time.getDate(); 
+      monthLastEventRecieved = time.getMonth();
+      yearLastEventRecieved = time.getFullYear();
+      minLastEventRecieved = time.getMinutes();
+      hourLastEventRecieved = time.getHours();
+       
       // TODO: Find a better way to do this
       if (once) {
         graph_elem.focusNode(event.id);
@@ -91,6 +144,10 @@
 
       legend = layout.getNodeStyle();
     }
+    recievedNewNode = false; 
+    console.log("stoped recieving nodes")
+    startTimer();
+    
   };
 
   const submit_state_query = () => submit_query(current_query);
@@ -346,7 +403,18 @@
       </div>
     </div>
   </div>
-  <!-- Graph with listeners -->
+  <div class="w-fit h-10
+            right-3
+             top-10
+             fixed
+             mr-10
+             mb-6            
+             "
+             class:hidden={!show_message}
+             class:show= {show_message}
+             >
+    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {hourLastEventRecieved}:{minLastEventRecieved}</span> 
+  </div>
   <G6Graph
     on:nodeselected={on_node_selected}
     bind:this={graph_elem}
