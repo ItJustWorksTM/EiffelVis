@@ -150,17 +150,21 @@ impl<I> TrackedQuery<I> {
             } else {
                 // Event filters itterator that returns nodes that contain the imput given (id filter has to be an exact match, all others do not.)
                 let data = node.data();
+                // Attributes that are converted to lowercase are converted outside the loop in order to avoid allocating a new string everytime the function is called.
+                let node_type = data.meta.event_type.to_lowercase();
+                let source_name = data.meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n.to_lowercase());
+                let source_host = data.meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h.to_lowercase());
                 self.event_filters.iter().filter(|v| !v.is_empty()).any(|filters| {
                     filters.iter().all(|filter| match &filter.pred {
-                        EventFilter::Type { names: ref name } => name.iter().any(|name| data.meta.event_type.to_lowercase().contains(&name.to_lowercase())),
+                        EventFilter::Type { names: ref name } => name.iter().any(|name| node_type.contains(&name.to_lowercase())),
                         EventFilter::Id { ids } =>
                             ids.iter().any(|id| graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)),
                         EventFilter::Tag { tags } =>
                             tags.iter().any(|tag| data.meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)),
                         EventFilter::SourceHost { hosts } =>
-                            hosts.iter().any(|host|data.meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h.to_lowercase().contains(&host.to_lowercase())).unwrap_or(false)),
+                            hosts.iter().any(|host| source_host.as_ref().map(|h| h.to_lowercase().contains(&host.to_lowercase())).unwrap_or(false)),
                         EventFilter::SourceName { names } =>
-                            names.iter().any(|name| data.meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n.to_lowercase().contains(&name.to_lowercase())).unwrap_or(false)),
+                            names.iter().any(|name| source_name.as_ref().map(|n| n.to_lowercase().contains(&name.to_lowercase())).unwrap_or(false)),
                     } ^ filter.rev)
                 })
             }
