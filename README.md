@@ -74,11 +74,6 @@ To contribute to this repository, please see the [contribution guidelines](./CON
 If you would like to read more about the algorithm used by EiffelVis, please see the [algorithm concept](./frontend/README.md#layout-algorithm).
 
 Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
-
-# Testing
-
-TODO
-
 # Event Sender and testing instructions (for default rabbitmq configuration)
 
 1. start your rabbitmq server 
