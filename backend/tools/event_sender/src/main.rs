@@ -19,11 +19,11 @@ struct Cli {
     // When setting these values, keep in mind that the generator process will stop at whichever value is reached first (between the count and total duration).
     // The defaut settings on these variables represent roughly 30,000 events sent per hour.
 
-    // Total amount of events to be sent (note: multiplied with the `burst` option)
+    /// Total amount of events to be sent (note: multiplied with the `burst` option)
     #[clap(default_value = "30000", short, long)]
     count: usize,
 
-    // Total duration to run the event generator
+    /// Total duration to run the event generator
     #[clap(default_value = "3600000", short, long)]
     total_duration: usize,
 
@@ -36,7 +36,6 @@ struct Cli {
     exchange: String,
 
     /// Routing key used for ampq connections
-
     #[clap(short, long)]
     routing_key: String,
 
@@ -56,6 +55,7 @@ struct Cli {
     #[clap(default_value = "1", short, long)]
     burst: usize,
 
+    /// Option to replay from a file (Input a path to a JSON file)
     #[clap(long)]
     replay: Option<String>,
 }
