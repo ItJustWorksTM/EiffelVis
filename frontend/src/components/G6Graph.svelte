@@ -49,8 +49,9 @@
         target: edge.target,
         label: edge.type,
       }); // the type of link is connected to the label of the edge here.
-      edgesToBack(ev); // put all edges attached to the node behond the nodes (needed when using groupByTypes: false);
     }
+
+    edgesToBack(ev); // put all edges attached to the node behind the nodes (needed when using groupByTypes: false);
 
     timeBarData.push({
       date: ev.date,
@@ -68,9 +69,10 @@
     const node = graph.findById(event.id);
     if (node instanceof Node) {
       const edges = node.getEdges();
-      edges.forEach((edge) => {
-        edge.toBack();
-      });
+
+      for(let i = 0; i < edges.length; i++){
+        edges[i].toBack();
+      }
     }
     graph.paint();
   };
@@ -155,23 +157,11 @@
     return time.toLocaleTimeString(); // return the converted date to local time with a precision to the second.
   };
 
-  onMount(() => {
-    if (graph) {
-      graph.destroy();
-    }
-
-    graph = new G6.Graph({
-      ...options,
-      container,
-      plugins: [tooltip], // add tooltip as plugin to the graph.
-    });
-
-    graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
-
-    // Listeners that manipulates the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => {
-      const node = e.item;
-      if (node instanceof Node) {
+  /**
+   * Method that takes a node and highlights the edges, show the link type and activate the tool tip of the node with the time of the Eiffel event's creation
+   * @param node of type Node
+   */
+  const showRelations = (node) => {
         // check if item is a Node to be able to access the getEdges() method.
         const edges = node.getEdges();
         edges.forEach((edge) => {
@@ -189,13 +179,13 @@
             },
           });
         });
-      }
-    });
+  }
 
-    graph.on("node:mouseleave", (e) => {
-      const node = e.item;
-      if (node instanceof Node) {
-        // check if item is a Node to be able to access the getEdges() method.
+  /**
+   * Method that takes a node:event and undoes the effect of showRelations()
+   * @param node of type Node 
+   */
+  const hideRelations = (node: Node) => {
         const edges = node.getEdges();
         edges.forEach((edge) => {
           edge.toBack(); // put edge back behond the node
@@ -211,7 +201,33 @@
             },
           });
         });
+  }
+
+  onMount(() => {
+    if (graph) {
+      graph.destroy();
+    }
+
+    graph = new G6.Graph({
+      ...options,
+      container,
+      plugins: [tooltip], // add tooltip as plugin to the graph.
+    });
+
+    graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+
+    // Listeners that manipulates the nodes when they are hovered.
+    graph.on("node:mouseenter", (e) => {
+      if (e.item instanceof Node){
+        showRelations(e.item);
       }
+    });
+
+    graph.on("node:mouseleave", (e) => {
+      if (e.item instanceof Node){
+        hideRelations(e.item);
+      }
+      
     });
 
     // Enable keyboard manipulation
@@ -223,9 +239,6 @@
         weight("ArrowDown", "ArrowUp") * graph_translation
       );
     });
-
-    //TODO : Add a listener when entering and exiting the nodes
-    graph.on("node:mouseenter", (e) => dispatch("nodeHovered", e)); // emit an event when the node is entered with the mouse
 
     graph.changeData(data);
     resizeGraph();
@@ -267,9 +280,7 @@
     border-color: #555555;
     border-width: 1px;
     box-shadow: rgb(35, 34, 34) 2px 2px 2px;
-    height: fit-content;
     align-items: center;
-    width: fit-content;
     font-size: 0.875rem;
     color: #ffffff;
     font-family: "ui-sans-serif", "system-ui", "-apple-system",
