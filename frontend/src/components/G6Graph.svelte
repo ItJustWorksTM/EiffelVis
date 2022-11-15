@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Graph, IG6GraphEvent, Node } from "@antv/g6";
+  import G6, { Graph, IEdge, IG6GraphEvent, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
@@ -70,8 +70,8 @@
     if (node instanceof Node) {
       const edges = node.getEdges();
 
-      for(let i = 0; i < edges.length; i++){
-        edges[i].toBack();
+      for(const edge of edges){
+        edge.toBack();
       }
     }
     graph.paint();
