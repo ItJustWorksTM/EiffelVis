@@ -104,22 +104,13 @@ async fn app() -> anyhow::Result<()> {
         Box::new(gen.iter())
     };
 
-<<<<<<< HEAD
-    let target = cli.count * cli.burst;
+    let target = cli.count;
 
     println!(
         "\nSending out a maximum of {} events, over a maximum duration of {} seconds. \nProcess will stop at whichever comes first. \nEvents sent at random intervals between {}-{}ms. \n",
-        target, (cli.total_duration / 1000), cli.min_latency, cli.latency_max
-=======
-    let target = cli.count;
-    let sleep_duration = Duration::from_millis(cli.latency as u64);
-
-    println!(
-        "Sending out ~{} events, {} events every {}ms interval",
         target * cli.burst,
-        cli.burst,
-        cli.latency
->>>>>>> 65aed53 (Backend/gen:BUG-FIX sent count: #27)
+        (cli.total_duration / 1000), cli.min_latency,
+        cli.latency_max
     );
 
     let mut sent = 0;
