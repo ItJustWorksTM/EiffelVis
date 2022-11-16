@@ -15,7 +15,7 @@ export const defaultNode = {
 }
 type node = Event & {
   event_type: string
-  style?: object 
+  style?: object
   size?: number
   type?: string
   time: number
@@ -37,7 +37,7 @@ export class StatefulLayout {
 
 
 
-  apply(node: node, graphOptions: GraphSettings) { 
+  apply(node: node, graphOptions: GraphSettings) {
     if (this.curve === 0 && graphOptions.offset) {
       this.curve = graphOptions.offset
       this.curveSep = graphOptions.offset
@@ -89,7 +89,7 @@ export class StatefulLayout {
   getNodeColor(): Map<string, string> {
     return this.colors
   }
- getNodeShape(): Map<string, string> {
+  getNodeShape(): Map<string, string> {
     return this.shapes
   }
 

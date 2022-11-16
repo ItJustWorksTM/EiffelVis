@@ -21,17 +21,13 @@
     dispatch("nodeselected", null);
   };
 
-    // This is a hack to get the graph to render the entire window width
+  // This is a hack to get the graph to render the entire window width
   export const resizeGraph = () => {
-        if (graph && container) {
-            const width = Number(
-                window.innerWidth
-            );
-            const height = Number(
-                window.innerHeight
-            );
-            graph.changeSize(width, height);
-        }
+    if (graph && container) {
+      const width = Number(window.innerWidth);
+      const height = Number(window.innerHeight);
+      graph.changeSize(width, height);
+    }
   };
 
   export const focusNode = (id: any) => {
@@ -68,7 +64,7 @@
     if (node instanceof Node) {
       const edges = node.getEdges();
 
-      for(const edge of edges){
+      for (const edge of edges) {
         edge.toBack();
       }
     }
@@ -160,46 +156,46 @@
    * @param node of type Node
    */
   const showRelations = (node) => {
-        // check if item is a Node to be able to access the getEdges() method.
-        const edges = node.getEdges();
-        edges.forEach((edge) => {
-          edge.toFront(); // put edge on top of the nodes (to see lables)
-          graph.updateItem(edge, {
-            //update the edges of the node (used here to style labels and edge)
-            labelCfg: {
-              style: {
-                fillOpacity: 1, // change the opacity to 1(make it visible), as the default opacity is set to 0(invisible).
-              },
-            },
-            style: {
-              opacity: 1,
-              lineWidth: 1.5,
-            },
-          });
-        });
-  }
+    // check if item is a Node to be able to access the getEdges() method.
+    const edges = node.getEdges();
+    edges.forEach((edge) => {
+      edge.toFront(); // put edge on top of the nodes (to see lables)
+      graph.updateItem(edge, {
+        //update the edges of the node (used here to style labels and edge)
+        labelCfg: {
+          style: {
+            fillOpacity: 1, // change the opacity to 1(make it visible), as the default opacity is set to 0(invisible).
+          },
+        },
+        style: {
+          opacity: 1,
+          lineWidth: 1.5,
+        },
+      });
+    });
+  };
 
   /**
    * Method that takes a node:event and undoes the effect of showRelations()
-   * @param node of type Node 
+   * @param node of type Node
    */
   const hideRelations = (node: Node) => {
-        const edges = node.getEdges();
-        edges.forEach((edge) => {
-          edge.toBack(); // put edge back behond the node
-          graph.updateItem(edge, {
-            labelCfg: {
-              style: {
-                fillOpacity: 0, // make the link lable invisible again, as the mouse moves away from the node
-              },
-            },
-            style: {
-              opacity: 0.15,
-              lineWidth: 1,
-            },
-          });
-        });
-  }
+    const edges = node.getEdges();
+    edges.forEach((edge) => {
+      edge.toBack(); // put edge back behond the node
+      graph.updateItem(edge, {
+        labelCfg: {
+          style: {
+            fillOpacity: 0, // make the link lable invisible again, as the mouse moves away from the node
+          },
+        },
+        style: {
+          opacity: 0.15,
+          lineWidth: 1,
+        },
+      });
+    });
+  };
 
   onMount(() => {
     if (graph) {
@@ -216,16 +212,15 @@
 
     // Listeners that manipulates the nodes when they are hovered.
     graph.on("node:mouseenter", (e) => {
-      if (e.item instanceof Node){
+      if (e.item instanceof Node) {
         showRelations(e.item);
       }
     });
 
     graph.on("node:mouseleave", (e) => {
-      if (e.item instanceof Node){
+      if (e.item instanceof Node) {
         hideRelations(e.item);
       }
-      
     });
 
     // Enable keyboard manipulation
@@ -266,7 +261,7 @@
     background: rgb(33, 33, 32);
     border-radius: 20px;
     position: absolute !important;
-    left: 45%; 
+    left: 45%;
     bottom: 80px;
     z-index: 0;
   }
@@ -281,6 +276,5 @@
     align-items: center;
     font-size: 0.875rem;
     color: #ffffff;
-
   }
 </style>
