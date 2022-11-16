@@ -18,7 +18,6 @@ struct Cli {
     // NOTE: The number of events along with the total duration, min lacency and latency max is to be used for stress testing.
     // When setting these values, keep in mind that the generator process will stop at whichever value is reached first (between the count and total duration).
     // The defaut settings on these variables represent roughly 30,000 events sent per hour.
-
     /// Total amount of events to be sent (note: multiplied with the `burst` option)
     #[clap(default_value = "30000", short, long)]
     count: usize,
