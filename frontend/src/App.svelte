@@ -171,15 +171,26 @@
     height: 400,
     workerEnabled: false,
     fitView: true,
+    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
-      style: {
-        endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
-      },
+      labelCfg: {
+        position: 'center', 
+        style:{           // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+          fontSize: 10,
+          fill: '#ffffff',
+          fillOpacity: 0,
+          shadowColor: "#151517",
+          shadowOffsetY: 10,
+          shoadowOffsetX: 10,
+          shadowBlur: 10
+        }
     },
-    nodeStateStyles: {
-      selected: {
-        fill: "#ffffff",
-        lineWidth: 0.4,
+      style: {          // default styling for the edge should come here
+        lineWidth: 1, 
+        opacity: 0.15,
+        fill: '#fff',
+        position: "middle",
+        endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
     },
     modes: {
@@ -191,7 +202,7 @@
           enableOptimize: true,
         },
       ],
-    },
+    }
   };
 </script>
 
@@ -332,7 +343,7 @@
       </div>
     </div>
   </div>
-
+  <!-- Graph with listeners -->
   <G6Graph
     on:nodeselected={on_node_selected}
     bind:this={graph_elem}
