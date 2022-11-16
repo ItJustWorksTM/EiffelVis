@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/domain/user_queries.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>user_queries.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../eiffelvis_core/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/domain/user_queries.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>user_queries.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../eiffelvis_core/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -173,180 +173,180 @@
 <span id="173">173</span>
 <span id="174">174</span>
 <span id="175">175</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">domain::types::BaseEvent</span>,
-    <span class="ident">graph</span>::<span class="kw-2">*</span>,
-    <span class="ident">tracked_query</span>::{<span class="ident">TrackedNodes</span>, <span class="ident">TrackedSubGraphs</span>},
+</pre><pre class="rust"><code><span class="kw">use crate</span>::{
+    domain::types::BaseEvent,
+    graph::<span class="kw-2">*</span>,
+    tracked_query::{TrackedNodes, TrackedSubGraphs},
 };
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
-<span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
+<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>uuid::Uuid;
 
-<span class="doccomment">/// Describes a query to collect nodes from an eiffel graph,</span>
-<span class="doccomment">/// to match an event **all** filters need to match.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Query</span> {
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="doccomment">/// Filters used to determine initial range of nodes to be filtered</span>
-    <span class="ident">range_filter</span>: <span class="ident">RangeFilter</span>,
-    <span class="doccomment">/// Filters to be applied over individual events</span>
-    <span class="ident">event_filters</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EventFilterMeta</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Method of collection, may add additional nodes</span>
-    <span class="ident">collection</span>: <span class="ident">Collection</span>,
+<span class="doccomment">/// Describes a query to collect nodes from an eiffel graph,
+/// to match an event **all** filters need to match.
+</span><span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>Query {
+    <span class="attribute">#[serde(default)]
+    </span><span class="doccomment">/// Filters used to determine initial range of nodes to be filtered
+    </span>range_filter: RangeFilter,
+    <span class="doccomment">/// Filters to be applied over individual events
+    </span>event_filters: Vec&lt;Vec&lt;EventFilterMeta&gt;&gt;,
+    <span class="doccomment">/// Method of collection, may add additional nodes
+    </span>collection: Collection,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;type&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RangeFilterBound</span> {
-    <span class="ident">Absolute</span> { <span class="ident">val</span>: <span class="ident">i64</span> },
-    <span class="ident">Time</span> { <span class="ident">val</span>: <span class="ident">u64</span> },
-    <span class="ident">Ids</span> { <span class="ident">val</span>: <span class="ident">Uuid</span> },
+<span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = <span class="string">&quot;type&quot;</span>)]
+</span><span class="kw">pub enum </span>RangeFilterBound {
+    Absolute { val: i64 },
+    Time { val: u64 },
+    Ids { val: Uuid },
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">RangeFilter</span> {
-    <span class="ident">begin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeFilterBound</span><span class="op">&gt;</span>,
-    <span class="ident">end</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeFilterBound</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+</span><span class="kw">struct </span>RangeFilter {
+    begin: <span class="prelude-ty">Option</span>&lt;RangeFilterBound&gt;,
+    end: <span class="prelude-ty">Option</span>&lt;RangeFilterBound&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EventFilterMeta</span> {
-    <span class="doccomment">/// Reverses the predicate&#39;s result if true</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="ident">rev</span>: <span class="ident">bool</span>,
-    <span class="ident">pred</span>: <span class="ident">EventFilter</span>,
+<span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>EventFilterMeta {
+    <span class="doccomment">/// Reverses the predicate&#39;s result if true
+    </span><span class="attribute">#[serde(default)]
+    </span>rev: bool,
+    pred: EventFilter,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;type&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">EventFilter</span> {
-    <span class="doccomment">/// Event Type</span>
-    <span class="ident">Type</span> { <span class="ident">names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> },
-    <span class="doccomment">/// Specific ids</span>
-    <span class="ident">Id</span> { <span class="ident">ids</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Uuid</span><span class="op">&gt;</span> },
-    <span class="doccomment">/// meta.tags</span>
-    <span class="ident">Tag</span> { <span class="ident">tags</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> },
-    <span class="doccomment">/// meta.source.host</span>
-    <span class="ident">SourceHost</span> { <span class="ident">hosts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> },
-    <span class="doccomment">/// meta.source.name</span>
-    <span class="ident">SourceName</span> { <span class="ident">names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> },
+<span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = <span class="string">&quot;type&quot;</span>)]
+</span><span class="kw">pub enum </span>EventFilter {
+    <span class="doccomment">/// Event Type
+    </span>Type { names: Vec&lt;String&gt; },
+    <span class="doccomment">/// Specific ids
+    </span>Id { ids: Vec&lt;Uuid&gt; },
+    <span class="doccomment">/// meta.tags
+    </span>Tag { tags: Vec&lt;String&gt; },
+    <span class="doccomment">/// meta.source.host
+    </span>SourceHost { hosts: Vec&lt;String&gt; },
+    <span class="doccomment">/// meta.source.name
+    </span>SourceName { names: Vec&lt;String&gt; },
 }
 
-<span class="doccomment">/// Used collection method,</span>
-<span class="doccomment">/// selected variant is run **after** filtering has been done,</span>
-<span class="doccomment">/// this means you can get nodes back that may not filfull the filter requirements.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;type&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Collection</span> {
-    <span class="doccomment">/// Does not do anything</span>
-    <span class="ident">Forward</span>,
-    <span class="doccomment">/// Uses the result of the filtered nodes as roots and collects their graph</span>
-    <span class="ident">AsRoots</span>,
+<span class="doccomment">/// Used collection method,
+/// selected variant is run **after** filtering has been done,
+/// this means you can get nodes back that may not filfull the filter requirements.
+</span><span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = <span class="string">&quot;type&quot;</span>)]
+</span><span class="kw">pub enum </span>Collection {
+    <span class="doccomment">/// Does not do anything
+    </span>Forward,
+    <span class="doccomment">/// Uses the result of the filtered nodes as roots and collects their graph
+    </span>AsRoots,
 }
 
-<span class="doccomment">/// A tracked query, only returns new matches.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TrackedQuery</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="ident">range_filter</span>: <span class="ident">RangeFilter</span>,
-    <span class="ident">event_filters</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EventFilterMeta</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">collector</span>: <span class="ident">Collector</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
-    <span class="ident">inner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TrackedNodes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="doccomment">/// A tracked query, only returns new matches.
+</span><span class="kw">pub struct </span>TrackedQuery&lt;I&gt; {
+    range_filter: RangeFilter,
+    event_filters: Vec&lt;Vec&lt;EventFilterMeta&gt;&gt;,
+    collector: Collector&lt;I&gt;,
+    inner: <span class="prelude-ty">Option</span>&lt;TrackedNodes&lt;I&gt;&gt;,
 }
 
-<span class="kw">enum</span> <span class="ident">Collector</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="ident">Forward</span>,
-    <span class="ident">SubGraph</span>(<span class="ident">TrackedSubGraphs</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>),
+<span class="kw">enum </span>Collector&lt;I&gt; {
+    Forward,
+    SubGraph(TrackedSubGraphs&lt;I&gt;),
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">TrackedQuery</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">query</span>: <span class="ident">Query</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">range_filter</span>: <span class="ident">query</span>.<span class="ident">range_filter</span>,
-            <span class="ident">event_filters</span>: <span class="ident">query</span>.<span class="ident">event_filters</span>,
-            <span class="ident">collector</span>: <span class="kw">match</span> <span class="ident">query</span>.<span class="ident">collection</span> {
-                <span class="ident">Collection::Forward</span> =&gt; <span class="ident">Collector::Forward</span>,
-                <span class="ident">Collection::AsRoots</span> =&gt; <span class="ident">Collector::SubGraph</span>(<span class="ident">TrackedSubGraphs::new</span>(<span class="macro">vec!</span>[])),
+<span class="kw">impl</span>&lt;I&gt; TrackedQuery&lt;I&gt; {
+    <span class="kw">pub fn </span>new(query: Query) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            range_filter: query.range_filter,
+            event_filters: query.event_filters,
+            collector: <span class="kw">match </span>query.collection {
+                Collection::Forward =&gt; Collector::Forward,
+                Collection::AsRoots =&gt; Collector::SubGraph(TrackedSubGraphs::new(<span class="macro">vec!</span>[])),
             },
-            <span class="ident">inner</span>: <span class="prelude-val">None</span>,
+            inner: <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="doccomment">/// Collects new nodes that match the query since the last time this method was called</span>
-    <span class="doccomment">/// If it was not called before it behaves as the non-tracked version.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span>, <span class="ident">G</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">G</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">G</span>: <span class="ident">Graph</span><span class="op">&lt;</span><span class="ident">Data</span> <span class="op">=</span> <span class="ident">BaseEvent</span>, <span class="ident">Idx</span> <span class="op">=</span> <span class="ident">I</span>, <span class="ident">Key</span> <span class="op">=</span> <span class="ident">Uuid</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-        <span class="ident">R</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BaseEvent</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">I</span>: <span class="ident">Idx</span>,
+    <span class="doccomment">/// Collects new nodes that match the query since the last time this method was called
+    /// If it was not called before it behaves as the non-tracked version.
+    </span><span class="kw">pub fn </span>handle&lt;<span class="lifetime">&#39;a</span>, R, G&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>G) -&gt; Vec&lt;R&gt;
+    <span class="kw">where
+        </span>G: Graph&lt;Data = BaseEvent, Idx = I, Key = Uuid&gt; + Indexable&lt;usize&gt;,
+        R: From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BaseEvent&gt; + <span class="lifetime">&#39;static</span>,
+        I: Idx,
     {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">inner</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span> {
-            <span class="ident">inner</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">range_bound_to_idx</span> <span class="op">=</span> <span class="op">|</span><span class="ident">rg</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeFilterBound</span><span class="op">&gt;</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">rg</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">rg</span>) =&gt; <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">rg</span> {
-                    <span class="ident">RangeFilterBound::Ids</span> { <span class="ident">val</span> } =&gt; <span class="ident">graph</span>.<span class="ident">get</span>(<span class="ident">val</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">d</span>.<span class="ident">id</span>())),
-                    <span class="ident">RangeFilterBound::Time</span> { <span class="ident">val</span> } =&gt; <span class="ident">graph</span>
-                        .<span class="ident">items</span>()
-                        .<span class="ident">find</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">time</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">val</span>)
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">d</span>.<span class="ident">id</span>())),
-                    <span class="ident">RangeFilterBound::Absolute</span> { <span class="ident">val</span> } =&gt; {
-                        <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">val</span> <span class="op">&lt;</span> <span class="number">0</span> {
-                            (<span class="ident">graph</span>.<span class="ident">node_count</span>()
-                                <span class="op">-</span> (<span class="ident">val</span>.<span class="ident">unsigned_abs</span>() <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">min</span>(<span class="ident">graph</span>.<span class="ident">node_count</span>()))
-                                <span class="kw">as</span> <span class="ident">usize</span>
-                        } <span class="kw">else</span> {
-                            <span class="ident">val</span> <span class="kw">as</span> <span class="ident">usize</span>
+        <span class="kw">let </span>inner = <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>inner) = <span class="self">self</span>.inner {
+            inner
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>range_bound_to_idx = |rg: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RangeFilterBound&gt;| <span class="kw">match </span>rg {
+                <span class="prelude-val">Some</span>(rg) =&gt; <span class="kw">match </span><span class="kw-2">*</span>rg {
+                    RangeFilterBound::Ids { val } =&gt; graph.get(val).map(|d| <span class="prelude-val">Some</span>(d.id())),
+                    RangeFilterBound::Time { val } =&gt; graph
+                        .items()
+                        .find(|node| node.data().meta.time &gt;= val)
+                        .map(|d| <span class="prelude-val">Some</span>(d.id())),
+                    RangeFilterBound::Absolute { val } =&gt; {
+                        <span class="kw">let </span>val = <span class="kw">if </span>val &lt; <span class="number">0 </span>{
+                            (graph.node_count()
+                                - (val.unsigned_abs() <span class="kw">as </span>usize).min(graph.node_count()))
+                                <span class="kw">as </span>usize
+                        } <span class="kw">else </span>{
+                            val <span class="kw">as </span>usize
                         };
-                        <span class="ident">graph</span>.<span class="ident">get</span>(<span class="ident">val</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">no</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">no</span>.<span class="ident">id</span>()))
+                        graph.get(val).map(|no| <span class="prelude-val">Some</span>(no.id()))
                     }
                 },
-                <span class="kw">_</span> =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">None</span>),
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">None</span>),
             };
 
-            <span class="kw">let</span> <span class="ident">begin</span> <span class="op">=</span> <span class="ident">range_bound_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">range_filter</span>.<span class="ident">begin</span>);
-            <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">range_bound_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">range_filter</span>.<span class="ident">end</span>);
+            <span class="kw">let </span>begin = range_bound_to_idx(<span class="kw-2">&amp;</span><span class="self">self</span>.range_filter.begin);
+            <span class="kw">let </span>end = range_bound_to_idx(<span class="kw-2">&amp;</span><span class="self">self</span>.range_filter.end);
 
-            <span class="kw">let</span> <span class="ident">new</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">begin</span>.<span class="ident">zip</span>(<span class="ident">end</span>) {
-                <span class="prelude-val">Some</span>(<span class="ident">s</span>) =&gt; <span class="kw">match</span> <span class="ident">s</span> {
-                    (<span class="prelude-val">Some</span>(<span class="ident">d</span>), <span class="prelude-val">Some</span>(<span class="ident">b</span>)) =&gt; <span class="ident">TrackedNodes::range</span>(<span class="ident">d</span>..<span class="op">=</span><span class="ident">b</span>),
-                    (<span class="prelude-val">Some</span>(<span class="ident">d</span>), <span class="prelude-val">None</span>) =&gt; <span class="ident">TrackedNodes::range</span>(<span class="ident">d</span>..),
-                    (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">b</span>)) =&gt; <span class="ident">TrackedNodes::range</span>(..<span class="op">=</span><span class="ident">b</span>),
-                    <span class="kw">_</span> =&gt; <span class="ident">TrackedNodes::range</span>(..),
+            <span class="kw">let </span>new = <span class="kw">match </span>begin.zip(end) {
+                <span class="prelude-val">Some</span>(s) =&gt; <span class="kw">match </span>s {
+                    (<span class="prelude-val">Some</span>(d), <span class="prelude-val">Some</span>(b)) =&gt; TrackedNodes::range(d..=b),
+                    (<span class="prelude-val">Some</span>(d), <span class="prelude-val">None</span>) =&gt; TrackedNodes::range(d..),
+                    (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(b)) =&gt; TrackedNodes::range(..=b),
+                    <span class="kw">_ </span>=&gt; TrackedNodes::range(..),
                 },
-                <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="ident">Vec::new</span>(), <span class="comment">// TODO: decide error handling</span>
-            };
+                <span class="kw">_ </span>=&gt; <span class="kw">return </span>Vec::new(), <span class="comment">// TODO: decide error handling
+            </span>};
 
-            <span class="self">self</span>.<span class="ident">inner</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">new</span>);
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()
+            <span class="self">self</span>.inner = <span class="prelude-val">Some</span>(new);
+            <span class="self">self</span>.inner.as_mut().unwrap()
         };
 
-        <span class="kw">let</span> <span class="ident">fresh</span> <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">handle</span>(<span class="ident">graph</span>);
-        <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">fresh</span>.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">event_filters</span>.<span class="ident">is_empty</span>() {
-                <span class="bool-val">true</span>
-            } <span class="kw">else</span> {
-                <span class="self">self</span>.<span class="ident">event_filters</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="op">!</span><span class="ident">v</span>.<span class="ident">is_empty</span>()).<span class="ident">any</span>(<span class="op">|</span><span class="ident">filters</span><span class="op">|</span> {
-                    <span class="ident">filters</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">filter</span><span class="op">|</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">filter</span>.<span class="ident">pred</span> {
-                        <span class="ident">EventFilter::Type</span> { <span class="ident">names</span>: <span class="kw-2">ref</span> <span class="ident">name</span> } =&gt; <span class="ident">name</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">event_type</span> <span class="op">==</span> <span class="ident">name</span>),
-                        <span class="ident">EventFilter::Id</span> { <span class="ident">ids</span> } =&gt;
-                            <span class="ident">ids</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">id</span><span class="op">|</span> <span class="ident">graph</span>.<span class="ident">get</span>(<span class="kw-2">*</span><span class="ident">id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>() <span class="op">==</span> <span class="ident">node</span>.<span class="ident">id</span>()).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)),
-                        <span class="ident">EventFilter::Tag</span> { <span class="ident">tags</span> } =&gt;
-                            <span class="ident">tags</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">tag</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">tags</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">contains</span>(<span class="ident">tag</span>)).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)),
-                        <span class="ident">EventFilter::SourceHost</span> { <span class="ident">hosts</span> } =&gt;
-                            <span class="ident">hosts</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">host</span><span class="op">|</span><span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">source</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">host</span>.<span class="ident">as_ref</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span> <span class="op">==</span> <span class="ident">host</span>).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)),
-                        <span class="ident">EventFilter::SourceName</span> { <span class="ident">names</span> } =&gt;
-                            <span class="ident">names</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">data</span>().<span class="ident">meta</span>.<span class="ident">source</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span> <span class="op">==</span> <span class="ident">name</span>).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)),
-                    } <span class="op">^</span> <span class="ident">filter</span>.<span class="ident">rev</span>)
+        <span class="kw">let </span>fresh = inner.handle(graph);
+        <span class="kw">let </span>iter = fresh.filter(|node| {
+            <span class="kw">if </span><span class="self">self</span>.event_filters.is_empty() {
+                <span class="bool-val">true
+            </span>} <span class="kw">else </span>{
+                <span class="self">self</span>.event_filters.iter().filter(|v| !v.is_empty()).any(|filters| {
+                    filters.iter().all(|filter| <span class="kw">match </span><span class="kw-2">&amp;</span>filter.pred {
+                        EventFilter::Type { names: <span class="kw-2">ref </span>name } =&gt; name.iter().any(|name| <span class="kw-2">&amp;</span>node.data().meta.event_type == name),
+                        EventFilter::Id { ids } =&gt;
+                            ids.iter().any(|id| graph.get(<span class="kw-2">*</span>id).map(|n| n.id() == node.id()).unwrap_or(<span class="bool-val">false</span>)),
+                        EventFilter::Tag { tags } =&gt;
+                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(<span class="bool-val">false</span>)),
+                        EventFilter::SourceHost { hosts } =&gt;
+                            hosts.iter().any(|host|node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(<span class="bool-val">false</span>)),
+                        EventFilter::SourceName { names } =&gt;
+                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(<span class="bool-val">false</span>)),
+                    } ^ filter.rev)
                 })
             }
         });
 
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">collector</span> {
-            <span class="ident">Collector::Forward</span> =&gt; <span class="ident">iter</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">R::from</span>(<span class="ident">v</span>.<span class="ident">data</span>())).<span class="ident">collect</span>(),
-            <span class="ident">Collector::SubGraph</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">sub</span>) =&gt; {
-                <span class="ident">iter</span>.<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">sub</span>.<span class="ident">add_id</span>(<span class="ident">v</span>.<span class="ident">id</span>()));
-                <span class="ident">sub</span>.<span class="ident">handle</span>(<span class="ident">graph</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">R::from</span>(<span class="ident">v</span>.<span class="ident">data</span>())).<span class="ident">collect</span>()
+        <span class="kw">match </span><span class="self">self</span>.collector {
+            Collector::Forward =&gt; iter.map(|v| R::from(v.data())).collect(),
+            Collector::SubGraph(<span class="kw-2">ref mut </span>sub) =&gt; {
+                iter.for_each(|v| sub.add_id(v.id()));
+                sub.handle(graph).map(|v| R::from(v.data())).collect()
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

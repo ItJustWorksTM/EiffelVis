@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_http/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_http/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_http/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_http/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -72,79 +72,79 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! An HTTP frontend for eiffelvis_core</span>
-<span class="doccomment">//!</span>
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! An HTTP frontend for eiffelvis_core
+//!
 
-<span class="kw">mod</span> <span class="ident">handlers</span>;
+</span><span class="kw">mod </span>handlers;
 
-<span class="kw">use</span> <span class="ident">handlers</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span>handlers::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">axum</span>::{<span class="ident">routing::get</span>, <span class="ident">Router</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">axum_server::Handle</span>;
-<span class="kw">use</span> <span class="ident">axum_server</span>::{<span class="self">self</span>, <span class="ident">tls_rustls::RustlsConfig</span>};
-<span class="kw">use</span> <span class="ident">tracing::info</span>;
+<span class="kw">use </span>axum::{routing::get, Router};
+<span class="kw">pub use </span>axum_server::Handle;
+<span class="kw">use </span>axum_server::{<span class="self">self</span>, tls_rustls::RustlsConfig};
+<span class="kw">use </span>tracing::info;
 
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">io</span>,
-    <span class="ident">net</span>::{<span class="ident">IpAddr</span>, <span class="ident">SocketAddr</span>},
-    <span class="ident">sync::Arc</span>,
+<span class="kw">use </span>std::{
+    io,
+    net::{IpAddr, SocketAddr},
+    sync::Arc,
 };
 
-<span class="kw">use</span> <span class="ident">tower_http::cors</span>::{<span class="ident">Any</span>, <span class="ident">CorsLayer</span>};
+<span class="kw">use </span>tower_http::cors::{Any, CorsLayer};
 
-<span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
+<span class="kw">use </span>uuid::Uuid;
 
-<span class="kw">use</span> <span class="ident">eiffelvis_core::domain</span>::{<span class="ident">app::EiffelVisApp</span>, <span class="ident">types::BaseEvent</span>};
+<span class="kw">use </span>eiffelvis_core::domain::{app::EiffelVisApp, types::BaseEvent};
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EiffelVisHttpApp</span>: <span class="ident">EiffelVisApp</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">EiffelVisHttpApp</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">EiffelVisApp</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {}
+<span class="kw">pub trait </span>EiffelVisHttpApp: EiffelVisApp + Send + Sync + <span class="lifetime">&#39;static </span>{}
+<span class="kw">impl</span>&lt;T&gt; EiffelVisHttpApp <span class="kw">for </span>T <span class="kw">where </span>T: EiffelVisApp + Send + Sync + <span class="lifetime">&#39;static </span>{}
 
-<span class="kw">type</span> <span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tokio::sync::RwLock</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">type </span>App&lt;T&gt; = Arc&lt;tokio::sync::RwLock&lt;T&gt;&gt;;
 
-<span class="doccomment">/// Takes an eiffelvis app and binds the http server on the given address.</span>
-<span class="doccomment">/// This is likely the only function you&#39;ll ever need to call.</span>
-<span class="doccomment">/// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">app</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(
-    <span class="ident">app</span>: <span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    <span class="ident">address</span>: <span class="ident">IpAddr</span>,
-    <span class="ident">port</span>: <span class="ident">u16</span>,
-    <span class="ident">handle</span>: <span class="ident">Handle</span>,
-    <span class="ident">tls</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">String</span>)<span class="op">&gt;</span>,
-) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">tls</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tls</span> {
-        <span class="prelude-val">Some</span>((<span class="ident">cert</span>, <span class="ident">key</span>)) =&gt; <span class="prelude-val">Some</span>(<span class="ident">RustlsConfig::from_pem_file</span>(<span class="ident">cert</span>, <span class="ident">key</span>).<span class="kw">await</span><span class="question-mark">?</span>),
-        <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+<span class="doccomment">/// Takes an eiffelvis app and binds the http server on the given address.
+/// This is likely the only function you&#39;ll ever need to call.
+/// `shutdown` is used to trigger graceful shutdown, tokio::signal is useful for this.
+</span><span class="kw">pub async fn </span>app&lt;T: EiffelVisHttpApp&gt;(
+    app: App&lt;T&gt;,
+    address: IpAddr,
+    port: u16,
+    handle: Handle,
+    tls: <span class="prelude-ty">Option</span>&lt;(String, String)&gt;,
+) -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>tls = <span class="kw">match </span>tls {
+        <span class="prelude-val">Some</span>((cert, key)) =&gt; <span class="prelude-val">Some</span>(RustlsConfig::from_pem_file(cert, key).<span class="kw">await</span><span class="question-mark">?</span>),
+        <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
     };
 
-    <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">make_service</span>(<span class="ident">app</span>);
+    <span class="kw">let </span>service = make_service(app);
 
-    <span class="ident">serve_service</span>(<span class="ident">SocketAddr::new</span>(<span class="ident">address</span>, <span class="ident">port</span>), <span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">tls</span>).<span class="kw">await</span>
-}
+    serve_service(SocketAddr::new(address, port), service, handle, tls).<span class="kw">await
+</span>}
 
-<span class="doccomment">/// Serves an axum router on the given address, with optional TLS</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">serve_service</span>(
-    <span class="ident">addr</span>: <span class="ident">SocketAddr</span>,
-    <span class="ident">service</span>: <span class="ident">Router</span>,
-    <span class="ident">handle</span>: <span class="ident">Handle</span>,
-    <span class="ident">tls</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RustlsConfig</span><span class="op">&gt;</span>,
-) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">match</span> <span class="ident">tls</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">config</span>) =&gt; {
-            <span class="macro">info!</span>(<span class="string">&quot;Binding to {:?} using tls&quot;</span>, <span class="ident">addr</span>);
-            <span class="ident">axum_server::bind_rustls</span>(<span class="ident">addr</span>, <span class="ident">config</span>)
-                .<span class="ident">handle</span>(<span class="ident">handle</span>)
-                .<span class="ident">serve</span>(<span class="ident">service</span>.<span class="ident">into_make_service</span>())
-                .<span class="kw">await</span>
-        }
-        <span class="prelude-val">None</span> =&gt; {
-            <span class="macro">info!</span>(<span class="string">&quot;Binding to {:?} without tls&quot;</span>, <span class="ident">addr</span>);
-            <span class="ident">axum_server::bind</span>(<span class="ident">addr</span>)
-                .<span class="ident">handle</span>(<span class="ident">handle</span>)
-                .<span class="ident">serve</span>(<span class="ident">service</span>.<span class="ident">into_make_service</span>())
-                .<span class="kw">await</span>
-        }
+<span class="doccomment">/// Serves an axum router on the given address, with optional TLS
+</span><span class="kw">async fn </span>serve_service(
+    addr: SocketAddr,
+    service: Router,
+    handle: Handle,
+    tls: <span class="prelude-ty">Option</span>&lt;RustlsConfig&gt;,
+) -&gt; io::Result&lt;()&gt; {
+    <span class="kw">match </span>tls {
+        <span class="prelude-val">Some</span>(config) =&gt; {
+            <span class="macro">info!</span>(<span class="string">&quot;Binding to {:?} using tls&quot;</span>, addr);
+            axum_server::bind_rustls(addr, config)
+                .handle(handle)
+                .serve(service.into_make_service())
+                .<span class="kw">await
+        </span>}
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="macro">info!</span>(<span class="string">&quot;Binding to {:?} without tls&quot;</span>, addr);
+            axum_server::bind(addr)
+                .handle(handle)
+                .serve(service.into_make_service())
+                .<span class="kw">await
+        </span>}
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_http" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_http" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

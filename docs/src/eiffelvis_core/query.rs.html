@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/query.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>query.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/query.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>query.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -57,64 +57,64 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::ControlFlow</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::ops::ControlFlow;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">algorithms::depth_first</span>, <span class="ident">graph</span>::<span class="kw-2">*</span>};
+<span class="kw">use crate</span>::{algorithms::depth_first, graph::<span class="kw-2">*</span>};
 
-<span class="kw">use</span> <span class="ident">ahash::RandomState</span>;
-<span class="kw">use</span> <span class="ident">indexmap::IndexSet</span>;
+<span class="kw">use </span>ahash::RandomState;
+<span class="kw">use </span>indexmap::IndexSet;
 
-<span class="doccomment">/// An iterator that takes graph nodes and yields the subgraph</span>
-<span class="doccomment">/// with given nodes as root.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SubGraphs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">Graph</span>,
+<span class="doccomment">/// An iterator that takes graph nodes and yields the subgraph
+/// with given nodes as root.
+</span><span class="kw">pub struct </span>SubGraphs&lt;<span class="lifetime">&#39;a</span>, G&gt;
+<span class="kw">where
+    </span>G: Graph,
 {
-    <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">G</span>,
-    <span class="ident">index</span>: <span class="op">&lt;</span><span class="ident">IndexSet</span><span class="op">&lt;</span><span class="ident">G::Idx</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">IntoIterator</span><span class="op">&gt;</span><span class="ident">::IntoIter</span>,
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>G,
+    index: &lt;IndexSet&lt;G::Idx&gt; <span class="kw">as </span>IntoIterator&gt;::IntoIter,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">SubGraphs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">Graph</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, G&gt; Iterator <span class="kw">for </span>SubGraphs&lt;<span class="lifetime">&#39;a</span>, G&gt;
+<span class="kw">where
+    </span>G: Graph,
 {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span>;
+    <span class="kw">type </span>Item = NodeType&lt;<span class="lifetime">&#39;a</span>, G&gt;;
 
-    <span class="doccomment">/// Yields the next node, guarantees nodes are yielded in order as defined by [crate::graph::Graph::cmp_index]</span>
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">index</span>(<span class="ident">i</span>))
+    <span class="doccomment">/// Yields the next node, guarantees nodes are yielded in order as defined by [crate::graph::Graph::cmp_index]
+    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.index.next().map(|i| <span class="self">self</span>.graph.index(i))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GraphQuery</span>: <span class="ident">Iterator</span> {
-    <span class="doccomment">/// Consumes the iterator, used up nodes will be treated as root nodes in given graph</span>
-    <span class="kw">fn</span> <span class="ident">roots_for_graph</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">G</span>) -&gt; <span class="ident">SubGraphs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">G</span>: <span class="ident">Graph</span>,
-        <span class="self">Self</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">G</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sized</span>,
+<span class="kw">pub trait </span>GraphQuery: Iterator {
+    <span class="doccomment">/// Consumes the iterator, used up nodes will be treated as root nodes in given graph
+    </span><span class="kw">fn </span>roots_for_graph&lt;<span class="lifetime">&#39;a</span>, G&gt;(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>G) -&gt; SubGraphs&lt;<span class="lifetime">&#39;a</span>, G&gt;
+    <span class="kw">where
+        </span>G: Graph,
+        <span class="self">Self</span>: Iterator&lt;Item = NodeType&lt;<span class="lifetime">&#39;a</span>, G&gt;&gt; + Sized,
     {
-        <span class="comment">// Simple visit map, all nodes will be only visited once</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">IndexSet::with_capacity_and_hasher</span>(<span class="number">8</span>, <span class="ident">RandomState::default</span>());
-        <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="self">self</span> {
-            <span class="ident">depth_first</span>(<span class="ident">graph</span>, <span class="ident">node</span>.<span class="ident">id</span>(), <span class="kw-2">&amp;mut</span> <span class="op">|</span><span class="ident">i</span><span class="op">|</span> {
-                <span class="kw">if</span> <span class="ident">index</span>.<span class="ident">insert</span>(<span class="ident">i</span>) {
-                    <span class="ident">ControlFlow::Continue</span>(())
-                } <span class="kw">else</span> {
-                    <span class="ident">ControlFlow::Break</span>(())
+        <span class="comment">// Simple visit map, all nodes will be only visited once
+        </span><span class="kw">let </span><span class="kw-2">mut </span>index = IndexSet::with_capacity_and_hasher(<span class="number">8</span>, RandomState::default());
+        <span class="kw">for </span>node <span class="kw">in </span><span class="self">self </span>{
+            depth_first(graph, node.id(), <span class="kw-2">&amp;mut </span>|i| {
+                <span class="kw">if </span>index.insert(i) {
+                    ControlFlow::Continue(())
+                } <span class="kw">else </span>{
+                    ControlFlow::Break(())
                 }
             });
         }
 
-        <span class="comment">// Sort the visit map, as depth_first does not preserve insertion order</span>
-        <span class="ident">index</span>.<span class="ident">sort</span>();
+        <span class="comment">// Sort the visit map, as depth_first does not preserve insertion order
+        </span>index.sort();
 
-        <span class="ident">SubGraphs</span> {
-            <span class="ident">graph</span>,
-            <span class="ident">index</span>: <span class="ident">index</span>.<span class="ident">into_iter</span>(),
+        SubGraphs {
+            graph,
+            index: index.into_iter(),
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&gt;</span> <span class="ident">GraphQuery</span> <span class="kw">for</span> <span class="ident">I</span> {}
+<span class="kw">impl</span>&lt;I: Iterator&gt; GraphQuery <span class="kw">for </span>I {}
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

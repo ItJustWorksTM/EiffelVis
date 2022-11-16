@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_gen/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_gen/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_gen/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_gen/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_gen/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_gen/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_gen/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_gen/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -176,183 +176,183 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
-</pre><pre class="rust"><code><span class="doccomment">//! A library for generating mock eiffel events that actually link back to something.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Glosary</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Which events with what links will be generated is dictated by [event_set::EventSet],</span>
-<span class="doccomment">//! you can view it as the template that is used to stamp out many events.  </span>
-<span class="doccomment">//! To actually generate events an [generator::EventGenerator] is needed with an event set</span>
-<span class="doccomment">//! along with a few more rules such as history limit, max link amount and a random seed.</span>
-<span class="doccomment">//! ```no_run</span>
-<span class="doccomment">//! use eiffelvis_gen::event_set::{EventSet, Link, Event};</span>
-<span class="doccomment">//! use eiffelvis_gen::generator::EventGenerator;</span>
-<span class="doccomment">//! let my_event_set = EventSet::build()</span>
-<span class="doccomment">//!     .add_link(Link::new(&quot;Link0&quot;, false))</span>
-<span class="doccomment">//!     .add_link(Link::new(&quot;Link1&quot;, true))</span>
-<span class="doccomment">//!     .add_event(</span>
-<span class="doccomment">//!        Event::new(&quot;Event&quot;, &quot;1.0.0&quot;)</span>
-<span class="doccomment">//!            .with_link(&quot;Link0&quot;)</span>
-<span class="doccomment">//!            .with_req_link(&quot;Link1&quot;),</span>
-<span class="doccomment">//!     )</span>
-<span class="doccomment">//!     .build()</span>
-<span class="doccomment">//!     .expect(&quot;I reference existing links and events&quot;);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let seed = 123;</span>
-<span class="doccomment">//! let max_links = 5;</span>
-<span class="doccomment">//! let max_history = 100;</span>
-<span class="doccomment">//! let generator = EventGenerator::new(seed, max_links, max_history, my_event_set);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! /// Events can now be iterated over via .iter()</span>
-<span class="doccomment">//! for event in generator.iter().take(100) {</span>
-<span class="doccomment">//!     // Do something!   </span>
-<span class="doccomment">//! }</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//! Do note however that it is a never ending iterator; it only ever returns [None] when an impossible to generate [event_set::EventSet] is given.</span>
-<span class="doccomment">//! Always use in combination with [Iterator::take] if you want to collect it.</span>
-<span class="doccomment">//!</span>
+</pre><pre class="rust"><code><span class="doccomment">//! A library for generating mock eiffel events that actually link back to something.
+//!
+//! ## Glosary
+//!
+//! Which events with what links will be generated is dictated by [event_set::EventSet],
+//! you can view it as the template that is used to stamp out many events.  
+//! To actually generate events an [generator::EventGenerator] is needed with an event set
+//! along with a few more rules such as history limit, max link amount and a random seed.
+//! ```no_run
+//! use eiffelvis_gen::event_set::{EventSet, Link, Event};
+//! use eiffelvis_gen::generator::EventGenerator;
+//! let my_event_set = EventSet::build()
+//!     .add_link(Link::new(&quot;Link0&quot;, false))
+//!     .add_link(Link::new(&quot;Link1&quot;, true))
+//!     .add_event(
+//!        Event::new(&quot;Event&quot;, &quot;1.0.0&quot;)
+//!            .with_link(&quot;Link0&quot;)
+//!            .with_req_link(&quot;Link1&quot;),
+//!     )
+//!     .build()
+//!     .expect(&quot;I reference existing links and events&quot;);
+//!
+//! let seed = 123;
+//! let max_links = 5;
+//! let max_history = 100;
+//! let generator = EventGenerator::new(seed, max_links, max_history, my_event_set);
+//!
+//! /// Events can now be iterated over via .iter()
+//! for event in generator.iter().take(100) {
+//!     // Do something!   
+//! }
+//! ```
+//! Do note however that it is a never ending iterator; it only ever returns [None] when an impossible to generate [event_set::EventSet] is given.
+//! Always use in combination with [Iterator::take] if you want to collect it.
+//!
 
-<span class="doccomment">/// Types that are used to describe Events.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">event_set</span>;
+/// Types that are used to describe Events.
+</span><span class="kw">pub mod </span>event_set;
 
-<span class="doccomment">/// Generator that stamps out events.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">generator</span>;
+<span class="doccomment">/// Generator that stamps out events.
+</span><span class="kw">pub mod </span>generator;
 
-<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">base_event</span>;
+<span class="attribute">#[doc(hidden)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>base_event;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test</span> {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test {
 
-    <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">thread_rng</span>, <span class="ident">Rng</span>};
-    <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
-    <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
+    <span class="kw">use </span>rand::{thread_rng, Rng};
+    <span class="kw">use </span>std::collections::HashMap;
+    <span class="kw">use </span>uuid::Uuid;
 
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::event_set</span>::{<span class="ident">Event</span>, <span class="ident">EventSet</span>, <span class="ident">Link</span>};
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::generator::EventGenerator</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::event_set::{Event, EventSet, Link};
+    <span class="kw">use </span><span class="kw">crate</span>::generator::EventGenerator;
 
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::base_event::BaseEvent</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::base_event::BaseEvent;
 
-    <span class="kw">fn</span> <span class="ident">collect_events</span>(<span class="ident">gen</span>: <span class="kw-2">&amp;</span><span class="ident">EventGenerator</span>, <span class="ident">count</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">gen</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">take</span>(<span class="ident">count</span>)
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">bytes</span><span class="op">|</span> <span class="ident">serde_json::from_slice</span>::<span class="op">&lt;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>).<span class="ident">unwrap</span>())
-            .<span class="ident">collect</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">ret</span>.<span class="ident">len</span>(), <span class="ident">count</span>);
-        <span class="ident">ret</span>
+    <span class="kw">fn </span>collect_events(gen: <span class="kw-2">&amp;</span>EventGenerator, count: usize) -&gt; Vec&lt;BaseEvent&gt; {
+        <span class="kw">let </span>ret: Vec&lt;BaseEvent&gt; = gen
+            .iter()
+            .take(count)
+            .map(|bytes| serde_json::from_slice::&lt;BaseEvent&gt;(<span class="kw-2">&amp;</span>bytes).unwrap())
+            .collect();
+        <span class="macro">assert_eq!</span>(ret.len(), count);
+        ret
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">general</span>() {
-        <span class="kw">let</span> <span class="ident">max_links</span> <span class="op">=</span> <span class="number">20</span>;
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>general() {
+        <span class="kw">let </span>max_links = <span class="number">20</span>;
 
-        <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">EventGenerator::new</span>(
-            <span class="ident">thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>(),
-            <span class="ident">max_links</span>,
-            <span class="ident">usize::MAX</span>,
-            <span class="ident">EventSet::build</span>()
-                .<span class="ident">add_link</span>(<span class="string">&quot;TestLinkNice&quot;</span>)
-                .<span class="ident">add_event</span>(<span class="ident">Event::new</span>(<span class="string">&quot;TestEventNice&quot;</span>, <span class="string">&quot;2.0.0&quot;</span>).<span class="ident">with_link</span>(<span class="string">&quot;TestLinkNice&quot;</span>))
-                .<span class="ident">build</span>()
-                .<span class="ident">unwrap</span>(),
+        <span class="kw">let </span>gen = EventGenerator::new(
+            thread_rng().gen::&lt;usize&gt;(),
+            max_links,
+            usize::MAX,
+            EventSet::build()
+                .add_link(<span class="string">&quot;TestLinkNice&quot;</span>)
+                .add_event(Event::new(<span class="string">&quot;TestEventNice&quot;</span>, <span class="string">&quot;2.0.0&quot;</span>).with_link(<span class="string">&quot;TestLinkNice&quot;</span>))
+                .build()
+                .unwrap(),
         );
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_run</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Uuid</span>, <span class="ident">BaseEvent</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>last_run: <span class="prelude-ty">Option</span>&lt;HashMap&lt;Uuid, BaseEvent&gt;&gt; = <span class="prelude-val">None</span>;
 
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2</span> {
-            <span class="kw">let</span> <span class="ident">event_map</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Uuid</span>, <span class="ident">BaseEvent</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">gen</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">take</span>(<span class="number">100</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">bytes</span><span class="op">|</span> <span class="ident">serde_json::from_slice</span>::<span class="op">&lt;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>).<span class="ident">unwrap</span>())
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">event</span><span class="op">|</span> (<span class="ident">event</span>.<span class="ident">meta</span>.<span class="ident">id</span>, <span class="ident">event</span>))
-                .<span class="ident">collect</span>();
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">2 </span>{
+            <span class="kw">let </span>event_map: HashMap&lt;Uuid, BaseEvent&gt; = gen
+                .iter()
+                .take(<span class="number">100</span>)
+                .map(|bytes| serde_json::from_slice::&lt;BaseEvent&gt;(<span class="kw-2">&amp;</span>bytes).unwrap())
+                .map(|event| (event.meta.id, event))
+                .collect();
 
-            <span class="comment">// Check if we make valid links</span>
-            <span class="kw">for</span> <span class="ident">vec</span> <span class="kw">in</span> <span class="ident">event_map</span>.<span class="ident">values</span>() {
-                <span class="macro">assert!</span>(<span class="ident">vec</span>.<span class="ident">links</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">max_links</span>);
+            <span class="comment">// Check if we make valid links
+            </span><span class="kw">for </span>vec <span class="kw">in </span>event_map.values() {
+                <span class="macro">assert!</span>(vec.links.len() &lt; max_links);
 
-                <span class="kw">for</span> <span class="ident">link</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">vec</span>.<span class="ident">links</span> {
-                    <span class="macro">assert!</span>(<span class="ident">event_map</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">link</span>.<span class="ident">target</span>));
+                <span class="kw">for </span>link <span class="kw">in </span><span class="kw-2">&amp;</span>vec.links {
+                    <span class="macro">assert!</span>(event_map.contains_key(<span class="kw-2">&amp;</span>link.target));
                 }
 
-                <span class="comment">// Check if the links are unique</span>
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">links</span>.<span class="ident">clone</span>();
-                <span class="ident">l</span>.<span class="ident">sort</span>();
-                <span class="ident">l</span>.<span class="ident">dedup</span>();
+                <span class="comment">// Check if the links are unique
+                </span><span class="kw">let </span><span class="kw-2">mut </span>l = vec.links.clone();
+                l.sort();
+                l.dedup();
 
-                <span class="macro">assert_eq!</span>(<span class="ident">vec</span>.<span class="ident">links</span>.<span class="ident">len</span>(), <span class="ident">l</span>.<span class="ident">len</span>());
+                <span class="macro">assert_eq!</span>(vec.links.len(), l.len());
             }
 
-            <span class="comment">// Check if we are reproducable</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">events</span>) <span class="op">=</span> <span class="ident">last_run</span> {
-                <span class="macro">assert!</span>(<span class="ident">events</span>.<span class="ident">keys</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">event_map</span>.<span class="ident">contains_key</span>(<span class="ident">k</span>)));
+            <span class="comment">// Check if we are reproducable
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(events) = last_run {
+                <span class="macro">assert!</span>(events.keys().all(|k| event_map.contains_key(k)));
             }
 
-            <span class="ident">last_run</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">event_map</span>);
+            last_run = <span class="prelude-val">Some</span>(event_map);
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">impossible</span>() {
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">10</span> {
-            <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">EventGenerator::new</span>(
-                <span class="ident">thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>(),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>impossible() {
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
+            <span class="kw">let </span>gen = EventGenerator::new(
+                thread_rng().gen::&lt;usize&gt;(),
                 <span class="number">10</span>,
                 <span class="number">100</span>,
-                <span class="ident">EventSet::build</span>()
-                    .<span class="ident">add_link</span>(<span class="string">&quot;Link&quot;</span>)
-                    .<span class="ident">add_event</span>(<span class="ident">Event::new</span>(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;&quot;</span>).<span class="ident">with_req_link</span>(<span class="string">&quot;Link&quot;</span>))
-                    .<span class="ident">build</span>()
-                    .<span class="ident">unwrap</span>(),
+                EventSet::build()
+                    .add_link(<span class="string">&quot;Link&quot;</span>)
+                    .add_event(Event::new(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;&quot;</span>).with_req_link(<span class="string">&quot;Link&quot;</span>))
+                    .build()
+                    .unwrap(),
             );
-            <span class="macro">assert!</span>(<span class="ident">gen</span>.<span class="ident">iter</span>().<span class="ident">next</span>().<span class="ident">is_none</span>());
+            <span class="macro">assert!</span>(gen.iter().next().is_none());
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">required</span>() {
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">10</span> {
-            <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">EventGenerator::new</span>(
-                <span class="ident">thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>(),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>required() {
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
+            <span class="kw">let </span>gen = EventGenerator::new(
+                thread_rng().gen::&lt;usize&gt;(),
                 <span class="number">10</span>,
                 <span class="number">100</span>,
-                <span class="ident">EventSet::build</span>()
-                    .<span class="ident">add_link</span>(<span class="string">&quot;Link0&quot;</span>)
-                    .<span class="ident">add_link</span>(<span class="ident">Link::new</span>(<span class="string">&quot;Link1&quot;</span>, <span class="bool-val">false</span>))
-                    .<span class="ident">add_link</span>(<span class="ident">Link::new</span>(<span class="string">&quot;Link2&quot;</span>, <span class="bool-val">false</span>))
-                    .<span class="ident">add_event</span>(
-                        <span class="ident">Event::new</span>(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;&quot;</span>)
-                            .<span class="ident">with_link</span>(<span class="string">&quot;Link0&quot;</span>)
-                            .<span class="ident">with_req_link</span>(<span class="string">&quot;Link1&quot;</span>),
+                EventSet::build()
+                    .add_link(<span class="string">&quot;Link0&quot;</span>)
+                    .add_link(Link::new(<span class="string">&quot;Link1&quot;</span>, <span class="bool-val">false</span>))
+                    .add_link(Link::new(<span class="string">&quot;Link2&quot;</span>, <span class="bool-val">false</span>))
+                    .add_event(
+                        Event::new(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;&quot;</span>)
+                            .with_link(<span class="string">&quot;Link0&quot;</span>)
+                            .with_req_link(<span class="string">&quot;Link1&quot;</span>),
                     )
-                    .<span class="ident">add_event</span>(<span class="ident">Event::new</span>(<span class="string">&quot;AnyEvent&quot;</span>, <span class="string">&quot;&quot;</span>).<span class="ident">with_link</span>(<span class="string">&quot;Link2&quot;</span>))
-                    .<span class="ident">build</span>()
-                    .<span class="ident">unwrap</span>(),
+                    .add_event(Event::new(<span class="string">&quot;AnyEvent&quot;</span>, <span class="string">&quot;&quot;</span>).with_link(<span class="string">&quot;Link2&quot;</span>))
+                    .build()
+                    .unwrap(),
             );
-            <span class="kw">let</span> <span class="ident">events</span> <span class="op">=</span> <span class="ident">collect_events</span>(<span class="kw-2">&amp;</span><span class="ident">gen</span>, <span class="number">100</span>);
+            <span class="kw">let </span>events = collect_events(<span class="kw-2">&amp;</span>gen, <span class="number">100</span>);
 
-            <span class="ident">events</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">inspect</span>(<span class="op">|</span><span class="ident">ev</span><span class="op">|</span> {
-                    <span class="macro">assert!</span>(<span class="ident">ev</span>.<span class="ident">links</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">l</span><span class="op">|</span> <span class="ident">l</span>.<span class="ident">link_type</span> <span class="op">==</span> <span class="string">&quot;Link1&quot;</span>).<span class="ident">count</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>);
-                    <span class="macro">assert!</span>(<span class="ident">ev</span>.<span class="ident">links</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">l</span><span class="op">|</span> <span class="ident">l</span>.<span class="ident">link_type</span> <span class="op">==</span> <span class="string">&quot;Link2&quot;</span>).<span class="ident">count</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>);
+            events
+                .iter()
+                .inspect(|ev| {
+                    <span class="macro">assert!</span>(ev.links.iter().filter(|l| l.link_type == <span class="string">&quot;Link1&quot;</span>).count() &lt;= <span class="number">1</span>);
+                    <span class="macro">assert!</span>(ev.links.iter().filter(|l| l.link_type == <span class="string">&quot;Link2&quot;</span>).count() &lt;= <span class="number">1</span>);
                 })
-                .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">ev</span><span class="op">|</span> <span class="ident">ev</span>.<span class="ident">meta</span>.<span class="ident">event_type</span> <span class="op">==</span> <span class="string">&quot;Event&quot;</span>)
-                .<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">ev</span><span class="op">|</span> {
-                    <span class="macro">assert_eq!</span>(<span class="ident">ev</span>.<span class="ident">meta</span>.<span class="ident">event_type</span>, <span class="string">&quot;Event&quot;</span>);
+                .filter(|ev| ev.meta.event_type == <span class="string">&quot;Event&quot;</span>)
+                .for_each(|ev| {
+                    <span class="macro">assert_eq!</span>(ev.meta.event_type, <span class="string">&quot;Event&quot;</span>);
                     <span class="macro">assert!</span>(
-                        <span class="ident">ev</span>.<span class="ident">links</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">l</span><span class="op">|</span> <span class="ident">l</span>.<span class="ident">link_type</span> <span class="op">==</span> <span class="string">&quot;Link1&quot;</span>),
+                        ev.links.iter().any(|l| l.link_type == <span class="string">&quot;Link1&quot;</span>),
                         <span class="string">&quot;Failure: {:#?}&quot;</span>,
-                        <span class="ident">ev</span>
+                        ev
                     );
                 });
 
-            <span class="macro">assert!</span>(<span class="ident">events</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">any</span>(<span class="op">|</span><span class="ident">ev</span><span class="op">|</span> <span class="ident">ev</span>.<span class="ident">links</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">l</span><span class="op">|</span> <span class="ident">l</span>.<span class="ident">link_type</span> <span class="op">!</span><span class="op">=</span> <span class="string">&quot;Link0&quot;</span>)));
+            <span class="macro">assert!</span>(events
+                .iter()
+                .any(|ev| ev.links.iter().all(|l| l.link_type != <span class="string">&quot;Link0&quot;</span>)));
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_gen" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_gen" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

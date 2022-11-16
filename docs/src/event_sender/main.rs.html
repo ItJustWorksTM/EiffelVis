@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tools/event_sender/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../event_sender/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../event_sender/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../event_sender/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tools/event_sender/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../event_sender/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../event_sender/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../event_sender/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -139,146 +139,146 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">fs::File</span>,
-    <span class="ident">io</span>::{<span class="ident">BufRead</span>, <span class="ident">BufReader</span>},
-    <span class="ident">time::Duration</span>,
+</pre><pre class="rust"><code><span class="kw">use </span>std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    time::Duration,
 };
 
-<span class="kw">use</span> <span class="ident">eiffelvis_gen</span>::{
-    <span class="ident">event_set</span>::{<span class="ident">Event</span>, <span class="ident">EventSet</span>, <span class="ident">Link</span>},
-    <span class="ident">generator::EventGenerator</span>,
+<span class="kw">use </span>eiffelvis_gen::{
+    event_set::{Event, EventSet, Link},
+    generator::EventGenerator,
 };
-<span class="kw">use</span> <span class="ident">lapin</span>::{<span class="ident">options</span>::<span class="kw-2">*</span>, <span class="ident">BasicProperties</span>, <span class="ident">Connection</span>, <span class="ident">ConnectionProperties</span>};
+<span class="kw">use </span>lapin::{options::<span class="kw-2">*</span>, BasicProperties, Connection, ConnectionProperties};
 
-<span class="kw">use</span> <span class="ident">clap::Parser</span>;
-<span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">thread_rng</span>, <span class="ident">Rng</span>};
+<span class="kw">use </span>clap::Parser;
+<span class="kw">use </span>rand::{thread_rng, Rng};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>)]</span>
-<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Generates random events and sends them over ampq&quot;</span>)]</span>
-<span class="kw">struct</span> <span class="ident">Cli</span> {
-    <span class="doccomment">/// Total amount of events to be sent (note: multiplied with the `burst` option)</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>, <span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">count</span>: <span class="ident">usize</span>,
+<span class="attribute">#[derive(Parser)]
+#[clap(about = <span class="string">&quot;Generates random events and sends them over ampq&quot;</span>)]
+</span><span class="kw">struct </span>Cli {
+    <span class="doccomment">/// Total amount of events to be sent (note: multiplied with the `burst` option)
+    </span><span class="attribute">#[clap(default_value = <span class="string">&quot;1&quot;</span>, short, long)]
+    </span>count: usize,
 
-    <span class="doccomment">/// URL to amqp server</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;amqp://127.0.0.1:5672/%2f&quot;</span>, <span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">url</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// URL to amqp server
+    </span><span class="attribute">#[clap(default_value = <span class="string">&quot;amqp://127.0.0.1:5672/%2f&quot;</span>, short, long)]
+    </span>url: String,
 
-    <span class="doccomment">/// Ampq exchange to send events to</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;amq.fanout&quot;</span>, <span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">exchange</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// Ampq exchange to send events to
+    </span><span class="attribute">#[clap(default_value = <span class="string">&quot;amq.fanout&quot;</span>, short, long)]
+    </span>exchange: String,
 
-    <span class="doccomment">/// Routing key used for ampq connections</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">routing_key</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// Routing key used for ampq connections
+    </span><span class="attribute">#[clap(short, long)]
+    </span>routing_key: String,
 
-    <span class="doccomment">/// Random seed used to create event data</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
-    <span class="ident">seed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Random seed used to create event data
+    </span><span class="attribute">#[clap(long)]
+    </span>seed: <span class="prelude-ty">Option</span>&lt;usize&gt;,
 
-    <span class="doccomment">/// Time in milliseconds to sleep before emitting a new burst of events</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>, <span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">latency</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// Time in milliseconds to sleep before emitting a new burst of events
+    </span><span class="attribute">#[clap(default_value = <span class="string">&quot;0&quot;</span>, short, long)]
+    </span>latency: usize,
 
-    <span class="doccomment">/// Amount of events to send before introducing another delay (defined with the latency option)</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>, <span class="ident">short</span>, <span class="ident">long</span>)]</span>
-    <span class="ident">burst</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// Amount of events to send before introducing another delay (defined with the latency option)
+    </span><span class="attribute">#[clap(default_value = <span class="string">&quot;1&quot;</span>, short, long)]
+    </span>burst: usize,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
-    <span class="ident">replay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(long)]
+    </span>replay: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="ident">tokio::runtime::Builder::new_current_thread</span>()
-        .<span class="ident">enable_all</span>()
-        .<span class="ident">build</span>()<span class="question-mark">?</span>
-        .<span class="ident">block_on</span>(<span class="ident">app</span>())
+<span class="kw">fn </span>main() -&gt; anyhow::Result&lt;()&gt; {
+    tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()<span class="question-mark">?
+        </span>.block_on(app())
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">app</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">cli</span> <span class="op">=</span> <span class="ident">Cli::from_args</span>();
-    <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">url</span>.<span class="ident">as_str</span>();
+<span class="kw">async fn </span>app() -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>cli = Cli::from_args();
+    <span class="kw">let </span>addr = cli.url.as_str();
 
-    <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="ident">Connection::connect</span>(
-        <span class="ident">addr</span>,
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-        <span class="ident">ConnectionProperties::default</span>()
-            .<span class="ident">with_executor</span>(<span class="ident">tokio_executor_trait::Tokio::current</span>())
-            .<span class="ident">with_reactor</span>(<span class="ident">tokio_reactor_trait::Tokio</span>),
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">unix</span>))]</span>
-        <span class="ident">ConnectionProperties::default</span>().<span class="ident">with_executor</span>(<span class="ident">tokio_executor_trait::Tokio::current</span>()),
+    <span class="kw">let </span>conn = Connection::connect(
+        addr,
+        <span class="attribute">#[cfg(unix)]
+        </span>ConnectionProperties::default()
+            .with_executor(tokio_executor_trait::Tokio::current())
+            .with_reactor(tokio_reactor_trait::Tokio),
+        <span class="attribute">#[cfg(not(unix))]
+        </span>ConnectionProperties::default().with_executor(tokio_executor_trait::Tokio::current()),
     )
     .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="ident">channel_a</span> <span class="op">=</span> <span class="ident">conn</span>.<span class="ident">create_channel</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>channel_a = conn.create_channel().<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="macro">println!</span>(<span class="string">&quot;Connected to broker.&quot;</span>);
 
-    <span class="kw">let</span> <span class="ident">gen</span> <span class="op">=</span> <span class="ident">EventGenerator::new</span>(
-        <span class="ident">cli</span>.<span class="ident">seed</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>()),
+    <span class="kw">let </span>gen = EventGenerator::new(
+        cli.seed.unwrap_or_else(|| thread_rng().gen::&lt;usize&gt;()),
         <span class="number">4</span>,
         <span class="number">8</span>,
-        <span class="ident">EventSet::build</span>()
-            .<span class="ident">add_link</span>(<span class="ident">Link::new</span>(<span class="string">&quot;Link0&quot;</span>, <span class="bool-val">true</span>))
-            .<span class="ident">add_link</span>(<span class="ident">Link::new</span>(<span class="string">&quot;Link1&quot;</span>, <span class="bool-val">true</span>))
-            .<span class="ident">add_event</span>(
-                <span class="ident">Event::new</span>(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;1.0.0&quot;</span>)
-                    .<span class="ident">with_link</span>(<span class="string">&quot;Link0&quot;</span>)
-                    .<span class="ident">with_link</span>(<span class="string">&quot;Link1&quot;</span>),
+        EventSet::build()
+            .add_link(Link::new(<span class="string">&quot;Link0&quot;</span>, <span class="bool-val">true</span>))
+            .add_link(Link::new(<span class="string">&quot;Link1&quot;</span>, <span class="bool-val">true</span>))
+            .add_event(
+                Event::new(<span class="string">&quot;Event&quot;</span>, <span class="string">&quot;1.0.0&quot;</span>)
+                    .with_link(<span class="string">&quot;Link0&quot;</span>)
+                    .with_link(<span class="string">&quot;Link1&quot;</span>),
             )
-            .<span class="ident">build</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;This should work&quot;</span>),
+            .build()
+            .expect(<span class="string">&quot;This should work&quot;</span>),
     );
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">replay_path</span>) <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">replay</span>.<span class="ident">as_ref</span>()
+    <span class="kw">let </span><span class="kw-2">mut </span>iter: Box&lt;<span class="kw">dyn </span>Iterator&lt;Item = Vec&lt;u8&gt;&gt;&gt; = <span class="kw">if let </span><span class="prelude-val">Some</span>(replay_path) = cli.replay.as_ref()
     {
-        <span class="macro">println!</span>(<span class="string">&quot;replaying file \&quot;{}\&quot;&quot;</span>, <span class="ident">replay_path</span>);
-        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="ident">replay_path</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader::new</span>(<span class="ident">file</span>);
+        <span class="macro">println!</span>(<span class="string">&quot;replaying file \&quot;{}\&quot;&quot;</span>, replay_path);
+        <span class="kw">let </span>file = File::open(replay_path)<span class="question-mark">?</span>;
+        <span class="kw">let </span>reader = BufReader::new(file);
 
-        <span class="ident">Box::new</span>(<span class="ident">reader</span>.<span class="ident">lines</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>.<span class="ident">unwrap</span>().<span class="ident">as_bytes</span>().<span class="ident">to_owned</span>()))
-    } <span class="kw">else</span> {
-        <span class="ident">Box::new</span>(<span class="ident">gen</span>.<span class="ident">iter</span>())
+        Box::new(reader.lines().map(|err| err.unwrap().as_bytes().to_owned()))
+    } <span class="kw">else </span>{
+        Box::new(gen.iter())
     };
 
-    <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">count</span> <span class="op">*</span> <span class="ident">cli</span>.<span class="ident">burst</span>;
-    <span class="kw">let</span> <span class="ident">sleep_duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="ident">cli</span>.<span class="ident">latency</span> <span class="kw">as</span> <span class="ident">u64</span>);
+    <span class="kw">let </span>target = cli.count * cli.burst;
+    <span class="kw">let </span>sleep_duration = Duration::from_millis(cli.latency <span class="kw">as </span>u64);
 
     <span class="macro">println!</span>(
         <span class="string">&quot;Sending out ~{} events, {} events every {}ms interval&quot;</span>,
-        <span class="ident">target</span>, <span class="ident">cli</span>.<span class="ident">burst</span>, <span class="ident">cli</span>.<span class="ident">latency</span>
+        target, cli.burst, cli.latency
     );
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sent</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="ident">target</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">taken</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">for</span> <span class="ident">ev</span> <span class="kw">in</span> (<span class="kw-2">&amp;mut</span> <span class="ident">iter</span>).<span class="ident">take</span>(<span class="ident">cli</span>.<span class="ident">burst</span>) {
-            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">channel_a</span>
-                .<span class="ident">basic_publish</span>(
-                    <span class="ident">cli</span>.<span class="ident">exchange</span>.<span class="ident">as_str</span>(),
-                    <span class="ident">cli</span>.<span class="ident">routing_key</span>.<span class="ident">as_str</span>(),
-                    <span class="ident">BasicPublishOptions::default</span>(),
-                    <span class="ident">ev</span>.<span class="ident">as_slice</span>(),
-                    <span class="ident">BasicProperties::default</span>(),
+    <span class="kw">let </span><span class="kw-2">mut </span>sent = <span class="number">0</span>;
+    <span class="kw">for _ in </span><span class="number">0</span>..(target) {
+        <span class="kw">let </span><span class="kw-2">mut </span>taken = <span class="number">0</span>;
+        <span class="kw">for </span>ev <span class="kw">in </span>(<span class="kw-2">&amp;mut </span>iter).take(cli.burst) {
+            <span class="kw">let _ </span>= channel_a
+                .basic_publish(
+                    cli.exchange.as_str(),
+                    cli.routing_key.as_str(),
+                    BasicPublishOptions::default(),
+                    ev.as_slice(),
+                    BasicProperties::default(),
                 )
-                .<span class="kw">await</span><span class="question-mark">?</span>
-                .<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="ident">taken</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                .<span class="kw">await</span><span class="question-mark">?
+                </span>.<span class="kw">await</span><span class="question-mark">?</span>;
+            taken += <span class="number">1</span>;
         }
-        <span class="kw">if</span> <span class="ident">cli</span>.<span class="ident">burst</span> <span class="op">&gt;</span> <span class="ident">taken</span> {
+        <span class="kw">if </span>cli.burst &gt; taken {
             <span class="macro">println!</span>(<span class="string">&quot;Exhausted source, stopping early!&quot;</span>);
             <span class="kw">break</span>;
         }
-        <span class="ident">sent</span> <span class="op">+</span><span class="op">=</span> <span class="ident">taken</span>;
-        <span class="kw">if</span> <span class="ident">sleep_duration</span>.<span class="ident">as_millis</span>() <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="ident">tokio::time::sleep</span>(<span class="ident">sleep_duration</span>).<span class="kw">await</span>;
+        sent += taken;
+        <span class="kw">if </span>sleep_duration.as_millis() &gt; <span class="number">0 </span>{
+            tokio::time::sleep(sleep_duration).<span class="kw">await</span>;
         }
     }
 
-    <span class="macro">println!</span>(<span class="string">&quot;Done, sent {} events&quot;</span>, <span class="ident">sent</span>);
+    <span class="macro">println!</span>(<span class="string">&quot;Done, sent {} events&quot;</span>, sent);
 
     <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="event_sender" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="event_sender" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

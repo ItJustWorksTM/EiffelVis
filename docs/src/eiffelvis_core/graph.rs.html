@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/graph.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>graph.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_core/src/graph.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>graph.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_core/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -127,134 +127,134 @@
 <span id="127">127</span>
 <span id="128">128</span>
 <span id="129">129</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::ops::RangeBounds</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::ops::RangeBounds;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Key</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span> {}
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Idx</span>:
-    <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialOrd</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span>
+<span class="kw">pub trait </span>Key: PartialEq + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send {}
+<span class="kw">pub trait </span>Idx:
+    PartialEq + Eq + PartialOrd + Ord + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send
 {
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Idx</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">PartialOrd</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Send</span>
+<span class="kw">impl</span>&lt;T&gt; Idx <span class="kw">for </span>T <span class="kw">where
+    </span>T: PartialEq + PartialOrd + Ord + Eq + Copy + Clone + std::fmt::Debug + std::hash::Hash + Send
 {
 }
 
-<span class="doccomment">/// Meta graph trait, defines the base types of a graph such as key and data types</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Meta</span> {
-    <span class="kw">type</span> <span class="ident">Idx</span>: <span class="ident">Idx</span>;
-    <span class="kw">type</span> <span class="ident">Key</span>: <span class="ident">Key</span>;
-    <span class="kw">type</span> <span class="ident">Data</span>;
-    <span class="kw">type</span> <span class="ident">EdgeData</span>;
+<span class="doccomment">/// Meta graph trait, defines the base types of a graph such as key and data types
+</span><span class="kw">pub trait </span>Meta {
+    <span class="kw">type </span>Idx: Idx;
+    <span class="kw">type </span>Key: Key;
+    <span class="kw">type </span>Data;
+    <span class="kw">type </span>EdgeData;
 }
 
-<span class="doccomment">/// Main graph trait</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Graph</span>:
-    <span class="ident">Meta</span> <span class="op">+</span> <span class="ident">ItemIter</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Idx</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Key</span><span class="op">&gt;</span>
+<span class="doccomment">/// Main graph trait
+</span><span class="kw">pub trait </span>Graph:
+    Meta + ItemIter + Indexable&lt;&lt;<span class="self">Self </span><span class="kw">as </span>Meta&gt;::Idx&gt; + Indexable&lt;&lt;<span class="self">Self </span><span class="kw">as </span>Meta&gt;::Key&gt;
 {
-    <span class="doccomment">/// Returns the total amount of nodes this graph holds</span>
-    <span class="kw">fn</span> <span class="ident">node_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
+    <span class="doccomment">/// Returns the total amount of nodes this graph holds
+    </span><span class="kw">fn </span>node_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
-    <span class="doccomment">/// Creates a new edge with given data without any edges</span>
-    <span class="kw">fn</span> <span class="ident">add_node</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident"><span class="self">Self</span>::Key</span>, <span class="ident">data</span>: <span class="ident"><span class="self">Self</span>::Data</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Idx</span><span class="op">&gt;</span>;
+    <span class="doccomment">/// Creates a new edge with given data without any edges
+    </span><span class="kw">fn </span>add_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key, data: <span class="self">Self</span>::Data) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Idx&gt;;
 
-    <span class="doccomment">/// Creates a new edge between a and b with given edge data</span>
-    <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident"><span class="self">Self</span>::Key</span>, <span class="ident">b</span>: <span class="ident"><span class="self">Self</span>::Key</span>, <span class="ident">data</span>: <span class="ident"><span class="self">Self</span>::EdgeData</span>);
+    <span class="doccomment">/// Creates a new edge between a and b with given edge data
+    </span><span class="kw">fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="self">Self</span>::Key, b: <span class="self">Self</span>::Key, data: <span class="self">Self</span>::EdgeData);
 
-    <span class="doccomment">/// Convenience function, implemented in terms of [Graph::add_node] and [Graph::add_edge]</span>
-    <span class="kw">fn</span> <span class="ident">add_node_with_edges</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">key</span>: <span class="ident"><span class="self">Self</span>::Key</span>,
-        <span class="ident">data</span>: <span class="ident"><span class="self">Self</span>::Data</span>,
-        <span class="ident">edges</span>: <span class="ident">I</span>,
-    ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Idx</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident"><span class="self">Self</span>::Key</span>, <span class="ident"><span class="self">Self</span>::EdgeData</span>)<span class="op">&gt;</span>,
+    <span class="doccomment">/// Convenience function, implemented in terms of [Graph::add_node] and [Graph::add_edge]
+    </span><span class="kw">fn </span>add_node_with_edges&lt;I&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        key: <span class="self">Self</span>::Key,
+        data: <span class="self">Self</span>::Data,
+        edges: I,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Idx&gt;
+    <span class="kw">where
+        </span>I: Iterator&lt;Item = (<span class="self">Self</span>::Key, <span class="self">Self</span>::EdgeData)&gt;,
     {
-        <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">add_node</span>(<span class="ident">key</span>, <span class="ident">data</span>);
-        <span class="kw">if</span> <span class="ident">id</span>.<span class="ident">is_some</span>() {
-            <span class="kw">for</span> (<span class="ident">target</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="ident">edges</span> {
-                <span class="self">self</span>.<span class="ident">add_edge</span>(<span class="ident">key</span>, <span class="ident">target</span>, <span class="ident">data</span>);
+        <span class="kw">let </span>id = <span class="self">self</span>.add_node(key, data);
+        <span class="kw">if </span>id.is_some() {
+            <span class="kw">for </span>(target, data) <span class="kw">in </span>edges {
+                <span class="self">self</span>.add_edge(key, target, data);
             }
         }
-        <span class="ident">id</span>
+        id
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span>: <span class="ident">Meta</span> {
-    <span class="kw">type</span> <span class="ident">NodeType</span>: <span class="ident">Item</span><span class="op">&lt;</span>
+<span class="kw">pub trait </span>HasNode&lt;<span class="lifetime">&#39;a</span>, _Outlives = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt;: Meta {
+    <span class="kw">type </span>NodeType: Item&lt;
         <span class="lifetime">&#39;a</span>,
-        <span class="ident">Data</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Data</span>,
-        <span class="ident">EdgeData</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::EdgeData</span>,
-        <span class="ident">Idx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Meta</span><span class="op">&gt;</span><span class="ident">::Idx</span>,
-    <span class="op">&gt;</span>;
+        Data = &lt;<span class="self">Self </span><span class="kw">as </span>Meta&gt;::Data,
+        EdgeData = &lt;<span class="self">Self </span><span class="kw">as </span>Meta&gt;::EdgeData,
+        Idx = &lt;<span class="self">Self </span><span class="kw">as </span>Meta&gt;::Idx,
+    &gt;;
 }
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeType</span>;
+<span class="kw">pub type </span>NodeType&lt;<span class="lifetime">&#39;a</span>, This&gt; = &lt;This <span class="kw">as </span>HasNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;::NodeType;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Item</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident"><span class="self">Self</span>::Data</span>: <span class="lifetime">&#39;a</span>,
-    <span class="ident"><span class="self">Self</span>::EdgeData</span>: <span class="lifetime">&#39;a</span>,
+<span class="kw">pub trait </span>Item&lt;<span class="lifetime">&#39;a</span>&gt;
+<span class="kw">where
+    </span><span class="self">Self</span>::Data: <span class="lifetime">&#39;a</span>,
+    <span class="self">Self</span>::EdgeData: <span class="lifetime">&#39;a</span>,
 {
-    <span class="kw">type</span> <span class="ident">Data</span>;
-    <span class="kw">type</span> <span class="ident">EdgeData</span>;
-    <span class="kw">type</span> <span class="ident">Idx</span>;
+    <span class="kw">type </span>Data;
+    <span class="kw">type </span>EdgeData;
+    <span class="kw">type </span>Idx;
 
-    <span class="doccomment">/// Returns the data associated with this node</span>
-    <span class="kw">fn</span> <span class="ident">data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Data</span>;
+    <span class="doccomment">/// Returns the data associated with this node
+    </span><span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Data;
 
-    <span class="doccomment">/// Returns the id associated with this node</span>
-    <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Idx</span>;
+    <span class="doccomment">/// Returns the id associated with this node
+    </span><span class="kw">fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Idx;
 
-    <span class="kw">type</span> <span class="ident">EdgeItem</span>: <span class="ident">ItemEdge</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">EdgeData</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::EdgeData</span>, <span class="ident">Idx</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Idx</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">EdgeIterator</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::EdgeItem</span><span class="op">&gt;</span>;
+    <span class="kw">type </span>EdgeItem: ItemEdge&lt;<span class="lifetime">&#39;a</span>, EdgeData = <span class="self">Self</span>::EdgeData, Idx = <span class="self">Self</span>::Idx&gt;;
+    <span class="kw">type </span>EdgeIterator: Iterator&lt;Item = <span class="self">Self</span>::EdgeItem&gt;;
 
-    <span class="doccomment">/// Returns an iterator over the edges this node has</span>
-    <span class="kw">fn</span> <span class="ident">edges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EdgeIterator</span>;
+    <span class="doccomment">/// Returns an iterator over the edges this node has
+    </span><span class="kw">fn </span>edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EdgeIterator;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ItemEdge</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident"><span class="self">Self</span>::EdgeData</span>: <span class="lifetime">&#39;a</span>,
+<span class="kw">pub trait </span>ItemEdge&lt;<span class="lifetime">&#39;a</span>&gt;
+<span class="kw">where
+    </span><span class="self">Self</span>::EdgeData: <span class="lifetime">&#39;a</span>,
 {
-    <span class="kw">type</span> <span class="ident">EdgeData</span>;
-    <span class="kw">type</span> <span class="ident">Idx</span>;
+    <span class="kw">type </span>EdgeData;
+    <span class="kw">type </span>Idx;
 
-    <span class="doccomment">/// Returns the data associated with this edge</span>
-    <span class="kw">fn</span> <span class="ident">data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::EdgeData</span>;
+    <span class="doccomment">/// Returns the data associated with this edge
+    </span><span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::EdgeData;
 
-    <span class="doccomment">/// Returns the index of the node this edge targets</span>
-    <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Idx</span>;
+    <span class="doccomment">/// Returns the index of the node this edge targets
+    </span><span class="kw">fn </span>target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Idx;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Item</span>;
-    <span class="kw">type</span> <span class="ident">NodeIterType</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
+<span class="kw">pub trait </span>HasNodeIter&lt;<span class="lifetime">&#39;a</span>, _Outlives = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt; {
+    <span class="kw">type </span>Item;
+    <span class="kw">type </span>NodeIterType: Iterator&lt;Item = <span class="self">Self</span>::Item&gt;;
 }
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeIterType</span>;
+<span class="kw">pub type </span>NodeIterType&lt;<span class="lifetime">&#39;a</span>, This&gt; = &lt;This <span class="kw">as </span>HasNodeIter&lt;<span class="lifetime">&#39;a</span>&gt;&gt;::NodeIterType;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">_Outlives</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Item</span>;
-    <span class="kw">type</span> <span class="ident">NodeRangeIterType</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
+<span class="kw">pub trait </span>HasNodeRangeIter&lt;<span class="lifetime">&#39;a</span>, _Outlives = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt; {
+    <span class="kw">type </span>Item;
+    <span class="kw">type </span>NodeRangeIterType: Iterator&lt;Item = <span class="self">Self</span>::Item&gt;;
 }
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeRangeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">This</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">This</span> <span class="kw">as</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NodeRangeIterType</span>;
+<span class="kw">pub type </span>NodeRangeIterType&lt;<span class="lifetime">&#39;a</span>, This&gt; = &lt;This <span class="kw">as </span>HasNodeRangeIter&lt;<span class="lifetime">&#39;a</span>&gt;&gt;::NodeRangeIterType;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ItemIter</span>:
-    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNodeRangeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>
-    <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNodeIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Item</span> <span class="op">=</span> <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>
-    <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>
+<span class="kw">pub trait </span>ItemIter:
+    <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; HasNodeRangeIter&lt;<span class="lifetime">&#39;a</span>, Item = NodeType&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; HasNodeIter&lt;<span class="lifetime">&#39;a</span>, Item = NodeType&lt;<span class="lifetime">&#39;a</span>, <span class="self">Self</span>&gt;&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; HasNode&lt;<span class="lifetime">&#39;a</span>&gt;
 {
-    <span class="kw">fn</span> <span class="ident">items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">NodeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>items(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; NodeIterType&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;;
 
-    <span class="kw">fn</span> <span class="ident">range</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">R</span>) -&gt; <span class="ident">NodeRangeIterType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">R</span>: <span class="ident">RangeBounds</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Idx</span><span class="op">&gt;</span>;
+    <span class="kw">fn </span>range&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; NodeRangeIterType&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span>R: RangeBounds&lt;<span class="self">Self</span>::Idx&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Indexable</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">HasNode</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">T</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">T</span>) -&gt; <span class="ident">NodeType</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">get</span>(<span class="ident">id</span>).<span class="ident">unwrap</span>()
+<span class="kw">pub trait </span>Indexable&lt;T&gt;: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; HasNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, id: T) -&gt; <span class="prelude-ty">Option</span>&lt;NodeType&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt;&gt;;
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, id: T) -&gt; NodeType&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>&gt; {
+        <span class="self">self</span>.get(id).unwrap()
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_core" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

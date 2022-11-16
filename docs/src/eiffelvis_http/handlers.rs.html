@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_http/src/handlers.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>handlers.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_http/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/eiffelvis_http/src/handlers.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>handlers.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../eiffelvis_http/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../eiffelvis_http/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -123,123 +123,123 @@
 <span id="123">123</span>
 <span id="124">124</span>
 <span id="125">125</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">serde::Serialize</span>;
+</pre><pre class="rust"><code><span class="kw">use crate</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span>serde::Serialize;
 
-<span class="kw">use</span> <span class="ident">axum</span>::{
-    <span class="ident">body::Full</span>,
-    <span class="ident">extract</span>::{
-        <span class="ident">ws</span>::{<span class="ident">Message</span>, <span class="ident">WebSocketUpgrade</span>},
-        <span class="ident">Extension</span>, <span class="ident">Path</span>, <span class="ident">TypedHeader</span>,
+<span class="kw">use </span>axum::{
+    body::Full,
+    extract::{
+        ws::{Message, WebSocketUpgrade},
+        Extension, Path, TypedHeader,
     },
-    <span class="ident">http::StatusCode</span>,
-    <span class="ident">response::IntoResponse</span>,
-    <span class="ident">Json</span>,
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
 };
 
-<span class="kw">use</span> <span class="ident">eiffelvis_core::domain</span>::{
-    <span class="ident">types::LeanEvent</span>,
-    <span class="ident">user_queries</span>::{<span class="ident">Query</span>, <span class="ident">TrackedQuery</span>},
+<span class="kw">use </span>eiffelvis_core::domain::{
+    types::LeanEvent,
+    user_queries::{Query, TrackedQuery},
 };
-<span class="kw">use</span> <span class="ident">hyper::Response</span>;
+<span class="kw">use </span>hyper::Response;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">make_service</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(<span class="ident">app</span>: <span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">Router</span> {
-    <span class="ident">Router::new</span>()
-        .<span class="ident">route</span>(<span class="string">&quot;/&quot;</span>, <span class="ident">get</span>(<span class="ident">event_dump</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
-        .<span class="ident">route</span>(<span class="string">&quot;/get_event/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">get_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
-        .<span class="ident">route</span>(<span class="string">&quot;/events_with_root/:id&quot;</span>, <span class="ident">get</span>(<span class="ident">events_with_root</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
-        .<span class="ident">route</span>(<span class="string">&quot;/ws&quot;</span>, <span class="ident">get</span>(<span class="ident">establish_websocket</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>))
-        .<span class="ident">layer</span>(<span class="ident">CorsLayer::new</span>().<span class="ident">allow_origin</span>(<span class="ident">Any</span>).<span class="ident">allow_methods</span>(<span class="ident">Any</span>))
-        .<span class="ident">layer</span>(<span class="ident">Extension</span>(<span class="ident">app</span>))
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>make_service&lt;T: EiffelVisHttpApp&gt;(app: App&lt;T&gt;) -&gt; Router {
+    Router::new()
+        .route(<span class="string">&quot;/&quot;</span>, get(event_dump::&lt;T&gt;))
+        .route(<span class="string">&quot;/get_event/:id&quot;</span>, get(get_event::&lt;T&gt;))
+        .route(<span class="string">&quot;/events_with_root/:id&quot;</span>, get(events_with_root::&lt;T&gt;))
+        .route(<span class="string">&quot;/ws&quot;</span>, get(establish_websocket::&lt;T&gt;))
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
+        .layer(Extension(app))
 }
 
-<span class="doccomment">/// Dumps the entire event store into a json array</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">event_dump</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(
-    <span class="ident">Extension</span>(<span class="ident">app</span>): <span class="ident">Extension</span><span class="op">&lt;</span><span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="kw">impl</span> <span class="ident">IntoResponse</span> {
-    <span class="kw">let</span> <span class="ident">lk</span> <span class="op">=</span> <span class="ident">app</span>.<span class="ident">read</span>().<span class="kw">await</span>;
+<span class="doccomment">/// Dumps the entire event store into a json array
+</span><span class="kw">pub async fn </span>event_dump&lt;T: EiffelVisHttpApp&gt;(
+    Extension(app): Extension&lt;App&lt;T&gt;&gt;,
+) -&gt; <span class="kw">impl </span>IntoResponse {
+    <span class="kw">let </span>lk = app.read().<span class="kw">await</span>;
 
-    <span class="kw">let</span> <span class="ident">dump</span> <span class="op">=</span> <span class="ident">lk</span>.<span class="ident">dump</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span>();
+    <span class="kw">let </span>dump = lk.dump::&lt;<span class="kw-2">&amp;</span>BaseEvent&gt;();
 
-    <span class="ident">Json</span>(<span class="kw-2">&amp;</span><span class="ident">dump</span>).<span class="ident">into_response</span>()
+    Json(<span class="kw-2">&amp;</span>dump).into_response()
 }
 
-<span class="doccomment">/// Returns full event that belongs to given uuid</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(
-    <span class="ident">Path</span>(<span class="ident">find_id</span>): <span class="ident">Path</span><span class="op">&lt;</span><span class="ident">Uuid</span><span class="op">&gt;</span>,
-    <span class="ident">Extension</span>(<span class="ident">app</span>): <span class="ident">Extension</span><span class="op">&lt;</span><span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="kw">impl</span> <span class="ident">IntoResponse</span> {
-    <span class="kw">let</span> <span class="ident">lk</span> <span class="op">=</span> <span class="ident">app</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">event</span>) <span class="op">=</span> <span class="ident">lk</span>.<span class="ident">get_event</span>(<span class="ident">find_id</span>) {
-        <span class="ident">Json</span>(<span class="ident">event</span>).<span class="ident">into_response</span>()
-    } <span class="kw">else</span> {
-        <span class="ident">Response::builder</span>()
-            .<span class="ident">status</span>(<span class="ident">StatusCode::NOT_FOUND</span>)
-            .<span class="ident">body</span>(<span class="ident">Full::default</span>())
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">into_response</span>()
+<span class="doccomment">/// Returns full event that belongs to given uuid
+</span><span class="kw">pub async fn </span>get_event&lt;T: EiffelVisHttpApp&gt;(
+    Path(find_id): Path&lt;Uuid&gt;,
+    Extension(app): Extension&lt;App&lt;T&gt;&gt;,
+) -&gt; <span class="kw">impl </span>IntoResponse {
+    <span class="kw">let </span>lk = app.read().<span class="kw">await</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = lk.get_event(find_id) {
+        Json(event).into_response()
+    } <span class="kw">else </span>{
+        Response::builder()
+            .status(StatusCode::NOT_FOUND)
+            .body(Full::default())
+            .unwrap()
+            .into_response()
     }
 }
 
-<span class="doccomment">/// Returns the sub-graph for given id</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">events_with_root</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(
-    <span class="ident">Path</span>(<span class="ident">find_id</span>): <span class="ident">Path</span><span class="op">&lt;</span><span class="ident">Uuid</span><span class="op">&gt;</span>,
-    <span class="ident">Extension</span>(<span class="ident">app</span>): <span class="ident">Extension</span><span class="op">&lt;</span><span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="kw">impl</span> <span class="ident">IntoResponse</span> {
-    <span class="kw">let</span> <span class="ident">lk</span> <span class="op">=</span> <span class="ident">app</span>.<span class="ident">read</span>().<span class="kw">await</span>;
-    <span class="ident">Json</span>(<span class="ident">lk</span>.<span class="ident">get_subgraph_with_roots</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">BaseEvent</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="ident">find_id</span>])).<span class="ident">into_response</span>()
+<span class="doccomment">/// Returns the sub-graph for given id
+</span><span class="kw">pub async fn </span>events_with_root&lt;T: EiffelVisHttpApp&gt;(
+    Path(find_id): Path&lt;Uuid&gt;,
+    Extension(app): Extension&lt;App&lt;T&gt;&gt;,
+) -&gt; <span class="kw">impl </span>IntoResponse {
+    <span class="kw">let </span>lk = app.read().<span class="kw">await</span>;
+    Json(lk.get_subgraph_with_roots::&lt;<span class="kw-2">&amp;</span>BaseEvent&gt;(<span class="kw-2">&amp;</span>[find_id])).into_response()
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">QueryRes</span> {
-    <span class="ident">repr</span>: <span class="ident">String</span>,
-    <span class="ident">error</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, Serialize)]
+</span><span class="kw">struct </span>QueryRes {
+    repr: String,
+    error: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
-<span class="doccomment">/// Establishes a websocket with the client,</span>
-<span class="doccomment">/// [Query] in json format is expected to be send by the client</span>
-<span class="doccomment">/// Backend will then use a [TrackedQuery] to gradually send results.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">establish_websocket</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">EiffelVisHttpApp</span><span class="op">&gt;</span>(
-    <span class="ident">Extension</span>(<span class="ident">app</span>): <span class="ident">Extension</span><span class="op">&lt;</span><span class="ident">App</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">ws</span>: <span class="ident">WebSocketUpgrade</span>,
-    <span class="ident">user_agent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TypedHeader</span><span class="op">&lt;</span><span class="ident">headers::UserAgent</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="kw">impl</span> <span class="ident">IntoResponse</span> {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">TypedHeader</span>(<span class="ident">user_agent</span>)) <span class="op">=</span> <span class="ident">user_agent</span> {
-        <span class="macro">println!</span>(<span class="string">&quot;`{}` connected to websocket&quot;</span>, <span class="ident">user_agent</span>.<span class="ident">as_str</span>());
+<span class="doccomment">/// Establishes a websocket with the client,
+/// [Query] in json format is expected to be send by the client
+/// Backend will then use a [TrackedQuery] to gradually send results.
+</span><span class="kw">pub async fn </span>establish_websocket&lt;T: EiffelVisHttpApp&gt;(
+    Extension(app): Extension&lt;App&lt;T&gt;&gt;,
+    ws: WebSocketUpgrade,
+    user_agent: <span class="prelude-ty">Option</span>&lt;TypedHeader&lt;headers::UserAgent&gt;&gt;,
+) -&gt; <span class="kw">impl </span>IntoResponse {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(TypedHeader(user_agent)) = user_agent {
+        <span class="macro">println!</span>(<span class="string">&quot;`{}` connected to websocket&quot;</span>, user_agent.as_str());
     }
 
-    <span class="ident">ws</span>.<span class="ident">on_upgrade</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">socket</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interval</span> <span class="op">=</span> <span class="ident">tokio::time::interval</span>(<span class="ident">std::time::Duration::from_millis</span>(<span class="number">500</span>));
+    ws.on_upgrade(<span class="kw">move </span>|<span class="kw-2">mut </span>socket| <span class="kw">async move </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>interval = tokio::time::interval(std::time::Duration::from_millis(<span class="number">500</span>));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req_handler</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TrackedQuery</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>req_handler: <span class="prelude-ty">Option</span>&lt;TrackedQuery&lt;<span class="kw">_</span>&gt;&gt; = <span class="prelude-val">None</span>;
 
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(()) <span class="op">=</span> <span class="macro">tokio::select!</span> {
-            <span class="ident">usr</span> <span class="op">=</span> <span class="ident">socket</span>.<span class="ident">recv</span>() =&gt; {
-                <span class="kw">match</span> <span class="ident">usr</span> {
-                    <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">Message::Text</span>(<span class="kw-2">ref</span> <span class="ident">msg</span>))) =&gt; {
-                        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">serde_json::from_str</span>::<span class="op">&lt;</span><span class="ident">Query</span><span class="op">&gt;</span>(<span class="ident">msg</span>) {
-                            <span class="prelude-val">Ok</span>(<span class="ident">rq</span>) =&gt; {
-                                <span class="ident">req_handler</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">TrackedQuery::new</span>(<span class="ident">rq</span>));
-                                <span class="prelude-val">None</span>
-                            },
-                            <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">err</span>))
+        <span class="kw">while let </span><span class="prelude-val">Ok</span>(()) = <span class="macro">tokio::select! </span>{
+            usr = socket.recv() =&gt; {
+                <span class="kw">match </span>usr {
+                    <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Message::Text(<span class="kw-2">ref </span>msg))) =&gt; {
+                        <span class="kw">let </span>res = <span class="kw">match </span>serde_json::from_str::&lt;Query&gt;(msg) {
+                            <span class="prelude-val">Ok</span>(rq) =&gt; {
+                                req_handler = <span class="prelude-val">Some</span>(TrackedQuery::new(rq));
+                                <span class="prelude-val">None
+                            </span>},
+                            <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, err))
                         };
-                        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">QueryRes</span> { <span class="ident">repr</span>: <span class="ident">msg</span>.<span class="ident">clone</span>(), <span class="ident">error</span>: <span class="ident">res</span> };
-                        <span class="macro">println!</span>(<span class="string">&quot;Request {:?}&quot;</span>, <span class="ident">res</span>);
-                        <span class="ident">socket</span>.<span class="ident">send</span>(<span class="ident">Message::Text</span>(<span class="ident">serde_json::to_string</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>).<span class="ident">unwrap</span>())).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+                        <span class="kw">let </span>res = QueryRes { repr: msg.clone(), error: res };
+                        <span class="macro">println!</span>(<span class="string">&quot;Request {:?}&quot;</span>, res);
+                        socket.send(Message::Text(serde_json::to_string(<span class="kw-2">&amp;</span>res).unwrap())).<span class="kw">await</span>.map_err(|<span class="kw">_</span>| ())
                     },
-                    <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(())
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(())
                 }
             },
-            <span class="kw">_</span> <span class="op">=</span> <span class="ident">interval</span>.<span class="ident">tick</span>() =&gt; {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">handler</span>) <span class="op">=</span> <span class="ident">req_handler</span>.<span class="ident">as_mut</span>() {
-                    <span class="kw">let</span> <span class="ident">events</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LeanEvent</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">handler</span>.<span class="ident">handle</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">app</span>.<span class="ident">read</span>().<span class="kw">await</span>);
-                    <span class="kw">if</span> <span class="op">!</span><span class="ident">events</span>.<span class="ident">is_empty</span>() {
-                        <span class="ident">socket</span>.<span class="ident">send</span>(<span class="ident">Message::Text</span>(<span class="ident">serde_json::to_string</span>(<span class="kw-2">&amp;</span><span class="ident">events</span>).<span class="ident">unwrap</span>())).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
-                    } <span class="kw">else</span> {
+            <span class="kw">_ </span>= interval.tick() =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(handler) = req_handler.as_mut() {
+                    <span class="kw">let </span>events: Vec&lt;LeanEvent&gt; = handler.handle(<span class="kw-2">&amp;*</span>app.read().<span class="kw">await</span>);
+                    <span class="kw">if </span>!events.is_empty() {
+                        socket.send(Message::Text(serde_json::to_string(<span class="kw-2">&amp;</span>events).unwrap())).<span class="kw">await</span>.map_err(|<span class="kw">_</span>| ())
+                    } <span class="kw">else </span>{
                         <span class="prelude-val">Ok</span>(())
                     }
-                } <span class="kw">else</span> {
+                } <span class="kw">else </span>{
                     <span class="prelude-val">Ok</span>(())
                 }
             }
@@ -249,4 +249,4 @@
     })
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_http" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="eiffelvis_http" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
