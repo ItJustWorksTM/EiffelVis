@@ -320,6 +320,7 @@
       {selected_node}
       {graph_options}
       {styles}
+      {show_filter_panel}
     />
     <!-- Graph with listeners -->
     <G6Graph
