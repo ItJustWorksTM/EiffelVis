@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["event_set","Types that are used to describe Events."],["generator","Generator that stamps out events."]]};
+window.SIDEBAR_ITEMS = {"mod":[["eiffel_vocabulary","Vocabulary used to create eiffel events."],["event_set","Types that are used to describe Events."],["generator","Generator that stamps out events."]]};
