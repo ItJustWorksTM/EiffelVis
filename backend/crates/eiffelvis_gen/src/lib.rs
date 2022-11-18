@@ -40,6 +40,9 @@ pub mod event_set;
 /// Generator that stamps out events.
 pub mod generator;
 
+/// Vocabulary used to create eiffel events.
+pub mod eiffel_vocabulary;
+
 #[doc(hidden)]
 pub(crate) mod base_event;
 
