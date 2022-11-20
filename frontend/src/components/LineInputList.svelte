@@ -1,6 +1,11 @@
 <script lang="ts">
+<<<<<<< HEAD
     export let values = [];
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
+=======
+
+    export let values;
+>>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 </script>
 
 <div class="form-control">
@@ -32,6 +37,7 @@
                         bind:value={value.value}
                         class="input input-sm input-bordered flex-1 w-40"
                     />
+<<<<<<< HEAD
                 </td>
             </tr>
             <tr>
@@ -89,4 +95,11 @@
             </tr>
         {/each}
     </table>
+=======
+                </svg>
+            </button>
+            <slot index={i}></slot>
+        </div>
+    {/each}
+>>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 </div>

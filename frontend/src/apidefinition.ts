@@ -33,12 +33,15 @@ export const string_compare_eq = (lhs: StringCompare, rhs: StringCompare) =>
 
 export const string_compare_default = (): StringCompare => { return { value: "", lower_case: false, partial: false } }
 
+<<<<<<< HEAD
 export interface StringCompare {
   lower_case: boolean,
   partial: boolean,
   value: string,
 }
 
+=======
+>>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 export type Type = TypeTag<'Type', {
   names: StringCompare[]
 }>
