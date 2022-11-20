@@ -1,6 +1,6 @@
 <script lang="ts">
+
     export let values;
-    export let placeholder;
 </script>
 
 <div class="form-control">
@@ -27,12 +27,7 @@
                     />
                 </svg>
             </button>
-            <input
-                type="text"
-                {placeholder}
-                bind:value
-                class="input input-sm input-bordered basis-full"
-            />
+            <slot index={i}></slot>
         </div>
     {/each}
 </div>
