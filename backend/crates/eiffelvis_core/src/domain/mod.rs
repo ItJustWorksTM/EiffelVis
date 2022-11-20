@@ -12,3 +12,6 @@ pub mod types;
 
 /// Query types and functions to acquire specific data from an [EiffelGraph]
 pub mod user_queries;
+
+/// Provides single node filtering.
+pub mod event_filter;
