@@ -17,20 +17,33 @@ export interface Event {
   edges: Array<Uuid>
 }
 
+export interface StringCompare {
+  lower_case: boolean,
+  partial: boolean,
+  value: string,
+}
+
+export const string_compare_eq = (lhs: StringCompare, rhs: StringCompare) =>
+  lhs.value == rhs.value &&
+  lhs.lower_case == rhs.lower_case &&
+  lhs.partial == rhs.partial
+
+export const string_compare_default = (): StringCompare => { return { value: "", lower_case: false, partial: false } }
+
 export type Type = TypeTag<'Type', {
-  names: string[]
+  names: StringCompare[]
 }>
 
 export type SourceHost = TypeTag<'SourceHost', {
-  hosts: string[]
+  hosts: StringCompare[]
 }>
 
 export type SourceName = TypeTag<'SourceName', {
-  names: string[]
+  names: StringCompare[]
 }>
 
 export type Tag = TypeTag<'Tag', {
-  tags: string[]
+  tags: StringCompare[]
 }>
 
 export type Id = TypeTag<'Id', {
@@ -41,13 +54,12 @@ export type EventFilterType = Type | Id | SourceHost | SourceName | Tag
 export const event_filter_type_eq = (lhs: EventFilterType, rhs: EventFilterType) =>
   lhs.type == rhs.type &&
   ((): boolean => {
-    const _rhs = rhs as any; // stupid linter...
     switch (lhs.type) {
-      case "Id": return lhs.ids.every((val) => _rhs.ids.includes(val))
-      case "SourceHost": return lhs.hosts.every((val) => _rhs.hosts.includes(val))
-      case "SourceName": return lhs.names.every((val) => _rhs.names.includes(val))
-      case "Tag": return lhs.tags.every((val) => _rhs.tags.includes(val))
-      case "Type": return lhs.names.every((val) => _rhs.names.includes(val))
+      case "Id": return lhs.ids.every((val) => (rhs as Id).ids.includes(val))
+      case "SourceHost": return lhs.hosts.every((val) => (rhs as SourceHost).hosts.every((rhs_val) => string_compare_eq(val, rhs_val)))
+      case "SourceName": return lhs.names.every((val) => (rhs as SourceName).names.every((rhs_val) => string_compare_eq(val, rhs_val)))
+      case "Tag": return lhs.tags.every((val) => (rhs as Tag).tags.every((rhs_val) => string_compare_eq(val, rhs_val)))
+      case "Type": return lhs.names.every((val) => (rhs as Type).names.every((rhs_val) => string_compare_eq(val, rhs_val)))
     }
   })()
 

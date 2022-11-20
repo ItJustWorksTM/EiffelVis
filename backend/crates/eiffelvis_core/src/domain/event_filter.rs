@@ -14,15 +14,15 @@ pub struct EventFilterMeta {
 #[serde(tag = "type")]
 pub enum EventFilter {
     /// Event Type
-    Type { names: Vec<String> },
+    Type { names: Vec<StringCompare> },
     /// Specific ids
     Id { ids: Vec<Uuid> },
     /// meta.tags
-    Tag { tags: Vec<String> },
+    Tag { tags: Vec<StringCompare> },
     /// meta.source.host
-    SourceHost { hosts: Vec<String> },
+    SourceHost { hosts: Vec<StringCompare> },
     /// meta.source.name
-    SourceName { names: Vec<String> },
+    SourceName { names: Vec<StringCompare> },
 }
 
 impl EventFilterMeta {
@@ -32,9 +32,9 @@ impl EventFilterMeta {
         I: Idx,
     {
         let res = match &self.pred {
-            EventFilter::Type { names: ref name } => {
-                name.iter().any(|name| &node.data().meta.event_type == name)
-            }
+            EventFilter::Type { names: ref name } => name
+                .iter()
+                .any(|name| name.eq(&node.data().meta.event_type)),
 
             EventFilter::Id { ids } => ids
                 .iter()
@@ -45,7 +45,7 @@ impl EventFilterMeta {
                     .meta
                     .tags
                     .as_ref()
-                    .map(|v| v.contains(tag))
+                    .map(|v| v.iter().any(|t| tag.eq(t)))
                     .unwrap_or(false)
             }),
 
@@ -55,7 +55,7 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.host.as_ref())
-                    .map(|h| h == host)
+                    .map(|h| host.eq(h))
                     .unwrap_or(false)
             }),
 
@@ -65,11 +65,46 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.name.as_ref())
-                    .map(|n| n == name)
+                    .map(|n| name.eq(n))
                     .unwrap_or(false)
             }),
         };
 
         res ^ self.rev
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct StringCompare {
+    /// The value to compare with
+    value: String,
+    /// Make value being compared with lower case
+    lower_case: bool,
+    /// Don't require full match
+    partial: bool,
+}
+
+impl StringCompare {
+    fn compare(&self, other: &str) -> bool {
+        if !self.partial {
+            other == self.value.as_str()
+        } else {
+            other.contains(self.value.as_str())
+        }
+    }
+
+    pub fn equal(&self, other: &str) -> bool {
+        if !self.lower_case {
+            self.compare(other)
+        } else {
+            // TODO: Avoid allocating with https://github.com/artichoke/focaccia if performance is bad.
+            self.compare(other.to_lowercase().as_str())
+        }
+    }
+}
+
+impl PartialEq<String> for StringCompare {
+    fn eq(&self, other: &String) -> bool {
+        self.equal(other.as_str())
     }
 }
