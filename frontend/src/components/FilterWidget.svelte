@@ -2,7 +2,6 @@
 <script lang="ts">
     import type { FilterInput, TemperateFilterArray } from "../uitypes";
     import LineInputList from "./LineInputList.svelte";
-
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 
     let selected = filter_types[0];
