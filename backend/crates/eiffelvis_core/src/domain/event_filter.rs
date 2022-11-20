@@ -14,7 +14,6 @@ pub struct EventFilterMeta {
 #[serde(tag = "type")]
 pub enum EventFilter {
     /// Event Type
-<<<<<<< HEAD
     Type { names: Vec<StringCompare> },
     /// Specific ids
     Id { ids: Vec<Uuid> },
@@ -24,17 +23,6 @@ pub enum EventFilter {
     SourceHost { hosts: Vec<StringCompare> },
     /// meta.source.name
     SourceName { names: Vec<StringCompare> },
-=======
-    Type { names: Vec<String> },
-    /// Specific ids
-    Id { ids: Vec<Uuid> },
-    /// meta.tags
-    Tag { tags: Vec<String> },
-    /// meta.source.host
-    SourceHost { hosts: Vec<String> },
-    /// meta.source.name
-    SourceName { names: Vec<String> },
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
 }
 
 impl EventFilterMeta {
@@ -44,15 +32,9 @@ impl EventFilterMeta {
         I: Idx,
     {
         let res = match &self.pred {
-<<<<<<< HEAD
             EventFilter::Type { names: ref name } => name
                 .iter()
                 .any(|name| name.eq(&node.data().meta.event_type)),
-=======
-            EventFilter::Type { names: ref name } => {
-                name.iter().any(|name| &node.data().meta.event_type == name)
-            }
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
 
             EventFilter::Id { ids } => ids
                 .iter()
@@ -63,11 +45,7 @@ impl EventFilterMeta {
                     .meta
                     .tags
                     .as_ref()
-<<<<<<< HEAD
                     .map(|v| v.iter().any(|t| tag.eq(t)))
-=======
-                    .map(|v| v.contains(tag))
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
                     .unwrap_or(false)
             }),
 
@@ -77,11 +55,7 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.host.as_ref())
-<<<<<<< HEAD
                     .map(|h| host.eq(h))
-=======
-                    .map(|h| h == host)
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
                     .unwrap_or(false)
             }),
 
@@ -91,11 +65,7 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.name.as_ref())
-<<<<<<< HEAD
                     .map(|n| name.eq(n))
-=======
-                    .map(|n| n == name)
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
                     .unwrap_or(false)
             }),
         };
@@ -103,7 +73,6 @@ impl EventFilterMeta {
         res ^ self.rev
     }
 }
-<<<<<<< HEAD
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct StringCompare {
@@ -139,5 +108,3 @@ impl PartialEq<String> for StringCompare {
         self.equal(other.as_str())
     }
 }
-=======
->>>>>>> 1967a85 (backend/domain: split out filter and collection)

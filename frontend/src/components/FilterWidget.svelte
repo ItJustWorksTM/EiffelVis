@@ -2,6 +2,7 @@
 <script lang="ts">
     import type { FilterInput, TemperateFilterArray } from "../uitypes";
     import LineInputList from "./LineInputList.svelte";
+    import Input from "./TextInput.svelte";
 
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 
