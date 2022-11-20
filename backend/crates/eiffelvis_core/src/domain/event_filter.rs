@@ -108,3 +108,38 @@ impl PartialEq<String> for StringCompare {
         self.equal(other.as_str())
     }
 }
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct StringCompare {
+    /// The value to compare with
+    value: String,
+    /// Make value being compared with lower case
+    lower_case: bool,
+    /// Don't require full match
+    partial: bool,
+}
+
+impl StringCompare {
+    fn compare(&self, other: &str) -> bool {
+        if !self.partial {
+            other == self.value.as_str()
+        } else {
+            other.contains(self.value.as_str())
+        }
+    }
+
+    pub fn equal(&self, other: &str) -> bool {
+        if !self.lower_case {
+            self.compare(other)
+        } else {
+            // TODO: Avoid allocating with https://github.com/artichoke/focaccia if performance is bad.
+            self.compare(other.to_lowercase().as_str())
+        }
+    }
+}
+
+impl PartialEq<String> for StringCompare {
+    fn eq(&self, other: &String) -> bool {
+        self.equal(other.as_str())
+    }
+}
