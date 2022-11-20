@@ -1,15 +1,17 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-    import type {
+    import {
         EventFilter,
         Id,
         SourceHost,
         SourceName,
+        string_compare_default,
         Tag,
         Type,
     } from "../apidefinition";
 
     import LineInputList from "./LineInputList.svelte";
+    import Input from "./TextInput.svelte";
 
     const filter_types = ["Id", "Type", "Source", "Host", "Tag"];
     let active_filter = "Id";
@@ -74,7 +76,9 @@
                 bind:checked={ids.rev}
             />
         </label>
-        <LineInputList placeholder={"uuid"} bind:values={ids.pred.ids} />
+        <LineInputList bind:values={ids.pred.ids} let:index={i}>
+            <Input placeholder={"uuid"} bind:value={ids.pred.ids[i]}/>
+        </LineInputList>
         <button
             class="btn btn-xs w-full"
             on:click={() => (ids.pred.ids = [...ids.pred.ids, ""])}>+</button
@@ -93,13 +97,12 @@
                 bind:checked={types.rev}
             />
         </label>
-        <LineInputList
-            placeholder={"type name"}
-            bind:values={types.pred.names}
-        />
+        <LineInputList bind:values={types.pred.names} let:index={i}>
+            <Input placeholder={"type name"} bind:value={types.pred.names[i].value} />
+        </LineInputList>
         <button
             class="btn btn-xs w-full"
-            on:click={() => (types.pred.names = [...types.pred.names, ""])}
+            on:click={() => (types.pred.names = [...types.pred.names, string_compare_default()])}
             >+</button
         >
     </div>
@@ -116,14 +119,13 @@
                 bind:checked={sourcenames.rev}
             />
         </label>
-        <LineInputList
-            placeholder={"source name"}
-            bind:values={sourcenames.pred.names}
-        />
+        <LineInputList bind:values={sourcenames.pred.names} let:index={i}>
+            <Input placeholder={"source name"} bind:value={sourcenames.pred.names[i].value} />
+        </LineInputList>
         <button
             class="btn btn-xs w-full"
             on:click={() =>
-                (sourcenames.pred.names = [...sourcenames.pred.names, ""])}
+                (sourcenames.pred.names = [...sourcenames.pred.names, string_compare_default()])}
             >+</button
         >
     </div>
@@ -140,14 +142,13 @@
                 bind:checked={sourcehosts.rev}
             />
         </label>
-        <LineInputList
-            placeholder={"host name"}
-            bind:values={sourcehosts.pred.hosts}
-        />
+        <LineInputList values={sourcehosts.pred.hosts} let:index={i}>
+            <Input placeholder={"host name"} bind:value={sourcehosts.pred.hosts[i].value} />
+        </LineInputList>
         <button
             class="btn btn-xs w-full"
             on:click={() =>
-                (sourcehosts.pred.hosts = [...sourcehosts.pred.hosts, ""])}
+                (sourcehosts.pred.hosts = [...sourcehosts.pred.hosts, string_compare_default()])}
             >+</button
         >
     </div>
@@ -164,10 +165,12 @@
                 bind:checked={tags.rev}
             />
         </label>
-        <LineInputList placeholder={"tag name"} bind:values={tags.pred.tags} />
+        <LineInputList bind:values={tags.pred.tags} let:index={i}>
+            <Input placeholder={"tag name"} bind:value={tags.pred.tags[i].value} />
+        </LineInputList>
         <button
             class="btn btn-xs w-full"
-            on:click={() => (tags.pred.tags = [...tags.pred.tags, ""])}
+            on:click={() => (tags.pred.tags = [...tags.pred.tags, string_compare_default()])}
             >+</button
         >
     </div> -->

@@ -45,6 +45,7 @@
                     />
                 </svg>
             </button>
+            <slot index={i} />
         </div>
     {/each}
 </div>
