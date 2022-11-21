@@ -9,19 +9,19 @@ use std::{
 };
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
-pub struct ChunkedIndex(u64);
+pub struct ChunkedIndex(u32, u32);
 
 impl ChunkedIndex {
     pub fn new(gen: u32, idx: u32) -> ChunkedIndex {
-        ChunkedIndex(((gen as u64) << 32) | idx as u64)
+        ChunkedIndex(gen, idx)
     }
 
     pub fn gen(self) -> u32 {
-        (self.0 >> 32) as u32
+        self.0
     }
 
     pub fn idx(self) -> u32 {
-        (self.0 & 0xFFFFFFFF) as u32
+        self.1
     }
 }
 
