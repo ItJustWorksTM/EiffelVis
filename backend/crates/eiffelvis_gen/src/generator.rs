@@ -79,7 +79,7 @@ impl Default for EventGenerator {
         Self {
             inner: Inner {
                 event_set: EventSet::default(),
-                max_links: 5,
+                max_links: 10,
                 history_max: 100,
             },
             seed: rand::random::<usize>().into(),
