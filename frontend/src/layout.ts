@@ -10,7 +10,7 @@ export interface GraphSettings {
 }
 export const defaultNode = {
   color: "#93ACB5",
-  shape: "circle",
+  shape: "diamond",
   type: "Unknown"
 }
 export class StatefulLayout {
