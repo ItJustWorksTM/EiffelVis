@@ -100,7 +100,7 @@
 </script>
 
 <div class="flex flex-col w-full">
-    <div class="bg-primary text-primary-content grid h-10   place-items-center">
+    <div class="bg-secondary text-base-content grid h-10 place-items-center">
         Legend
     </div>
     <div bind:this={container} class="legend" />
