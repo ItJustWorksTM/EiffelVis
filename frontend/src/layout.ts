@@ -8,7 +8,11 @@ export interface GraphSettings {
   y_sep: number
   hue: number
 }
-
+export const defaultNode = {
+  color: "#93ACB5",
+  shape: "circle",
+  type: "Unknown"
+}
 export class StatefulLayout {
   private timee = 0
   private posx = 0
@@ -19,7 +23,8 @@ export class StatefulLayout {
   private colors = new Map<string, string>()
   private shapes = new Map<string, string>()
   private customTheme = config.Theme.ColorBlind
-  private themeMap = new Map(Object.entries(this.customTheme));
+  private themeMap = new Map(Object.entries(this.customTheme))
+
 
 
 
@@ -65,7 +70,10 @@ export class StatefulLayout {
   }
 
   nodeColor(eventType: string) {
-
+    if (!this.themeMap.has(eventType)) {
+      // defaultNode color
+      return defaultNode.color
+    }
     return this.themeMap.get(eventType).Color
   }
 
@@ -80,11 +88,16 @@ export class StatefulLayout {
     return this.themeMap
   }
   nodeShape(eventType: string) {
+    if (!this.themeMap.has(eventType)) {
+      return defaultNode.shape
+    }
 
     return this.themeMap.get(eventType).Shape
   }
   nodeLabel(eventType: string) {
-
+    if (!this.themeMap.has(eventType)) {
+      return defaultNode.type
+    }
     return this.themeMap.get(eventType).Acronym
   }
 

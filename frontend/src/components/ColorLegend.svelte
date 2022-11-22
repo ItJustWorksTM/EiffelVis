@@ -3,7 +3,7 @@
     import G6, { Graph } from "@antv/g6";
     import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
-
+    import { defaultNode } from "../layout";
     const options = {
         container: "mountNode",
         width: 280,
@@ -35,6 +35,24 @@
         };
         array.push(node);
     });
+    let dNode = {
+        id: "defaultNode",
+        size: 10,
+        type: defaultNode.shape,
+        style: {
+            fill: defaultNode.color,
+            stroke: defaultNode.color,
+        },
+        label: defaultNode.type,
+        labelCfg: {
+            style: {
+                fill: defaultNode.color,
+            },
+            position: "bottom",
+            offset: 10,
+        },
+    };
+    array.push(dNode);
     data = { nodes: array };
 
     let container: HTMLElement;
