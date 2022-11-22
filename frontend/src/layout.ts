@@ -18,10 +18,8 @@ export class StatefulLayout {
   private curveSep = 0
   private colors = new Map<string, string>()
   private shapes = new Map<string, string>()
-  private shapeArray = ["circle", "rect", "ellipse", "diamond", "star"]
   private customTheme = config.Theme.ColorBlind
   private themeMap = new Map(Object.entries(this.customTheme));
-  private defaultColor = this.themeMap.get("EiffelSourceChangeSubmittedEvent").Color
 
 
 
@@ -36,15 +34,7 @@ export class StatefulLayout {
     }
     node.size = 10
     node.type = this.nodeShape(node.event_type)
-    // comment out labels for the node on the graph
-    // node.label = this.nodeLabel(node.event_type)
-    // node.labelCfg = {
-    //   style: {
-    //     fill: this.nodeColor(node.event_type),
-    //     fontSize: 10,
-    //   },
-    //   position: 'right',
-    // }
+
 
     const temp = node
     const tempTime: number = temp.time
@@ -75,13 +65,7 @@ export class StatefulLayout {
   }
 
   nodeColor(eventType: string) {
-    // if (!this.colors.has(eventType)) {
-    //   const hash = [...eventType].reduce(
-    //     (acc, char) => char.charCodeAt(0) + ((acc << 1) - acc),
-    //     2
-    //   )
-    //   const color = `hsl(${hash % (hue ? hue : 360)},50%,50%)`
-    //   this.colors.set(eventType, color)
+
     return this.themeMap.get(eventType).Color
   }
 
@@ -96,21 +80,11 @@ export class StatefulLayout {
     return this.themeMap
   }
   nodeShape(eventType: string) {
-    // if a new event type are created, we generate a random integer between 0-4 as the index of shape array.
-    // if (!this.shapes.has(eventType)) {
-    //   const shape = this.shapeArray[Math.floor(Math.random() * this.shapeArray.length)]
-    //   console.log(shape)
-    //   this.shapes.set(eventType, shape)
-    // }
+
     return this.themeMap.get(eventType).Shape
   }
   nodeLabel(eventType: string) {
-    // if a new event type are created, we generate a random integer between 0-4 as the index of shape array.
-    // if (!this.shapes.has(eventType)) {
-    //   const shape = this.shapeArray[Math.floor(Math.random() * this.shapeArray.length)]
-    //   console.log(shape)
-    //   this.shapes.set(eventType, shape)
-    // }
+
     return this.themeMap.get(eventType).Acronym
   }
 
