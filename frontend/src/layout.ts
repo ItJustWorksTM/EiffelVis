@@ -11,7 +11,7 @@ export interface GraphSettings {
 export const defaultNode = {
   color: "#93ACB5",
   shape: "diamond",
-  type: "Unknown"
+  type: "???"
 }
 export class StatefulLayout {
   private timee = 0
