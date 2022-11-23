@@ -265,10 +265,11 @@
     height: 100%;
   }
   .g6TimeBar {
-    background: #131616;
+    background: rgb(27, 29, 29);
+    box-shadow: rgb(35, 34, 34) 4px 2px 2px;
     border-radius: 20px;
     position: absolute !important;
-    left: 35%;
+    left: 45%; 
     bottom: 80px;
     z-index: 0;
   }

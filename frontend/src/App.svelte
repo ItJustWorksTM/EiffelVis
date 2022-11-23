@@ -17,6 +17,7 @@
   import { deep_copy } from "./utils";
   import G6Graph from "./components/G6Graph.svelte";
   import config from "./config.json";
+  import SideBar from "./components/SideBar.svelte";
 
   let graph_elem: G6Graph | null;
 
@@ -169,6 +170,12 @@
     show_legend = !show_legend;
   };
 
+  //Updates the timebar each time the show timebar button is clicked
+  const  updateTimebar = () =>{  
+            (show_timebar = !show_timebar),
+            graph_elem.updateTimeBar(show_timebar)
+  };
+
   const options = {
     width: 400,
     height: 400,
@@ -209,150 +216,91 @@
   };
 </script>
 
-<div class="m-0 h-screen bg-base-300">
-  <div
-    class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
-    style="z-index:1"
-  >
-    <div class="block m-6">
-      <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
-        <li>
-          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a
-            class=""
-            class:btn-active={show_timebar}
-            on:click={() => (
-              (show_timebar = !show_timebar),
-              graph_elem.updateTimeBar(show_timebar)
-            )}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21.5 12H12V2.5"
-              />
-              <circle
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div
-      class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
-      style="z-index:1"
-      class:hidden={!show_menu}
-    >
-      <GraphOptions
-        bind:graph_options
-        on:reset={reset_graph_options}
-        on:apply={consume_query}
-      />
-    </div>
-    <div
-      style="z-index:1"
-      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
-      class:show={show_legend}
-    >
-      <ColorLegend {styles} />
-    </div>
-  </div>
-
-  <div
-    style="z-index:1"
-    class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
-  >
-    <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-      <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
-        <EventDetail {selected_node} on:useroot={use_selected_as_root} />
-      </div>
-      <h1 class="text-lg py-2">Filter Options:</h1>
-      <QueryForm bind:query={current_query} />
-      <div class="btn-group w-full flex flex-row mt-2">
-        <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
-          + new filter</button
-        >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          disabled={qhistory.length <= 1 || awaiting_query_request}
-          on:click={() => {
-            qhistory.pop();
-            current_query = qhistory.pop();
-            qhistory = [...qhistory];
-            submit_state_query();
-          }}
-          >{qhistory.length - 1 > 0
-            ? "undo " + (qhistory.length - 1)
-            : ":)"}</button
-        >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          class:loading={awaiting_query_request}
-          disabled={awaiting_query_request || !current_query_changed}
-          on:click={submit_state_query}>submit</button
-        >
-      </div>
-    </div>
-  </div>
-  <!-- Graph with listeners -->
-  <G6Graph
-    on:nodeselected={on_node_selected}
-    bind:this={graph_elem}
-    {options}
-    data={{}}
+<div class="flex m-0 h-screen w-screen bg-base-100">
+  <!-- SideBar component: the variables are updated inside App.svelte -->
+  <SideBar 
+    show_timebar= {show_timebar}
+    show_legend = {show_legend}
+    show_menu = {show_menu} 
+    toggleMenuPlaceholder = {toggleMenu} 
+    toggleLegendPlaceholder = {toggleLegend} 
+    updateTimeBarPlaceholder = {updateTimebar}
   />
+  <div
+      class="left-16 h-screen"
+      style="z-index:1"
+    >   <!-- the div for the panels and the graph -->
+    <div class="flex w-80 bottom-0 bg-base-1" >
+      <ul class="menu menu-compact">
+          <li>
+            <div
+              class="overflow-x-auto overflow-y-auto bg-base-200 w-0 h-fit fixed shadow-lg rounded-box mb-0"
+              
+              class:hidden={!show_menu}
+            >
+              <GraphOptions
+                bind:graph_options
+                on:reset={reset_graph_options}
+                on:apply={consume_query}
+              />
+            </div>
+          </li>
+          <li>
+            <div
+            
+            class="bottom-80 overflow-x-auto overflow-y-auto fixed bg-base-200 w-0 h-fit shadow-lg rounded-box"
+            class:show={show_legend}
+            >
+              <ColorLegend {colors} />
+            </div>
+          </li>
+          <li>
+              <div
+                class=" overflow-x-auto overflow-y-auto p-3 shadow-lg bg-base-200 rounded-box h-fit bottom-0 fixed w-fit m-0" 
+              >
+                <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
+                  <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
+                    <EventDetail {selected_node} on:useroot={use_selected_as_root} />
+                  </div>
+                  <h1 class="text-lg py-2">Filter Options:</h1>
+                  <QueryForm bind:query={current_query} />
+                  <div class="btn-group w-full flex flex-row mt-2">
+                    <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
+                      + new filter</button
+                    >
+                    <button
+                      class="btn btn-sm btn-primary basis-1/3"
+                      disabled={qhistory.length <= 1 || awaiting_query_request}
+                      on:click={() => {
+                        qhistory.pop();
+                        current_query = qhistory.pop();
+                        qhistory = [...qhistory];
+                        submit_state_query();
+                      }}
+                      >{qhistory.length - 1 > 0
+                        ? "undo " + (qhistory.length - 1)
+                        : ":)"}</button
+                    >
+                    <button
+                      class="btn btn-sm btn-primary basis-1/3"
+                      class:loading={awaiting_query_request}
+                      disabled={awaiting_query_request || !current_query_changed}
+                      on:click={submit_state_query}>submit</button
+                    >
+                  </div>
+                </div>
+              </div>
+          </li>
+        </ul>
+    </div>
+      <!-- Graph with listeners -->
+    <G6Graph
+        on:nodeselected={on_node_selected}
+        bind:this={graph_elem}
+        {options}
+        data={{}}
+    />
+  </div>
 </div>
 
 <style lang="postcss" global>

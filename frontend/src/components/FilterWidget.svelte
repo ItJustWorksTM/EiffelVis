@@ -22,7 +22,7 @@
     export let sourcenames: EventFilter<SourceName>;
 </script>
 
-<div class="w-full h-full">
+<div class="w-full h-full flex flex-col">
     <div class="tabs tabs-boxed">
         {#each filter_types as type}
             <a
