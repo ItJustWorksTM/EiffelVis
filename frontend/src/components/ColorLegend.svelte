@@ -15,46 +15,51 @@
 
     let data = {};
     let array = [];
-    styles.map((event) => {
-        let node = {
-            id: event[0],
-            size: 10,
-            type: event[1].Shape,
-            style: {
-                fill: event[1].Color,
-                stroke: event[1].Color,
-            },
-            label: event[1].Acronym,
-            labelCfg: {
+    const loadNodeWithStyle = () => {
+        styles.map((event) => {
+            let node = {
+                id: event[0],
+                size: 10,
+                type: event[1].Shape,
                 style: {
                     fill: event[1].Color,
+                    stroke: event[1].Color,
+                },
+                label: event[1].Acronym,
+                labelCfg: {
+                    style: {
+                        fill: event[1].Color,
+                    },
+                    position: "bottom",
+                    offset: 10,
+                },
+            };
+            array.push(node);
+        });
+    };
+    const loadDefaultNode = () => {
+        let default_Node = {
+            id: "defaultNode",
+            size: 10,
+            type: defaultNode.shape,
+            style: {
+                fill: defaultNode.color,
+                stroke: defaultNode.color,
+            },
+            label: defaultNode.type,
+            labelCfg: {
+                style: {
+                    fill: defaultNode.color,
                 },
                 position: "bottom",
                 offset: 10,
             },
         };
-        array.push(node);
-    });
-    let dNode = {
-        id: "defaultNode",
-        size: 10,
-        type: defaultNode.shape,
-        style: {
-            fill: defaultNode.color,
-            stroke: defaultNode.color,
-        },
-        label: defaultNode.type,
-        labelCfg: {
-            style: {
-                fill: defaultNode.color,
-            },
-            position: "bottom",
-            offset: 10,
-        },
+        array.push(default_Node);
     };
-    array.push(dNode);
+    loadNodeWithStyle();
+    loadDefaultNode();
     data = { nodes: array };
-
     let container: HTMLElement;
     let graph: Graph | null;
     export const reset = () => {
