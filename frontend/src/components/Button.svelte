@@ -1,5 +1,4 @@
 <script lang="ts">
-    // your script goes here
     export let btnState: boolean; 
     export let onClickAction: any; 
     export let data: string; 

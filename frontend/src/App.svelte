@@ -3,10 +3,10 @@
   import G6 from "@antv/g6";
   import { QueryStream, EiffelVisConnection } from "./eiffelvis";
   import { GraphSettings, StatefulLayout } from "./layout";
-  import QueryForm from "./components/QueryForm.svelte";
-  import EventDetail from "./components/EventDetail.svelte";
-  import GraphOptions from "./components/GraphOptions.svelte";
-  import ColorLegend from "./components/ColorLegend.svelte";
+  import G6Graph from "./components/G6Graph.svelte";
+  import SideBar from "./components/SideBar.svelte";
+  import Panel from "./components/Panel.svelte";
+
 
   import { query_eq } from "./apidefinition";
   import {
@@ -15,9 +15,9 @@
     fixed_query_to_norm,
   } from "./uitypes";
   import { deep_copy } from "./utils";
-  import G6Graph from "./components/G6Graph.svelte";
+
   import config from "./config.json";
-  import SideBar from "./components/SideBar.svelte";
+
 
   let graph_elem: G6Graph | null;
 
@@ -158,20 +158,20 @@
 
   const toggleMenu = () => {
     if (show_legend) {
-      toggleLegend();
-    }
+       toggleLegend();
+      }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
     if (show_menu) {
-      toggleMenu();
-    }
+       toggleMenu();
+      }
     show_legend = !show_legend;
   };
 
   //Updates the timebar each time the show timebar button is clicked
-  const  updateTimebar = () =>{  
+  const updateTimebar = () =>{  
             (show_timebar = !show_timebar),
             graph_elem.updateTimeBar(show_timebar)
   };
@@ -216,7 +216,7 @@
   };
 </script>
 
-<div class="flex m-0 h-screen w-screen bg-base-100">
+<div class="flex fixed m-0 h-screen w-screen bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <SideBar 
     show_timebar= {show_timebar}
@@ -226,73 +226,25 @@
     toggleLegendPlaceholder = {toggleLegend} 
     updateTimeBarPlaceholder = {updateTimebar}
   />
-  <div
-      class="left-16 h-screen"
-      style="z-index:1"
-    >   <!-- the div for the panels and the graph -->
-    <div class="flex w-80 bottom-0 bg-base-1" >
-      <ul class="menu menu-compact">
-          <li>
-            <div
-              class="overflow-x-auto overflow-y-auto bg-base-200 w-0 h-fit fixed shadow-lg rounded-box mb-0"
-              
-              class:hidden={!show_menu}
-            >
-              <GraphOptions
-                bind:graph_options
-                on:reset={reset_graph_options}
-                on:apply={consume_query}
-              />
-            </div>
-          </li>
-          <li>
-            <div
-            
-            class="bottom-80 overflow-x-auto overflow-y-auto fixed bg-base-200 w-0 h-fit shadow-lg rounded-box"
-            class:show={show_legend}
-            >
-              <ColorLegend {colors} />
-            </div>
-          </li>
-          <li>
-              <div
-                class=" overflow-x-auto overflow-y-auto p-3 shadow-lg bg-base-200 rounded-box h-fit bottom-0 fixed w-fit m-0" 
-              >
-                <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-                  <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
-                    <EventDetail {selected_node} on:useroot={use_selected_as_root} />
-                  </div>
-                  <h1 class="text-lg py-2">Filter Options:</h1>
-                  <QueryForm bind:query={current_query} />
-                  <div class="btn-group w-full flex flex-row mt-2">
-                    <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
-                      + new filter</button
-                    >
-                    <button
-                      class="btn btn-sm btn-primary basis-1/3"
-                      disabled={qhistory.length <= 1 || awaiting_query_request}
-                      on:click={() => {
-                        qhistory.pop();
-                        current_query = qhistory.pop();
-                        qhistory = [...qhistory];
-                        submit_state_query();
-                      }}
-                      >{qhistory.length - 1 > 0
-                        ? "undo " + (qhistory.length - 1)
-                        : ":)"}</button
-                    >
-                    <button
-                      class="btn btn-sm btn-primary basis-1/3"
-                      class:loading={awaiting_query_request}
-                      disabled={awaiting_query_request || !current_query_changed}
-                      on:click={submit_state_query}>submit</button
-                    >
-                  </div>
-                </div>
-              </div>
-          </li>
-        </ul>
-    </div>
+  <div class="grid w-screen h-screen overflow-auto align-bottom justify-bottom items-end"
+        style="z-index:1"
+      >   <!-- panels  -->
+      <Panel 
+        show_legend_placeholder = {show_legend} 
+        show_menu_placeholder = {show_menu} 
+        reset_graph_options_placeholder = {reset_graph_options}
+        use_selected_as_root = {use_selected_as_root}
+        current_query = {current_query}
+        current_query_changed = {current_query_changed}
+        add_filter = {add_filter}
+        qhistory = {qhistory}
+        awaiting_query_request = {awaiting_query_request}
+        submit_state_query ={submit_state_query}
+        consume_query = {consume_query}
+        selected_node ={selected_node}
+        graph_options = {graph_options}
+        colors = {colors}
+      />
       <!-- Graph with listeners -->
     <G6Graph
         on:nodeselected={on_node_selected}

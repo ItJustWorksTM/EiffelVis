@@ -2,12 +2,13 @@
 
   import Button from "./Button.svelte";
 
-   export let show_menu = false;
-   export let show_legend = false;
-   export let show_timebar = false;
-   export let updateTimeBarPlaceholder:any; //it was called directly inside the div element, now: a method is created inside app.svelt
-   export let toggleMenuPlaceholder: any;  
-   export let toggleLegendPlaceholder: any;
+   export let show_menu: boolean;
+   export let show_legend: boolean;
+   export let show_timebar: boolean;
+
+   export let updateTimeBarPlaceholder: Object; //it was called directly inside the div element, now: a method is created inside app.svelt
+   export let toggleMenuPlaceholder: Object;  
+   export let toggleLegendPlaceholder: Object;
    
 
 </script>
