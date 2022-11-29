@@ -1,3 +1,5 @@
+import config from "./config.json";
+
 export interface GraphSettings {
   offset: number
   time_diff: number
@@ -6,7 +8,11 @@ export interface GraphSettings {
   y_sep: number
   hue: number
 }
-
+export const defaultNode = {
+  color: "#93ACB5",
+  shape: "diamond",
+  type: "???"
+}
 export class StatefulLayout {
   private timee = 0
   private posx = 0
@@ -15,6 +21,12 @@ export class StatefulLayout {
   private curve = 0
   private curveSep = 0
   private colors = new Map<string, string>()
+  private shapes = new Map<string, string>()
+  private customTheme = config.Theme.ColorBlind
+  private themeMap = new Map(Object.entries(this.customTheme))
+
+
+
 
   apply(node: any, graphOptions: GraphSettings) {
     if (this.curve === 0 && graphOptions.offset) {
@@ -22,10 +34,12 @@ export class StatefulLayout {
       this.curveSep = graphOptions.offset
     }
     node.style = {
-      fill: this.nodeColor(node.event_type, graphOptions.hue),
+      fill: this.nodeColor(node.event_type),
       lineWidth: 0.4,
     }
     node.size = 10
+    node.type = this.nodeShape(node.event_type)
+
 
     const temp = node
     const tempTime: number = temp.time
@@ -55,19 +69,36 @@ export class StatefulLayout {
     }
   }
 
-  nodeColor(eventType: string, hue?: number) {
-    if (!this.colors.has(eventType)) {
-      const hash = [...eventType].reduce(
-        (acc, char) => char.charCodeAt(0) + ((acc << 1) - acc),
-        2
-      )
-      const color = `hsl(${hash % (hue ? hue : 360)},50%,50%)`
-      this.colors.set(eventType, color)
+  nodeColor(eventType: string) {
+    if (!this.themeMap.has(eventType)) {
+      // defaultNode color
+      return defaultNode.color
     }
-    return this.colors.get(eventType)
+    return this.themeMap.get(eventType).Color
   }
 
   getNodeColor() {
     return this.colors
   }
+  getNodeShape() {
+    return this.shapes
+  }
+
+  getNodeStyle() {
+    return this.themeMap
+  }
+  nodeShape(eventType: string) {
+    if (!this.themeMap.has(eventType)) {
+      return defaultNode.shape
+    }
+
+    return this.themeMap.get(eventType).Shape
+  }
+  nodeLabel(eventType: string) {
+    if (!this.themeMap.has(eventType)) {
+      return defaultNode.type
+    }
+    return this.themeMap.get(eventType).Acronym
+  }
+
 }

@@ -1,0 +1,9 @@
+Theme:   
+    Rainbow corlors: change to color blind colors.
+    Shapes: circle rect, triangle star circle diamond
+    Links:
+    based on https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=2979FF respected color A400 primary
+            "PRECURSOR": "ff1744", Red
+            "CAUSE": "2979ff", Blue
+            "CONTEXT": "00e676", Green
+            "FLOW_CONTEXT": "ff9100" Orange
