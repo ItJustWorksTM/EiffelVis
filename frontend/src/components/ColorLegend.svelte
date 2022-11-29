@@ -105,7 +105,11 @@
 </script>
 
 <div class="flex flex-col w-full">
+<<<<<<< HEAD
     <div class="bg-base-200 text-base-content grid h-10 place-items-center">
+=======
+    <div class="bg-base-100 text-base-content grid h-10 place-items-center">
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
         Legend
     </div>
     <div bind:this={container} class="legend" />

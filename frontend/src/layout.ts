@@ -1,5 +1,9 @@
 import config from "./config.json";
+<<<<<<< HEAD
 import type { Event } from "./apidefinition"
+=======
+
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
 export interface GraphSettings {
   offset: number
   time_diff: number
@@ -13,6 +17,7 @@ export const defaultNode = {
   shape: "diamond",
   type: "???"
 }
+<<<<<<< HEAD
 type node = Event & {
   event_type: string
   style?: object
@@ -33,6 +38,22 @@ export class StatefulLayout {
   private shapes: Map<string, string> = new Map<string, string>()
   private customTheme: Object = config.Theme.ColorBlind
   private themeMap: Map<string, any> = new Map(Object.entries(this.customTheme))
+=======
+export class StatefulLayout {
+  private timee = 0
+  private posx = 0
+  private posy = 0
+  private log = 1
+  private curve = 0
+  private curveSep = 0
+  private colors = new Map<string, string>()
+  private shapes = new Map<string, string>()
+  private customTheme = config.Theme.ColorBlind
+  private themeMap = new Map(Object.entries(this.customTheme))
+
+
+
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
 
 
 
@@ -48,6 +69,10 @@ export class StatefulLayout {
     }
     node.size = 10
     node.type = this.nodeShape(node.event_type)
+<<<<<<< HEAD
+=======
+
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
 
 
     const temp: node = node;
@@ -78,7 +103,11 @@ export class StatefulLayout {
     }
   }
 
+<<<<<<< HEAD
   nodeColor(eventType: string): string {
+=======
+  nodeColor(eventType: string) {
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
     if (!this.themeMap.has(eventType)) {
       // defaultNode color
       return defaultNode.color
@@ -89,6 +118,7 @@ export class StatefulLayout {
   getNodeColor(): Map<string, string> {
     return this.colors
   }
+<<<<<<< HEAD
   getNodeShape(): Map<string, string> {
     return this.shapes
   }
@@ -97,13 +127,27 @@ export class StatefulLayout {
     return this.themeMap
   }
   nodeShape(eventType: string): string {
+=======
+  getNodeShape() {
+    return this.shapes
+  }
+
+  getNodeStyle() {
+    return this.themeMap
+  }
+  nodeShape(eventType: string) {
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
     if (!this.themeMap.has(eventType)) {
       return defaultNode.shape
     }
 
     return this.themeMap.get(eventType).Shape
   }
+<<<<<<< HEAD
   nodeLabel(eventType: string): string {
+=======
+  nodeLabel(eventType: string) {
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
     if (!this.themeMap.has(eventType)) {
       return defaultNode.type
     }

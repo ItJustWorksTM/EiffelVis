@@ -16,6 +16,14 @@
     fixed_query_to_norm,
     TemperateFilterArray,
   } from "./uitypes";
+<<<<<<< HEAD
+=======
+  import { deep_copy } from "./utils";
+  import G6Graph from "./components/G6Graph.svelte";
+  import config from "./config.json";
+
+  let graph_elem: G6Graph | null;
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
 
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
@@ -27,6 +35,7 @@
 
   let selected_node: FullEvent = null;
 
+<<<<<<< HEAD
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
@@ -35,6 +44,15 @@
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
   let legend: Map<string, any> = themeMap;
+=======
+  let show_menu = false;
+  let show_legend = true;
+  let show_timebar = false;
+
+  let customTheme = config.Theme.ColorBlind;
+  let themeMap = new Map(Object.entries(customTheme));
+  let legend = themeMap;
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
   $: styles = [...legend.entries()];
 
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
@@ -292,6 +310,7 @@
   };
 </script>
 
+<<<<<<< HEAD
 <div class="fixed flex m-0 h-screen w-screen bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <SideBar
@@ -329,6 +348,107 @@
       {options}
       data={{}}
     />
+=======
+<div class="m-0 h-screen bg-base-300">
+  <div
+    class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
+    style="z-index:1"
+  >
+    <div class="block m-6">
+      <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
+        <li>
+          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
+              />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a
+            class=""
+            class:btn-active={show_timebar}
+            on:click={() => (
+              (show_timebar = !show_timebar),
+              graph_elem.updateTimeBar(show_timebar)
+            )}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21.5 12H12V2.5"
+              />
+              <circle
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                cx="12"
+                cy="12"
+                r="10"
+              />
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
+      style="z-index:1"
+      class:hidden={!show_menu}
+    >
+      <GraphOptions
+        bind:graph_options
+        on:reset={reset_graph_options}
+        on:apply={consume_query}
+      />
+    </div>
+    <div
+      style="z-index:1"
+      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
+      class:show={show_legend}
+    >
+      <ColorLegend {styles} />
+    </div>
+>>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
   </div>
   <G6Graph
     on:nodeselected={on_node_selected}
