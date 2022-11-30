@@ -1,6 +1,6 @@
 <script lang="ts">
     export let btnState: boolean; 
-    export let onClickAction: any; 
+    export let onClickAction: () => void; 
     export let data: string; 
     
 </script>

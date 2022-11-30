@@ -15,17 +15,17 @@
     export let current_query_changed: boolean; 
 
     //Object variables; used for onClick actions.
-    export let reset_graph_options_placeholder: any; 
-    export let consume_query: any; 
-    export let use_selected_as_root: any; 
-    export let add_filter: any; 
-    export let submit_state_query: any; 
+    export let reset_graph_options_placeholder: () => void; 
+    export let consume_query: () => void; 
+    export let use_selected_as_root: () => void; 
+    export let add_filter: () => void; 
+    export let submit_state_query: () => void; 
 
     export let current_query: FixedQuery; 
     export let  qhistory: FixedQuery[];  
     export let selected_node: FullEvent | null;
     export let graph_options: GraphSettings;
-    export let colors:{}; 
+    export let colors: Object; 
 
   
   

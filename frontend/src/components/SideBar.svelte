@@ -6,9 +6,9 @@
    export let show_legend: boolean;
    export let show_timebar: boolean;
 
-   export let updateTimeBarPlaceholder: Object; //it was called directly inside the div element, now: a method is created inside app.svelt
-   export let toggleMenuPlaceholder: Object;  
-   export let toggleLegendPlaceholder: Object;
+   export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
+   export let toggleMenuPlaceholder: () => void;  
+   export let toggleLegendPlaceholder: () => void;
    
 
 </script>
