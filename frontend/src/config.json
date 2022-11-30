@@ -1,0 +1,127 @@
+{
+    "Theme": {
+        "ColorBlind": {
+            "EiffelActivityStartedEvent": {
+                "Color": "#D86EB3",
+                "Shape": "circle",
+                "Acronym": "ActS"
+            },
+            "EiffelActivityTriggeredEvent": {
+                "Color": "#2DA9E7",
+                "Shape": "circle",
+                "Acronym": "ActT"
+            },
+            "EiffelActivityCanceledEvent": {
+                "Color": "#F1F422",
+                "Shape": "circle",
+                "Acronym": "ActC"
+            },
+            "EiffelActivityFinishedEvent": {
+                "Color": "#93ACB5",
+                "Shape": "circle",
+                "Acronym": "ActF"
+            },
+            "EiffelArtifactCreatedEvent": {
+                "Color": "#F6DDA4",
+                "Shape": "rect",
+                "Acronym": "ArtC"
+            },
+            "EiffelArtifactPublishedEvent": {
+                "Color": "#D9850D",
+                "Shape": "rect",
+                "Acronym": "ArtP"
+            },
+            "EiffelArtifactReusedEvent": {
+                "Color": "#8E8757",
+                "Shape": "rect",
+                "Acronym": "ArtR"
+            },
+            "EiffelTestCaseStartedEvent": {
+                "Color": "#D86EB3",
+                "Shape": "triangle",
+                "Acronym": "TCS"
+            },
+            "EiffelTestCaseTriggeredEvent": {
+                "Color": "#2DA9E7",
+                "Shape": "triangle",
+                "Acronym": "TCT"
+            },
+            "EiffelTestCaseCanceledEvent": {
+                "Color": "#F1F422",
+                "Shape": "triangle",
+                "Acronym": "TCC"
+            },
+            "EiffelTestCaseFinishedEvent": {
+                "Color": "#93ACB5",
+                "Shape": "triangle",
+                "Acronym": "TCF"
+            },
+            "EiffelTestSuiteStartedEvent": {
+                "Color": "#F6DDA4",
+                "Shape": "triangle",
+                "Acronym": "TSS"
+            },
+            "EiffelTestExecutionRecipeCollectionCreatedEvent": {
+                "Color": "#D9850D",
+                "Shape": "triangle",
+                "Acronym": "TERCC"
+            },
+            "EiffelTestSuiteFinishedEvent": {
+                "Color": "#8E8757",
+                "Shape": "triangle",
+                "Acronym": "TSF"
+            },
+            "EiffelAnnouncementPublishedEvent": {
+                "Color": "#D86EB3",
+                "Shape": "star",
+                "Acronym": "AnnP"
+            },
+            "EiffelCompositionDefinedEvent": {
+                "Color": "#2DA9E7",
+                "Shape": "star",
+                "Acronym": "CD"
+            },
+            "EiffelConfidenceLevelModifiedEvent": {
+                "Color": "#F1F422",
+                "Shape": "star",
+                "Acronym": "CLM"
+            },
+            "EiffelEnvironmentDefinedEvent": {
+                "Color": "#93ACB5",
+                "Shape": "star",
+                "Acronym": "ED"
+            },
+            "EiffelFlowContextDefinedEvent": {
+                "Color": "#F6DDA4",
+                "Shape": "star",
+                "Acronym": "FCD"
+            },
+            "EiffelIssueDefinedEvent": {
+                "Color": "#D9850D",
+                "Shape": "circle",
+                "Acronym": "ID"
+            },
+            "EiffelIssueVerifiedEvent": {
+                "Color": "#8E8757",
+                "Shape": "circle",
+                "Acronym": "IV"
+            },
+            "EiffelSourceChangeCreatedEvent": {
+                "Color": "#D86EB3",
+                "Shape": "diamond",
+                "Acronym": "SCC"
+            },
+            "EiffelSourceChangeSubmittedEvent": {
+                "Color": "#2DA9E7",
+                "Shape": "diamond",
+                "Acronym": "SCS"
+            }
+        },
+        "Link": {
+            "PRECURSOR": "#ff1744",
+            "CAUSE": "#2979ff",
+            "CONTEXT": "#00e676",
+            "FLOW_CONTEXT": "#ff9100"
+        }
+    }
+}
