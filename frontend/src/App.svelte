@@ -15,6 +15,7 @@
     fixed_query_to_norm,
   } from "./uitypes";
   import { deep_copy } from "./utils";
+  import config from "./config.json";
 
   import config from "./config.json";
 
@@ -243,7 +244,7 @@
         consume_query = {consume_query}
         selected_node ={selected_node}
         graph_options = {graph_options}
-        colors = {colors}
+        styles = {styles}
       />
       <!-- Graph with listeners -->
     <G6Graph

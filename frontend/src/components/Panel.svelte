@@ -25,7 +25,7 @@
     export let  qhistory: FixedQuery[];  
     export let selected_node: FullEvent | null;
     export let graph_options: GraphSettings;
-    export let colors: Object; 
+    export let styles: Object; 
 
   
   
@@ -35,15 +35,15 @@
     <ul class="menu menu-compact">
         <li>
           <div
-          class="overflow-x-auto overflow-y-auto bottom-80 shadow-md fixed bg-base-200 w-0 h-fit rounded-box"
+          class="overflow-x-auto overflow-y-auto top-0 shadow-md fixed bg-base-200 w-0 h-fit rounded-box"
           class:show={show_legend_placeholder}
           >
-            <ColorLegend {colors} />
+            <ColorLegend {styles} />
           </div>
         </li>
         <li>
           <div
-            class="overflow-x-auto overflow-y-auto fixed bottom-80 shadow-md bg-base-200 w-0 h-fit rounded-box mb-0"
+            class="overflow-x-auto overflow-y-auto fixed top-0 shadow-md bg-base-200 w-0 h-fit rounded-box mb-0"
             class:show={show_menu_placeholder}
           >
             <GraphOptions
