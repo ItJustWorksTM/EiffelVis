@@ -7,6 +7,8 @@
   import EventDetail from "./components/EventDetail.svelte";
   import GraphOptions from "./components/GraphOptions.svelte";
   import ColorLegend from "./components/ColorLegend.svelte";
+  import { get } from 'svelte/store';
+  import { interactiveMode} from './store';
 
   import { query_eq } from "./apidefinition";
   import {
@@ -19,40 +21,30 @@
   import config from "./config.json";
 
   let graph_elem: G6Graph | null;
-
   export let connection: EiffelVisConnection;
-
   let active_stream: QueryStream | null = null;
   let awaiting_query_request = false;
-
   let selected_node = null;
-
   let show_menu = false;
   let show_legend = true;
   let show_timebar = false;
-
   let customTheme = config.Theme.ColorBlind;
   let themeMap = new Map(Object.entries(customTheme));
   let legend = themeMap;
   $: styles = [...legend.entries()];
-
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
-
   let qhistory: FixedQuery[] = [];
-
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
     event_filters: [empty_fixed_event_filters()],
     collection: { type: "Forward" },
   };
-
   $: current_query_changed =
     qhistory.length > 0 &&
     !query_eq(
       fixed_query_to_norm(current_query),
       fixed_query_to_norm(qhistory[qhistory.length - 1])
     );
-
   let graph_options: GraphSettings = {
     offset: 0,
     time_diff: 1000,
@@ -61,7 +53,6 @@
     y_sep: 60,
     hue: 360,
   };
-
   $: {
     if (graph_elem) {
       // TODO: split up?
@@ -76,14 +67,14 @@
   let time = new Date();
   let show_message = false; 
   let dayToDisplay = null; 
-  let minLastEventRecieved = 0; 
-  let hourLastEventRecieved = 0; 
   let dayLastEventRecieved = 0; 
   let monthLastEventRecieved = 0; 
   let yearLastEventRecieved = 0; 
   let recievedNewNode = false; 
-  let currentDay = 0; 
+  let currentDay = 0;
+  let displayTime = null;
   
+
 
 const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
   let time = new Date();
@@ -97,6 +88,8 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   }else if (currentDay - dayLastEventRecieved> 1){
       dayToDisplay = yearLastEventRecieved.toString() + "-"+ monthLastEventRecieved.toString()+ "-" +dayLastEventRecieved.toString();
   }
+
+
   
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
@@ -122,19 +115,20 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     awaiting_query_request = false;
     graph_elem.reset();
     let once = true;
-
     for await (const event of iter) {
       layout.apply(event, graph_options);
       graph_elem.push(event);
 
+      graph_elem.nonInteractiveMode(event,$interactiveMode);
       //every time a node is pushed to the graph the variables are updated
       recievedNewNode = true;
       show_message = false; 
       dayLastEventRecieved = time.getDate(); 
       monthLastEventRecieved = time.getMonth();
       yearLastEventRecieved = time.getFullYear();
-      minLastEventRecieved = time.getMinutes();
-      hourLastEventRecieved = time.getHours();
+      displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+
+
        
       // TODO: Find a better way to do this
       if (once) {
@@ -149,9 +143,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     startTimer();
     
   };
-
   const submit_state_query = () => submit_query(current_query);
-
   const submit_query = (fquery: FixedQuery) => {
     const new_query = fixed_query_to_norm(fquery);
     active_stream = (() => {
@@ -169,15 +161,12 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         return ret;
       }
     })();
-
     consume_query();
     qhistory = [...qhistory, deep_copy(fquery)];
     show_timebar = false;
     graph_elem.updateTimeBar(show_timebar);
   };
-
   const add_filter = () => {};
-
   // TODO: add loading for this
   const on_node_selected = async (e: any) => {
     if (e.detail?.target) {
@@ -188,18 +177,14 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       selected_node = null;
     }
   };
-
   const use_selected_as_root = () => {
     current_query.collection = { type: "AsRoots" };
     current_query.range_filter = { begin: null, end: null };
-
     const filters = empty_fixed_event_filters();
     filters.ids.pred.ids = [selected_node.meta.id];
     current_query.event_filters = [filters];
-
     submit_state_query();
   };
-
   const reset_graph_options = () => {
     graph_options = {
       offset: 0,
@@ -211,26 +196,24 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     };
     consume_query();
   };
-
   const toggleMenu = () => {
     if (show_legend) {
       toggleLegend();
     }
     show_menu = !show_menu;
   };
-
   const toggleLegend = () => {
     if (show_menu) {
       toggleMenu();
     }
     show_legend = !show_legend;
   };
-
   const options = {
     width: 400,
     height: 400,
     workerEnabled: false,
     fitView: true,
+    fitViewPadding:[0,0,0,800],
     groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
@@ -265,7 +248,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     }
   };
 </script>
-
 <div class="m-0 h-screen bg-base-300">
   <div
     class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
@@ -273,6 +255,22 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   >
     <div class="block m-6">
       <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
+        <li>
+          <a
+            class=""
+            class:btn-active={interactiveMode}
+            on:click={() => ( ( $interactiveMode=!$interactiveMode) )}
+          >
+          <svg class="svg-icon" viewBox="0 0 24 24" >
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="4"
+            fill="#ffffff"
+            d="M12.522,10.4l-3.559,3.562c-0.172,0.173-0.451,0.176-0.625,0c-0.173-0.173-0.173-0.451,0-0.624l3.248-3.25L8.161,6.662c-0.173-0.173-0.173-0.452,0-0.624c0.172-0.175,0.451-0.175,0.624,0l3.738,3.736C12.695,9.947,12.695,10.228,12.522,10.4 M18.406,10c0,4.644-3.764,8.406-8.406,8.406c-4.644,0-8.406-3.763-8.406-8.406S5.356,1.594,10,1.594C14.643,1.594,18.406,5.356,18.406,10M17.521,10c0-4.148-3.374-7.521-7.521-7.521c-4.148,0-7.521,3.374-7.521,7.521c0,4.147,3.374,7.521,7.521,7.521C14.147,17.521,17.521,14.147,17.521,10"></path>
+          </svg>
+          </a>
+        </li>
         <li>
           <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
             <svg
@@ -366,7 +364,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       <ColorLegend {styles} />
     </div>
   </div>
-
   <div
     style="z-index:1"
     class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
@@ -413,7 +410,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
              class:hidden={!show_message}
              class:show= {show_message}
              >
-    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {hourLastEventRecieved}:{minLastEventRecieved}</span> 
+    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
   </div>
   <G6Graph
     on:nodeselected={on_node_selected}
@@ -422,7 +419,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     data={{}}
   />
 </div>
-
 <style lang="postcss" global>
   @tailwind base;
   @tailwind components;
@@ -438,7 +434,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     -webkit-appearance: none;
     margin: 0;
   }
-
   /* Firefox */
   input[type="number"] {
     -moz-appearance: textfield;
