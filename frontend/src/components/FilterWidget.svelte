@@ -11,8 +11,8 @@
 
     import LineInputList from "./LineInputList.svelte";
 
-    const filter_types = ["Id", "Type", "Source", "Host", "Tag"];
-    let active_filter = "Id";
+    const filter_types: string[] = ["Id", "Type", "Source", "Host", "Tag"];
+    let active_filter: string = "Id";
 
     // TODO: Maybe just fixed filter?
     export let ids: EventFilter<Id>;

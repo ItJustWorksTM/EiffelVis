@@ -6,36 +6,31 @@
   import G6Graph from "./components/G6Graph.svelte";
   import SideBar from "./components/SideBar.svelte";
   import Panel from "./components/Panel.svelte";
+  import { FullEvent, query_eq } from "./apidefinition";
+  import { deep_copy } from "./utils";
+  import config from "./config.json";
 
-
-  import { query_eq } from "./apidefinition";
   import {
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
   } from "./uitypes";
-  import { deep_copy } from "./utils";
-  import config from "./config.json";
-
-  import config from "./config.json";
-
-
-  let graph_elem: G6Graph | null;
 
   export let connection: EiffelVisConnection;
 
+  let graph_elem: G6Graph | null;
   let active_stream: QueryStream | null = null;
   let awaiting_query_request = false;
 
-  let selected_node = null;
+  let selected_node: FullEvent | null;
 
-  let show_menu = false;
-  let show_legend = true;
-  let show_timebar = false;
+  let show_menu:boolean = false;
+  let show_legend:boolean = true;
+  let show_timebar:boolean = false;
 
-  let customTheme = config.Theme.ColorBlind;
-  let themeMap = new Map(Object.entries(customTheme));
-  let legend = themeMap;
+  let customTheme: Object = config.Theme.ColorBlind;
+  let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
+  let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
 
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];

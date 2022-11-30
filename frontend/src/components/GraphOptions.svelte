@@ -1,6 +1,5 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-
     import type { GraphSettings } from "../layout";
 
     const dispatch = createEventDispatcher();

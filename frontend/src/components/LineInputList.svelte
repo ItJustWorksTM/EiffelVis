@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let values;
-    export let placeholder;
+    export let values: string[];
+    export let placeholder: string;
 </script>
 
 <div class="form-control">

@@ -14,21 +14,21 @@ export const defaultNode = {
   type: "???"
 }
 export class StatefulLayout {
-  private timee = 0
-  private posx = 0
-  private posy = 0
-  private log = 1
-  private curve = 0
-  private curveSep = 0
-  private colors = new Map<string, string>()
-  private shapes = new Map<string, string>()
-  private customTheme = config.Theme.ColorBlind
-  private themeMap = new Map(Object.entries(this.customTheme))
+  private timee: number = 0
+  private posx: number = 0
+  private posy: number = 0
+  private log: number = 1
+  private curve: number = 0
+  private curveSep: number = 0
+  private colors: Map<string, string> = new Map<string, string>()
+  private shapes: Map<string, string> = new Map<string, string>()
+  private customTheme: Object = config.Theme.ColorBlind
+  private themeMap: Map<string, any> = new Map(Object.entries(this.customTheme))
 
 
 
 
-  apply(node: any, graphOptions: GraphSettings) {
+  apply(node: any, graphOptions: GraphSettings) { //the parameter 'any' should be replaced with a specific type? I couldn't find any better alternative. 
     if (this.curve === 0 && graphOptions.offset) {
       this.curve = graphOptions.offset
       this.curveSep = graphOptions.offset
@@ -41,7 +41,7 @@ export class StatefulLayout {
     node.type = this.nodeShape(node.event_type)
 
 
-    const temp = node
+    const temp = node; //since the parameter node(line 31) is of type 'any', the common types for node such as 'Node' or 'Item' from "@antv/g6" are not relevant in this context.
     const tempTime: number = temp.time
     if (tempTime <= this.timee + graphOptions.time_diff) {
       temp.x = this.posx + this.curve
