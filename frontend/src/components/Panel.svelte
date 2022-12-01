@@ -35,7 +35,7 @@
     <ul class="menu menu-compact">
         <li>
           <div
-          class="overflow-x-auto overflow-y-auto top-0 shadow-md fixed bg-base-200 w-0 h-fit rounded-box"
+          class="overflow-x-auto overflow-y-auto top-0 shadow-md fixed bg-base-200 w-0 h-fit rounded-r-lg"
           class:show={show_legend_placeholder}
           >
             <ColorLegend {styles} />
@@ -43,7 +43,7 @@
         </li>
         <li>
           <div
-            class="overflow-x-auto overflow-y-auto fixed top-0 shadow-md bg-base-200 w-0 h-fit rounded-box mb-0"
+            class="overflow-x-auto overflow-y-auto fixed top-0 shadow-md bg-base-200 w-0 h-fit mb-0 rounded-r-lg"
             class:show={show_menu_placeholder}
           >
             <GraphOptions
@@ -55,7 +55,7 @@
         </li>
         <li>
             <div
-              class="p-3 bg-base-200 shadow-md rounded-box h-fit bottom-0 fixed w-fit m-0" 
+              class="p-3 bg-base-200 shadow-md h-fit bottom-0 fixed w-fit m-0 rounded-r-lg" 
             >
               <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
                 <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
