@@ -1,5 +1,5 @@
 import config from "./config.json";
-
+import type { Event } from "./apidefinition"
 export interface GraphSettings {
   offset: number
   time_diff: number
@@ -12,6 +12,15 @@ export const defaultNode = {
   color: "#93ACB5",
   shape: "diamond",
   type: "???"
+}
+type node = Event & {
+  event_type: string
+  style?: object 
+  size?: number
+  type?: string
+  time: number
+  x?: number
+  y?: number
 }
 export class StatefulLayout {
   private timee: number = 0
@@ -28,7 +37,7 @@ export class StatefulLayout {
 
 
 
-  apply(node: any, graphOptions: GraphSettings) { //the parameter 'any' should be replaced with a specific type? I couldn't find any better alternative. 
+  apply(node: node, graphOptions: GraphSettings) { 
     if (this.curve === 0 && graphOptions.offset) {
       this.curve = graphOptions.offset
       this.curveSep = graphOptions.offset
@@ -41,7 +50,7 @@ export class StatefulLayout {
     node.type = this.nodeShape(node.event_type)
 
 
-    const temp = node; //since the parameter node(line 31) is of type 'any', the common types for node such as 'Node' or 'Item' from "@antv/g6" are not relevant in this context.
+    const temp: node = node;
     const tempTime: number = temp.time
     if (tempTime <= this.timee + graphOptions.time_diff) {
       temp.x = this.posx + this.curve
@@ -69,7 +78,7 @@ export class StatefulLayout {
     }
   }
 
-  nodeColor(eventType: string) {
+  nodeColor(eventType: string): string {
     if (!this.themeMap.has(eventType)) {
       // defaultNode color
       return defaultNode.color
@@ -77,24 +86,24 @@ export class StatefulLayout {
     return this.themeMap.get(eventType).Color
   }
 
-  getNodeColor() {
+  getNodeColor(): Map<string, string> {
     return this.colors
   }
-  getNodeShape() {
+ getNodeShape(): Map<string, string> {
     return this.shapes
   }
 
-  getNodeStyle() {
+  getNodeStyle(): Map<string, any> {
     return this.themeMap
   }
-  nodeShape(eventType: string) {
+  nodeShape(eventType: string): string {
     if (!this.themeMap.has(eventType)) {
       return defaultNode.shape
     }
 
     return this.themeMap.get(eventType).Shape
   }
-  nodeLabel(eventType: string) {
+  nodeLabel(eventType: string): string {
     if (!this.themeMap.has(eventType)) {
       return defaultNode.type
     }
