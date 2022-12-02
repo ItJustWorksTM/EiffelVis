@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["app","Contains [EiffelGraph] and implements some special operations for it"],["types","Eiffel Event types"],["user_queries","Query types and functions to acquire specific data from an [EiffelGraph]"]]};
+window.SIDEBAR_ITEMS = {"mod":[["app","Contains [EiffelGraph] and implements some special operations for it"],["event_filter","Provides single node filtering."],["types","Eiffel Event types"],["user_queries","Query types and functions to acquire specific data from an [EiffelGraph]"]]};

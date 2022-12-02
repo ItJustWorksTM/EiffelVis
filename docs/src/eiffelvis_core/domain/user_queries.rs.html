@@ -152,29 +152,8 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
-    domain::types::BaseEvent,
+    domain::{event_filter::EventFilterMeta, types::BaseEvent},
     graph::<span class="kw-2">*</span>,
     tracked_query::{TrackedNodes, TrackedSubGraphs},
 };
@@ -208,29 +187,6 @@
     end: <span class="prelude-ty">Option</span>&lt;RangeFilterBound&gt;,
 }
 
-<span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
-</span><span class="kw">pub struct </span>EventFilterMeta {
-    <span class="doccomment">/// Reverses the predicate&#39;s result if true
-    </span><span class="attribute">#[serde(default)]
-    </span>rev: bool,
-    pred: EventFilter,
-}
-
-<span class="attribute">#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = <span class="string">&quot;type&quot;</span>)]
-</span><span class="kw">pub enum </span>EventFilter {
-    <span class="doccomment">/// Event Type
-    </span>Type { names: Vec&lt;String&gt; },
-    <span class="doccomment">/// Specific ids
-    </span>Id { ids: Vec&lt;Uuid&gt; },
-    <span class="doccomment">/// meta.tags
-    </span>Tag { tags: Vec&lt;String&gt; },
-    <span class="doccomment">/// meta.source.host
-    </span>SourceHost { hosts: Vec&lt;String&gt; },
-    <span class="doccomment">/// meta.source.name
-    </span>SourceName { names: Vec&lt;String&gt; },
-}
-
 <span class="doccomment">/// Used collection method,
 /// selected variant is run **after** filtering has been done,
 /// this means you can get nodes back that may not filfull the filter requirements.
@@ -254,6 +210,24 @@
 <span class="kw">enum </span>Collector&lt;I&gt; {
     Forward,
     SubGraph(TrackedSubGraphs&lt;I&gt;),
+}
+
+<span class="kw">impl</span>&lt;I&gt; Collector&lt;I&gt; {
+    <span class="kw">fn </span>collect_nodes&lt;<span class="lifetime">&#39;a</span>, G, R, IterT&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>G, iter: IterT) -&gt; Vec&lt;R&gt;
+    <span class="kw">where
+        </span>G: Graph&lt;Data = BaseEvent, Idx = I, Key = Uuid&gt; + Indexable&lt;usize&gt;,
+        R: From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BaseEvent&gt; + <span class="lifetime">&#39;static</span>,
+        I: Idx,
+        IterT: Iterator&lt;Item = NodeType&lt;<span class="lifetime">&#39;a</span>, G&gt;&gt;,
+    {
+        <span class="kw">match </span><span class="self">self </span>{
+            Collector::Forward =&gt; iter.map(|v| R::from(v.data())).collect(),
+            Collector::SubGraph(<span class="kw-2">ref mut </span>sub) =&gt; {
+                iter.for_each(|v| sub.add_id(v.id()));
+                sub.handle(graph).map(|v| R::from(v.data())).collect()
+            }
+        }
+    }
 }
 
 <span class="kw">impl</span>&lt;I&gt; TrackedQuery&lt;I&gt; {
@@ -318,33 +292,17 @@
             <span class="self">self</span>.inner.as_mut().unwrap()
         };
 
-        <span class="kw">let </span>fresh = inner.handle(graph);
-        <span class="kw">let </span>iter = fresh.filter(|node| {
-            <span class="kw">if </span><span class="self">self</span>.event_filters.is_empty() {
-                <span class="bool-val">true
-            </span>} <span class="kw">else </span>{
-                <span class="self">self</span>.event_filters.iter().filter(|v| !v.is_empty()).any(|filters| {
-                    filters.iter().all(|filter| <span class="kw">match </span><span class="kw-2">&amp;</span>filter.pred {
-                        EventFilter::Type { names: <span class="kw-2">ref </span>name } =&gt; name.iter().any(|name| <span class="kw-2">&amp;</span>node.data().meta.event_type == name),
-                        EventFilter::Id { ids } =&gt;
-                            ids.iter().any(|id| graph.get(<span class="kw-2">*</span>id).map(|n| n.id() == node.id()).unwrap_or(<span class="bool-val">false</span>)),
-                        EventFilter::Tag { tags } =&gt;
-                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(<span class="bool-val">false</span>)),
-                        EventFilter::SourceHost { hosts } =&gt;
-                            hosts.iter().any(|host|node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(<span class="bool-val">false</span>)),
-                        EventFilter::SourceName { names } =&gt;
-                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(<span class="bool-val">false</span>)),
-                    } ^ filter.rev)
-                })
-            }
-        });
-
-        <span class="kw">match </span><span class="self">self</span>.collector {
-            Collector::Forward =&gt; iter.map(|v| R::from(v.data())).collect(),
-            Collector::SubGraph(<span class="kw-2">ref mut </span>sub) =&gt; {
-                iter.for_each(|v| sub.add_id(v.id()));
-                sub.handle(graph).map(|v| R::from(v.data())).collect()
-            }
+        <span class="kw">if </span><span class="self">self</span>.event_filters.is_empty() {
+            <span class="kw">let </span>iter = inner.handle(graph);
+            <span class="self">self</span>.collector.collect_nodes(graph, iter)
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>iter = inner.handle(graph).filter(|node| {
+                <span class="self">self</span>.event_filters
+                    .iter()
+                    .filter(|v| !v.is_empty())
+                    .any(|filters| filters.iter().all(|filter| filter.do_filter(graph, node)))
+            });
+            <span class="self">self</span>.collector.collect_nodes(graph, iter)
         }
     }
 }
