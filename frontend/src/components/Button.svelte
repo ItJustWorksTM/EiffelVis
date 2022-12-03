@@ -5,7 +5,7 @@
     
 </script>
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="" class:btn-active={btnState} on:click={onClickAction}>
+<a class:active={btnState} on:click={onClickAction}>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
