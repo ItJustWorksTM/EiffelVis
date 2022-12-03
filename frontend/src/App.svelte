@@ -212,7 +212,7 @@
   };
 </script>
 
-<div class="flex fixed m-0 h-screen w-screen bg-base-100">
+<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <SideBar 
     show_timebar= {show_timebar}
@@ -222,7 +222,7 @@
     toggleLegendPlaceholder = {toggleLegend} 
     updateTimeBarPlaceholder = {updateTimebar}
   />
-  <div class="grid w-screen h-screen overflow-auto align-bottom justify-bottom items-end"
+  <div class="grid w-screen h-screens"
         style="z-index:1"
       >   <!-- panels  -->
       <Panel 
