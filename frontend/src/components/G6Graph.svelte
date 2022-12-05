@@ -12,7 +12,7 @@
   export let options = {};
   export let data = {};
 
-    let nodePoint = 0; 
+    let nodePoint = 0;
 
     let container: HTMLElement;
     let graph: Graph | null;
@@ -41,21 +41,22 @@
 
     export const nonInteractiveMode = (e:any , modeDisabled:boolean) =>{
         if(modeDisabled == true){
-            graph.translate(0,0);
+            graph.translate(0,0); // to disable nonInteractive mode
         }
         else{
             let oldNodePoint = nodePoint;
             let scrollDistance  = 0;
-            let scrollDistanceWithRatio =0;
-            let zoomRatio = graph.getZoom();
+            let scrollDistanceWithRatio = 0;
+            let zoomRatio = graph.getZoom(); 
             nodePoint = e.x - container.scrollWidth;
-            if(nodePoint != oldNodePoint){
-              scrollDistance = nodePoint - oldNodePoint;
-              scrollDistanceWithRatio = scrollDistance*zoomRatio
+            if(nodePoint != oldNodePoint){ // find out if node has moved to new position
+              scrollDistance = nodePoint - oldNodePoint; 
+              scrollDistanceWithRatio = scrollDistance*zoomRatio // to recalculate translation based on zoom ratio
               graph.translate(-scrollDistanceWithRatio,0);
             }
         }
     }
+    //non-InteractiveMode function to calculate how much translation the graph should make
 
     export const push = (ev: any) => {
       ev.date = String(ev.time);
@@ -229,8 +230,6 @@
       graph.on("node:mouseleave", (e) => {
         if (e.item instanceof Node){
           hideRelations(e.item);
-          $interactiveMode= false;
-          nonInteractiveMode(e,$interactiveMode);
         }
         
       });
@@ -244,14 +243,15 @@
                 )
         })         
         
+        // deactivate on graph interactions such as drag ,mouseenter and node click   
         graph.on("canvas:drag", (e:IG6GraphEvent) => { 
                 $interactiveMode= true;
                 nonInteractiveMode(e,$interactiveMode);
             })
-
+        
         graph.on("node:click", (e:IG6GraphEvent) => { 
-            $interactiveMode= true;
-            nonInteractiveMode(e,$interactiveMode);
+              $interactiveMode= true;
+              nonInteractiveMode(e,$interactiveMode);
         })
 
       graph.changeData(data);

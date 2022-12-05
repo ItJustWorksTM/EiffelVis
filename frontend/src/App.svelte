@@ -68,11 +68,10 @@
   let show_message = false; 
   let dayToDisplay = null; 
   let dayLastEventRecieved = 0; 
-  let monthLastEventRecieved = 0; 
-  let yearLastEventRecieved = 0; 
   let recievedNewNode = false; 
   let currentDay = 0;
   let displayTime = null;
+  let displayDate = null;
   
 
 
@@ -86,7 +85,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     
       dayToDisplay = "YESTERDAY"; 
   }else if (currentDay - dayLastEventRecieved> 1){
-      dayToDisplay = yearLastEventRecieved.toString() + "-"+ monthLastEventRecieved.toString()+ "-" +dayLastEventRecieved.toString();
+      dayToDisplay = displayDate;
   }
 
 
@@ -124,8 +123,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       recievedNewNode = true;
       show_message = false; 
       dayLastEventRecieved = time.getDate(); 
-      monthLastEventRecieved = time.getMonth();
-      yearLastEventRecieved = time.getFullYear();
+      displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
       displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
 
 
@@ -213,7 +211,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     height: 400,
     workerEnabled: false,
     fitView: true,
-    fitViewPadding:[0,0,0,800],
+    fitViewPadding:[0,0,0,600],
     groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
@@ -400,13 +398,13 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       </div>
     </div>
   </div>
-  <div class="w-fit h-10
-            right-3
+  <div class="right-5
              top-10
              fixed
              mr-10
-             mb-6            
+             mb-6           
              "
+       style="white-space: nowrap;"      
              class:hidden={!show_message}
              class:show= {show_message}
              >
@@ -438,4 +436,5 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
 </style>
