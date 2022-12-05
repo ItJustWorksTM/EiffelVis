@@ -12,7 +12,7 @@
   export let options = {};
   export let data = {};
 
-    let nodePoint = 0;
+    let nodePoint:number = 0;
 
     let container: HTMLElement;
     let graph: Graph | null;
@@ -44,10 +44,10 @@
             graph.translate(0,0); // to disable nonInteractive mode
         }
         else{
-            let oldNodePoint = nodePoint;
-            let scrollDistance  = 0;
-            let scrollDistanceWithRatio = 0;
-            let zoomRatio = graph.getZoom(); 
+            let oldNodePoint:number = nodePoint;
+            let scrollDistance:number  = 0;
+            let scrollDistanceWithRatio:number = 0;
+            let zoomRatio:number = graph.getZoom(); 
             nodePoint = e.x - container.scrollWidth;
             if(nodePoint != oldNodePoint){ // find out if node has moved to new position
               scrollDistance = nodePoint - oldNodePoint; 

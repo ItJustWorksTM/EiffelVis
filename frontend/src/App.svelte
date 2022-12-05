@@ -64,32 +64,28 @@
 
 
                                                                // non-interactive mode variables
-  let time = new Date();
-  let show_message = false; 
-  let dayToDisplay = null; 
-  let dayLastEventRecieved = 0; 
-  let recievedNewNode = false; 
-  let currentDay = 0;
-  let displayTime = null;
-  let displayDate = null;
+  let time:Date = new Date();
+  let show_message:boolean = false; 
+  let dayToDisplay:string = null; 
+  let dayLastEventRecieved:number = 0; 
+  let recievedNewNode:boolean = false; 
+  let displayTime:string = null;
+  let displayDate:string = null;
   
 
 
 const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
-  let time = new Date();
-  currentDay = time.getDate();
-  if (currentDay = dayLastEventRecieved){
+  let time:Date = new Date();
+  if ( time.getDate() == dayLastEventRecieved){
       dayToDisplay = "TODAY"; 
       
-  }else if (currentDay - dayLastEventRecieved == 1){
+  }else if (time.getDate() - dayLastEventRecieved == 1){
     
       dayToDisplay = "YESTERDAY"; 
-  }else if (currentDay - dayLastEventRecieved> 1){
+  }else if (time.getDate() - dayLastEventRecieved> 1){
       dayToDisplay = displayDate;
   }
 
-
-  
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
     console.log("recieved no new node")
