@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import Button from "./Button.svelte";
 
    export let show_menu: boolean;
@@ -9,7 +8,6 @@
    export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
    export let toggleMenuPlaceholder: () => void;  
    export let toggleLegendPlaceholder: () => void;
-   
 
 </script>
 <div class="flex h-screen w-16">

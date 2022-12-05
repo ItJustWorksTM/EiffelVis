@@ -18,15 +18,15 @@
 
   export let connection: EiffelVisConnection;
 
-  let graph_elem: G6Graph | null;
-  let active_stream: QueryStream | null = null;
-  let awaiting_query_request = false;
+  let graph_elem: G6Graph = null;
+  let active_stream: QueryStream = null;
+  let awaiting_query_request: boolean = false;
 
-  let selected_node: FullEvent | null;
+  let selected_node: FullEvent = null;
 
-  let show_menu:boolean = false;
-  let show_legend:boolean = true;
-  let show_timebar:boolean = false;
+  let show_menu: boolean = false;
+  let show_legend: boolean = true;
+  let show_timebar: boolean = false;
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -231,13 +231,13 @@
         reset_graph_options_placeholder = {reset_graph_options}
         use_selected_as_root = {use_selected_as_root}
         current_query = {current_query}
-        current_query_changed = {current_query_changed}
+        current_query_changed= {current_query_changed}
         add_filter = {add_filter}
         qhistory = {qhistory}
         awaiting_query_request = {awaiting_query_request}
-        submit_state_query ={submit_state_query}
+        submit_state_query_placeholder = {submit_state_query}
         consume_query = {consume_query}
-        selected_node ={selected_node}
+        selected_node = {selected_node}
         graph_options = {graph_options}
         styles = {styles}
       />

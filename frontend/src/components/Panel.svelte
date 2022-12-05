@@ -1,33 +1,36 @@
 <script lang="ts">
-
     import GraphOptions from "./GraphOptions.svelte";
     import ColorLegend from "./ColorLegend.svelte";
     import EventDetail from "./EventDetail.svelte";
     import QueryForm from "./QueryForm.svelte";
     import type { GraphSettings } from "../layout";
-    import type { FixedQuery } from "../uitypes";
-    import type { FullEvent } from "../apidefinition";
-    
+    import { FixedQuery, fixed_query_to_norm } from "../uitypes";
+    import { FullEvent, query_eq } from "../apidefinition";
+
     //Boolean variables
     export let show_legend_placeholder: boolean; 
     export let show_menu_placeholder: boolean; 
     export let awaiting_query_request: boolean; 
     export let current_query_changed: boolean; 
 
+    $: current_query_changed =
+    qhistory.length > 0 &&
+    !query_eq(
+      fixed_query_to_norm(current_query),
+      fixed_query_to_norm(qhistory[qhistory.length - 1])
+    );
+
     //Object variables; used for onClick actions.
     export let reset_graph_options_placeholder: () => void; 
     export let consume_query: () => void; 
     export let use_selected_as_root: () => void; 
     export let add_filter: () => void; 
-    export let submit_state_query: () => void; 
-
+    export let submit_state_query_placeholder: () => void; 
     export let current_query: FixedQuery; 
     export let  qhistory: FixedQuery[];  
-    export let selected_node: FullEvent | null;
+    export let selected_node: FullEvent;
     export let graph_options: GraphSettings;
     export let styles: Object; 
-
-  
   
   </script>
 
@@ -74,7 +77,7 @@
                       qhistory.pop();
                       current_query = qhistory.pop();
                       qhistory = [...qhistory];
-                      submit_state_query();
+                      submit_state_query_placeholder();
                     }}
                     >{qhistory.length - 1 > 0
                       ? "undo " + (qhistory.length - 1)
@@ -84,7 +87,7 @@
                     class="btn btn-sm btn-primary basis-1/3"
                     class:loading={awaiting_query_request}
                     disabled={awaiting_query_request || !current_query_changed}
-                    on:click={submit_state_query}>submit</button
+                    on:click={submit_state_query_placeholder}>submit</button
                   >
                 </div>
               </div>
@@ -92,3 +95,4 @@
         </li>
       </ul>
   </div>
+  
