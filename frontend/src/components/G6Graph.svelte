@@ -1,18 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Graph, IEdge, IG6GraphEvent, Node } from "@antv/g6";
+  import G6, { Graph, IG6GraphEvent, Item, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-
   const graph_translation: number = 50;
 
   export let options = {};
   export let data = {};
 
   let container: HTMLElement;
-
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
 
@@ -23,6 +21,7 @@
     dispatch("nodeselected", null);
   };
 
+<<<<<<< HEAD
 
   // This is a hack to get the graph to render the entire window width
   export const resizeGraph = () => {
@@ -31,6 +30,19 @@
       const height = Number(window.innerHeight);
       graph.changeSize(width, height);
     }
+=======
+    // This is a hack to get the graph to render the entire window width
+  export const resizeGraph = () => {
+        if (graph && container) {
+            const width = Number(
+                window.innerWidth
+            );
+            const height = Number(
+                window.innerHeight
+            );
+            graph.changeSize(width, height);
+        }
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   };
 
   export const focusNode = (id: any) => {
@@ -86,7 +98,27 @@
     });
   };
 
+<<<<<<< HEAD
   
+=======
+  /**
+   * Helper method that will rearrange the order of items on the z-index (edges behind the nodes)
+   * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
+   * This allows to only manipulate the nodes newly pushed into the graph.
+   * @param event containing a node and its edges.
+   */
+  const edgesToBack = (event) => {
+    const node: Item = graph.findById(event.id);
+    if (node instanceof Node) {
+      const edges = node.getEdges();
+
+      for(const edge of edges){
+        edge.toBack();
+      }
+    }
+    graph.paint();
+  };
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 
   export const updateTimeBar = (timeBarEnabled: boolean) => {
     graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
@@ -304,10 +336,10 @@
     height: 100%;
   }
   .g6TimeBar {
-    background: #131616;
+    background: rgb(33, 33, 32);
     border-radius: 20px;
     position: absolute !important;
-    left: 35%;
+    left: 45%; 
     bottom: 80px;
     z-index: 0;
   }

@@ -17,6 +17,7 @@
     TemperateFilterArray,
   } from "./uitypes";
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   import { deep_copy } from "./utils";
   import G6Graph from "./components/G6Graph.svelte";
@@ -24,6 +25,8 @@
 
   let graph_elem: G6Graph | null;
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
@@ -35,6 +38,7 @@
 
   let selected_node: FullEvent = null;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   let show_menu: boolean = false;
   let show_legend: boolean = true;
@@ -53,6 +57,15 @@
   let themeMap = new Map(Object.entries(customTheme));
   let legend = themeMap;
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+  let show_menu: boolean = false;
+  let show_legend: boolean = true;
+  let show_timebar: boolean = false;
+
+  let customTheme: Object = config.Theme.ColorBlind;
+  let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
+  let legend: Map<string, any> = themeMap;
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   $: styles = [...legend.entries()];
 
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
@@ -247,25 +260,31 @@
 
   const toggleMenu = () => {
     if (show_legend) {
-      toggleLegend();
-    }
+       toggleLegend();
+      }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
     if (show_menu) {
-      toggleMenu();
-    }
+       toggleMenu();
+      }
     show_legend = !show_legend;
   };
 
   //Updates the timebar each time the show timebar button is clicked
+<<<<<<< HEAD
   const updateTimebar = () => {
     (show_timebar = !show_timebar), graph_elem.updateTimeBar(show_timebar);
   };
 
   const toggleInteractiveMode = () => {
     nonInteractiveState = !nonInteractiveState;
+=======
+  const updateTimebar = () =>{  
+            (show_timebar = !show_timebar),
+            graph_elem.updateTimeBar(show_timebar)
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   };
 
   const options = {
@@ -310,6 +329,7 @@
   };
 </script>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <div class="fixed flex m-0 h-screen w-screen bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
@@ -456,7 +476,45 @@
     bind:nonInteractiveState
     {options}
     data={{}}
+=======
+<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
+  <!-- SideBar component: the variables are updated inside App.svelte -->
+  <SideBar 
+    show_timebar= {show_timebar}
+    show_legend = {show_legend}
+    show_menu = {show_menu} 
+    toggleMenuPlaceholder = {toggleMenu} 
+    toggleLegendPlaceholder = {toggleLegend} 
+    updateTimeBarPlaceholder = {updateTimebar}
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   />
+  <div class="grid w-screen h-screens"
+        style="z-index:1"
+      >   <!-- panels  -->
+      <Panel 
+        show_legend_placeholder = {show_legend} 
+        show_menu_placeholder = {show_menu} 
+        reset_graph_options_placeholder = {reset_graph_options}
+        use_selected_as_root = {use_selected_as_root}
+        current_query = {current_query}
+        current_query_changed= {current_query_changed}
+        add_filter = {add_filter}
+        qhistory = {qhistory}
+        awaiting_query_request = {awaiting_query_request}
+        submit_state_query_placeholder = {submit_state_query}
+        consume_query = {consume_query}
+        selected_node = {selected_node}
+        graph_options = {graph_options}
+        styles = {styles}
+      />
+      <!-- Graph with listeners -->
+    <G6Graph
+        on:nodeselected={on_node_selected}
+        bind:this={graph_elem}
+        {options}
+        data={{}}
+    />
+  </div>
 </div>
 
 <style lang="postcss" global>

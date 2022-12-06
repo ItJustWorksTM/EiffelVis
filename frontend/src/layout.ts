@@ -1,9 +1,13 @@
 import config from "./config.json";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import type { Event } from "./apidefinition"
 =======
 
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+import type { Event } from "./apidefinition"
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 export interface GraphSettings {
   offset: number
   time_diff: number
@@ -18,15 +22,22 @@ export const defaultNode = {
   type: "???"
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 type node = Event & {
   event_type: string
   style?: object
+=======
+type node = Event & {
+  event_type: string
+  style?: object 
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   size?: number
   type?: string
   time: number
   x?: number
   y?: number
 }
+<<<<<<< HEAD
 export class StatefulLayout {
   private timee: number = 0
   private posx: number = 0
@@ -39,26 +50,32 @@ export class StatefulLayout {
   private customTheme: Object = config.Theme.ColorBlind
   private themeMap: Map<string, any> = new Map(Object.entries(this.customTheme))
 =======
+=======
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 export class StatefulLayout {
-  private timee = 0
-  private posx = 0
-  private posy = 0
-  private log = 1
-  private curve = 0
-  private curveSep = 0
-  private colors = new Map<string, string>()
-  private shapes = new Map<string, string>()
-  private customTheme = config.Theme.ColorBlind
-  private themeMap = new Map(Object.entries(this.customTheme))
+  private timee: number = 0
+  private posx: number = 0
+  private posy: number = 0
+  private log: number = 1
+  private curve: number = 0
+  private curveSep: number = 0
+  private colors: Map<string, string> = new Map<string, string>()
+  private shapes: Map<string, string> = new Map<string, string>()
+  private customTheme: Object = config.Theme.ColorBlind
+  private themeMap: Map<string, any> = new Map(Object.entries(this.customTheme))
 
 
 
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
 
+<<<<<<< HEAD
 
 
 
   apply(node: node, graphOptions: GraphSettings) {
+=======
+  apply(node: node, graphOptions: GraphSettings) { 
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     if (this.curve === 0 && graphOptions.offset) {
       this.curve = graphOptions.offset
       this.curveSep = graphOptions.offset
@@ -104,10 +121,14 @@ export class StatefulLayout {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   nodeColor(eventType: string): string {
 =======
   nodeColor(eventType: string) {
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+  nodeColor(eventType: string): string {
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     if (!this.themeMap.has(eventType)) {
       // defaultNode color
       return defaultNode.color
@@ -119,6 +140,7 @@ export class StatefulLayout {
     return this.colors
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
   getNodeShape(): Map<string, string> {
     return this.shapes
   }
@@ -129,14 +151,21 @@ export class StatefulLayout {
   nodeShape(eventType: string): string {
 =======
   getNodeShape() {
+=======
+ getNodeShape(): Map<string, string> {
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     return this.shapes
   }
 
-  getNodeStyle() {
+  getNodeStyle(): Map<string, any> {
     return this.themeMap
   }
+<<<<<<< HEAD
   nodeShape(eventType: string) {
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+  nodeShape(eventType: string): string {
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     if (!this.themeMap.has(eventType)) {
       return defaultNode.shape
     }
@@ -144,10 +173,14 @@ export class StatefulLayout {
     return this.themeMap.get(eventType).Shape
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
   nodeLabel(eventType: string): string {
 =======
   nodeLabel(eventType: string) {
 >>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
+=======
+  nodeLabel(eventType: string): string {
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     if (!this.themeMap.has(eventType)) {
       return defaultNode.type
     }

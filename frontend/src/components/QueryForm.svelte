@@ -1,4 +1,5 @@
 <script lang="ts">
+<<<<<<< HEAD
     import type {
         EventFilter,
         Id,
@@ -14,6 +15,10 @@
         FixedQuery,
         TemperateFilterArray,
     } from "../uitypes";
+=======
+    import type { RangeFilterBound } from "../apidefinition";
+    import type { FixedQuery } from "../uitypes";
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     import FilterWidget from "./FilterWidget.svelte";
 
     const range_modes: string[] = ["None", "Time", "Absolute", "Ids"];

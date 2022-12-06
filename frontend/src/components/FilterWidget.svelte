@@ -19,6 +19,7 @@
     import Input from "./TextInput.svelte";
 >>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 
+<<<<<<< HEAD
     let selected = filter_types[0];
     let inputValue = "";
     export let tempFilterArray: TemperateFilterArray = [];
@@ -56,6 +57,20 @@
             disabled={inputValue == ""}>+</button
 =======
 <div class="w-full h-full">
+=======
+    const filter_types: string[] = ["Id", "Type", "Source", "Host", "Tag"];
+    let active_filter: string = "Id";
+
+    // TODO: Maybe just fixed filter?
+    export let ids: EventFilter<Id>;
+    export let tags: EventFilter<Tag>;
+    export let types: EventFilter<Type>;
+    export let sourcehosts: EventFilter<SourceHost>;
+    export let sourcenames: EventFilter<SourceName>;
+</script>
+
+<div class="w-full h-full flex flex-col">
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
     <div class="tabs tabs-boxed">
         {#each filter_types as type}
             <a

@@ -1,11 +1,15 @@
 <script lang="ts">
 <<<<<<< HEAD
+<<<<<<< HEAD
     export let values = [];
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 =======
 
     export let values;
 >>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
+=======
+    export let values: string[];
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 </script>
 
 <div class="form-control">

@@ -81,6 +81,7 @@ To contribute to this repository, please see the [contribution guidelines](./CON
 If you would like to read more about the algorithm used by EiffelVis, please see the [algorithm concept](./frontend/README.md#layout-algorithm).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.  
 
 # Event Sender and testing instructions (for default rabbitmq configuration)
@@ -89,6 +90,10 @@ Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
   `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac.
 =======
 Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
+=======
+Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.  
+
+>>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 # Event Sender and testing instructions (for default rabbitmq configuration)
 
 1. start your rabbitmq server 
