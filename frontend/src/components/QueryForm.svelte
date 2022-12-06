@@ -1,15 +1,13 @@
 <script lang="ts">
     import type { RangeFilterBound } from "../apidefinition";
     import type { FixedQuery } from "../uitypes";
-
     import FilterWidget from "./FilterWidget.svelte";
 
-    const range_modes = ["None", "Time", "Absolute", "Ids"];
-
+    const range_modes: string[] = ["None", "Time", "Absolute", "Ids"];
     const collection_modes: ("Forward" | "AsRoots")[] = ["Forward", "AsRoots"];
 
-    let begin_mode = "None";
-    let end_mode = "None";
+    let begin_mode: string = "None";
+    let end_mode: string = "None";
 
     export let query: FixedQuery;
 
