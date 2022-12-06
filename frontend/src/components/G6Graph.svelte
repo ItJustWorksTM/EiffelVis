@@ -38,6 +38,7 @@
       graph.focusItem(id);
     };
 
+     //non-InteractiveMode function to calculate how much translation the graph should make
     export const nonInteractiveMode = (e:any , modeDisabled:boolean) =>{
         if(modeDisabled == true){
             graph.translate(0,0); // to disable nonInteractive mode
@@ -55,38 +56,9 @@
             }
         }
     }
-    //non-InteractiveMode function to calculate how much translation the graph should make
+
 
     export const push = (ev: any) => {
-      ev.date = String(ev.time);
-      graph.addItem("node", ev, false, false);
-      for (const edge of ev.edges) {
-        graph.addItem("edge", {
-          source: ev.id,
-          target: edge.target,
-          label: edge.type,
-        }); // the type of link is connected to the label of the edge here.
-      }
-      edgesToBack(ev); // put all edges attached to the node behind the nodes (needed when using groupByTypes: false);
-      timeBarData.push({
-        date: ev.date,
-        value: "1",
-      });
-    };
-    /**
-     * Helper method that will rearrange the order of items on the z-index (edges behind the nodes)
-     * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
-     * This allows to only manipulate the nodes newly pushed into the graph.
-     * @param event containing a node and its edges.
-     */
-    const edgesToBack = (event) => {
-      const node = graph.findById(event.id);
-      if (node instanceof Node) {
-        const edges = node.getEdges();
-        for(const edge of edges){
-          edge.toBack();
-        }
-  export const push = (ev: any) => {
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
     for (const edge of ev.edges) {
@@ -96,15 +68,12 @@
         label: edge.type,
       }); // the type of link is connected to the label of the edge here.
     }
-
     edgesToBack(ev); // put all edges attached to the node behind the nodes (needed when using groupByTypes: false);
-
     timeBarData.push({
       date: ev.date,
       value: "1",
     });
   };
-
   /**
    * Helper method that will rearrange the order of items on the z-index (edges behind the nodes)
    * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
@@ -115,12 +84,12 @@
     const node: Item = graph.findById(event.id);
     if (node instanceof Node) {
       const edges = node.getEdges();
-
       for(const edge of edges){
         edge.toBack();
       }
-      graph.paint();
-    };
+    }
+    graph.paint();
+  };
     export const updateTimeBar = (timeBarEnabled: boolean) => {
       graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
       if (!timeBarEnabled) {

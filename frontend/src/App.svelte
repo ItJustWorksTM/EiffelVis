@@ -3,11 +3,6 @@
   import G6 from "@antv/g6";
   import { QueryStream, EiffelVisConnection } from "./eiffelvis";
   import { GraphSettings, StatefulLayout } from "./layout";
-  import QueryForm from "./components/QueryForm.svelte";
-  import EventDetail from "./components/EventDetail.svelte";
-  import GraphOptions from "./components/GraphOptions.svelte";
-  import ColorLegend from "./components/ColorLegend.svelte";
-  import { get } from 'svelte/store';
   import { interactiveMode} from './store';
   import G6Graph from "./components/G6Graph.svelte";
   import SideBar from "./components/SideBar.svelte";
@@ -33,6 +28,7 @@
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
+  $interactiveMode = false;
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -70,7 +66,6 @@
 
 
                                                                // non-interactive mode variables
-  let time:Date = new Date();
   let show_message:boolean = false; 
   let dayToDisplay:string = null; 
   let dayLastEventRecieved:number = 0; 
@@ -94,6 +89,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
+    $interactiveMode = false;
     console.log("recieved no new node")
   }else{
     show_message = false;
@@ -121,13 +117,15 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       graph_elem.push(event);
 
       graph_elem.nonInteractiveMode(event,$interactiveMode);
+    
       //every time a node is pushed to the graph the variables are updated
-      recievedNewNode = true;
-      show_message = false; 
+      let timeJson:number = event.time;
+      let time:Date = new Date(timeJson);
       dayLastEventRecieved = time.getDate(); 
       displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
       displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
-
+      recievedNewNode = true;
+      show_message = false; 
 
        
       // TODO: Find a better way to do this
@@ -215,6 +213,10 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
             graph_elem.updateTimeBar(show_timebar)
   };
 
+  const toggleInteractiveMode = () =>{  
+            ($interactiveMode = !$interactiveMode)
+  };
+
   const options = {
     width: 400,
     height: 400,
@@ -262,9 +264,12 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     show_timebar= {show_timebar}
     show_legend = {show_legend}
     show_menu = {show_menu} 
+    interactiveMode = {$interactiveMode}
     toggleMenuPlaceholder = {toggleMenu} 
     toggleLegendPlaceholder = {toggleLegend} 
     updateTimeBarPlaceholder = {updateTimebar}
+    toggleInteractiveModePlaceholder = {toggleInteractiveMode}
+
   />
   <div class="grid w-screen h-screens"
         style="z-index:1"
@@ -285,7 +290,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         graph_options = {graph_options}
         styles = {styles}
       />
-  </div>
   <div class="right-5
              top-10
              fixed
@@ -304,6 +308,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     {options}
     data={{}}
   />
+</div>
 </div>
 <style lang="postcss" global>
   @tailwind base;
