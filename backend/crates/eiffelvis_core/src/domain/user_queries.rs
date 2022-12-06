@@ -1,5 +1,5 @@
 use crate::{
-    domain::types::BaseEvent,
+    domain::{event_filter::EventFilterMeta, types::BaseEvent},
     graph::*,
     tracked_query::{TrackedNodes, TrackedSubGraphs},
 };
@@ -33,29 +33,6 @@ struct RangeFilter {
     end: Option<RangeFilterBound>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventFilterMeta {
-    /// Reverses the predicate's result if true
-    #[serde(default)]
-    rev: bool,
-    pred: EventFilter,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum EventFilter {
-    /// Event Type
-    Type { names: Vec<String> },
-    /// Specific ids
-    Id { ids: Vec<Uuid> },
-    /// meta.tags
-    Tag { tags: Vec<String> },
-    /// meta.source.host
-    SourceHost { hosts: Vec<String> },
-    /// meta.source.name
-    SourceName { names: Vec<String> },
-}
-
 /// Used collection method,
 /// selected variant is run **after** filtering has been done,
 /// this means you can get nodes back that may not filfull the filter requirements.
@@ -79,6 +56,24 @@ pub struct TrackedQuery<I> {
 enum Collector<I> {
     Forward,
     SubGraph(TrackedSubGraphs<I>),
+}
+
+impl<I> Collector<I> {
+    fn collect_nodes<'a, G, R, IterT>(&'a mut self, graph: &'a G, iter: IterT) -> Vec<R>
+    where
+        G: Graph<Data = BaseEvent, Idx = I, Key = Uuid> + Indexable<usize>,
+        R: From<&'a BaseEvent> + 'static,
+        I: Idx,
+        IterT: Iterator<Item = NodeType<'a, G>>,
+    {
+        match self {
+            Collector::Forward => iter.map(|v| R::from(v.data())).collect(),
+            Collector::SubGraph(ref mut sub) => {
+                iter.for_each(|v| sub.add_id(v.id()));
+                sub.handle(graph).map(|v| R::from(v.data())).collect()
+            }
+        }
+    }
 }
 
 impl<I> TrackedQuery<I> {
@@ -143,33 +138,17 @@ impl<I> TrackedQuery<I> {
             self.inner.as_mut().unwrap()
         };
 
-        let fresh = inner.handle(graph);
-        let iter = fresh.filter(|node| {
-            if self.event_filters.is_empty() {
-                true
-            } else {
-                self.event_filters.iter().filter(|v| !v.is_empty()).any(|filters| {
-                    filters.iter().all(|filter| match &filter.pred {
-                        EventFilter::Type { names: ref name } => name.iter().any(|name| &node.data().meta.event_type == name),
-                        EventFilter::Id { ids } =>
-                            ids.iter().any(|id| graph.get(*id).map(|n| n.id() == node.id()).unwrap_or(false)),
-                        EventFilter::Tag { tags } =>
-                            tags.iter().any(|tag| node.data().meta.tags.as_ref().map(|v| v.contains(tag)).unwrap_or(false)),
-                        EventFilter::SourceHost { hosts } =>
-                            hosts.iter().any(|host|node.data().meta.source.as_ref().and_then(|s| s.host.as_ref()).map(|h| h == host).unwrap_or(false)),
-                        EventFilter::SourceName { names } =>
-                            names.iter().any(|name| node.data().meta.source.as_ref().and_then(|s| s.name.as_ref()).map(|n| n == name).unwrap_or(false)),
-                    } ^ filter.rev)
-                })
-            }
-        });
-
-        match self.collector {
-            Collector::Forward => iter.map(|v| R::from(v.data())).collect(),
-            Collector::SubGraph(ref mut sub) => {
-                iter.for_each(|v| sub.add_id(v.id()));
-                sub.handle(graph).map(|v| R::from(v.data())).collect()
-            }
+        if self.event_filters.is_empty() {
+            let iter = inner.handle(graph);
+            self.collector.collect_nodes(graph, iter)
+        } else {
+            let iter = inner.handle(graph).filter(|node| {
+                self.event_filters
+                    .iter()
+                    .filter(|v| !v.is_empty())
+                    .any(|filters| filters.iter().all(|filter| filter.do_filter(graph, node)))
+            });
+            self.collector.collect_nodes(graph, iter)
         }
     }
 }

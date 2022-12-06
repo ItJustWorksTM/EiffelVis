@@ -9,28 +9,34 @@
   import ColorLegend from "./components/ColorLegend.svelte";
   import { get } from 'svelte/store';
   import { interactiveMode} from './store';
+  import G6Graph from "./components/G6Graph.svelte";
+  import SideBar from "./components/SideBar.svelte";
+  import Panel from "./components/Panel.svelte";
+  import { FullEvent, query_eq } from "./apidefinition";
+  import { deep_copy } from "./utils";
+  import config from "./config.json";
 
-  import { query_eq } from "./apidefinition";
   import {
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
   } from "./uitypes";
-  import { deep_copy } from "./utils";
-  import G6Graph from "./components/G6Graph.svelte";
-  import config from "./config.json";
 
-  let graph_elem: G6Graph | null;
   export let connection: EiffelVisConnection;
-  let active_stream: QueryStream | null = null;
-  let awaiting_query_request = false;
-  let selected_node = null;
-  let show_menu = false;
-  let show_legend = true;
-  let show_timebar = false;
-  let customTheme = config.Theme.ColorBlind;
-  let themeMap = new Map(Object.entries(customTheme));
-  let legend = themeMap;
+
+  let graph_elem: G6Graph = null;
+  let active_stream: QueryStream = null;
+  let awaiting_query_request: boolean = false;
+
+  let selected_node: FullEvent = null;
+
+  let show_menu: boolean = false;
+  let show_legend: boolean = true;
+  let show_timebar: boolean = false;
+
+  let customTheme: Object = config.Theme.ColorBlind;
+  let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
+  let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
   let qhistory: FixedQuery[] = [];
@@ -192,16 +198,23 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
   const toggleMenu = () => {
     if (show_legend) {
-      toggleLegend();
-    }
+       toggleLegend();
+      }
     show_menu = !show_menu;
   };
   const toggleLegend = () => {
     if (show_menu) {
-      toggleMenu();
-    }
+       toggleMenu();
+      }
     show_legend = !show_legend;
   };
+
+  //Updates the timebar each time the show timebar button is clicked
+  const updateTimebar = () =>{  
+            (show_timebar = !show_timebar),
+            graph_elem.updateTimeBar(show_timebar)
+  };
+
   const options = {
     width: 400,
     height: 400,
@@ -242,157 +255,36 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     }
   };
 </script>
-<div class="m-0 h-screen bg-base-300">
-  <div
-    class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
-    style="z-index:1"
-  >
-    <div class="block m-6">
-      <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
-        <li>
-          <a
-            class=""
-            class:btn-active={interactiveMode}
-            on:click={() => ( ( $interactiveMode=!$interactiveMode) )}
-          >
-          <svg class="svg-icon" viewBox="0 0 24 24" >
-            <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="4"
-            fill="#ffffff"
-            d="M12.522,10.4l-3.559,3.562c-0.172,0.173-0.451,0.176-0.625,0c-0.173-0.173-0.173-0.451,0-0.624l3.248-3.25L8.161,6.662c-0.173-0.173-0.173-0.452,0-0.624c0.172-0.175,0.451-0.175,0.624,0l3.738,3.736C12.695,9.947,12.695,10.228,12.522,10.4 M18.406,10c0,4.644-3.764,8.406-8.406,8.406c-4.644,0-8.406-3.763-8.406-8.406S5.356,1.594,10,1.594C14.643,1.594,18.406,5.356,18.406,10M17.521,10c0-4.148-3.374-7.521-7.521-7.521c-4.148,0-7.521,3.374-7.521,7.521c0,4.147,3.374,7.521,7.521,7.521C14.147,17.521,17.521,14.147,17.521,10"></path>
-          </svg>
-          </a>
-        </li>
-        <li>
-          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a
-            class=""
-            class:btn-active={show_timebar}
-            on:click={() => (
-              (show_timebar = !show_timebar),
-              graph_elem.updateTimeBar(show_timebar)
-            )}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21.5 12H12V2.5"
-              />
-              <circle
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div
-      class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
-      style="z-index:1"
-      class:hidden={!show_menu}
-    >
-      <GraphOptions
-        bind:graph_options
-        on:reset={reset_graph_options}
-        on:apply={consume_query}
+
+<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
+  <!-- SideBar component: the variables are updated inside App.svelte -->
+  <SideBar 
+    show_timebar= {show_timebar}
+    show_legend = {show_legend}
+    show_menu = {show_menu} 
+    toggleMenuPlaceholder = {toggleMenu} 
+    toggleLegendPlaceholder = {toggleLegend} 
+    updateTimeBarPlaceholder = {updateTimebar}
+  />
+  <div class="grid w-screen h-screens"
+        style="z-index:1"
+      >   <!-- panels  -->
+      <Panel 
+        show_legend_placeholder = {show_legend} 
+        show_menu_placeholder = {show_menu} 
+        reset_graph_options_placeholder = {reset_graph_options}
+        use_selected_as_root = {use_selected_as_root}
+        current_query = {current_query}
+        current_query_changed= {current_query_changed}
+        add_filter = {add_filter}
+        qhistory = {qhistory}
+        awaiting_query_request = {awaiting_query_request}
+        submit_state_query_placeholder = {submit_state_query}
+        consume_query = {consume_query}
+        selected_node = {selected_node}
+        graph_options = {graph_options}
+        styles = {styles}
       />
-    </div>
-    <div
-      style="z-index:1"
-      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
-      class:show={show_legend}
-    >
-      <ColorLegend {styles} />
-    </div>
-  </div>
-  <div
-    style="z-index:1"
-    class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
-  >
-    <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-      <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
-        <EventDetail {selected_node} on:useroot={use_selected_as_root} />
-      </div>
-      <h1 class="text-lg py-2">Filter Options:</h1>
-      <QueryForm bind:query={current_query} />
-      <div class="btn-group w-full flex flex-row mt-2">
-        <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
-          + new filter</button
-        >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          disabled={qhistory.length <= 1 || awaiting_query_request}
-          on:click={() => {
-            qhistory.pop();
-            current_query = qhistory.pop();
-            qhistory = [...qhistory];
-            submit_state_query();
-          }}
-          >{qhistory.length - 1 > 0
-            ? "undo " + (qhistory.length - 1)
-            : ":)"}</button
-        >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          class:loading={awaiting_query_request}
-          disabled={awaiting_query_request || !current_query_changed}
-          on:click={submit_state_query}>submit</button
-        >
-      </div>
-    </div>
   </div>
   <div class="right-5
              top-10

@@ -1,7 +1,7 @@
 import App from './App.svelte';
 import { EiffelVisConnection } from './eiffelvis';
 
-const backend_url = process.env.EIFFELVIS_URL.startsWith("@origin")
+const backend_url: string = process.env.EIFFELVIS_URL.startsWith("@origin")
 	? `${window.location.host}${window.location.pathname
 	}${process.env.EIFFELVIS_URL.replace("@origin", "")}`
 	: process.env.EIFFELVIS_URL.startsWith("@hostname")
@@ -12,7 +12,7 @@ const backend_url = process.env.EIFFELVIS_URL.startsWith("@origin")
 		: process.env.EIFFELVIS_URL;
 const backend_has_ssl = JSON.parse(process.env.EIFFELVIS_SSL);
 
-const connection = new EiffelVisConnection(
+const connection: EiffelVisConnection = new EiffelVisConnection(
 	backend_url, backend_has_ssl
 )
 
