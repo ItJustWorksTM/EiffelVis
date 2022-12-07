@@ -65,3 +65,20 @@ export const fixed_query_to_norm = ({ range_filter, collection, event_filters }:
         collection
     }
 }
+export enum FilterType {
+    ID = "ID",
+    Host = "Host",
+    Source = "Source",
+    Tag = "Tag",
+    Type = "Type"
+}
+
+export interface FilterInput {
+    active: boolean
+    exclude: boolean
+    isWildCard: boolean
+    filterField: FilterType
+    value: string
+}
+
+export type TemperateFilterArray = FilterInput[]
