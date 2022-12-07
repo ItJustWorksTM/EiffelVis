@@ -11,7 +11,7 @@
   export let options = {};
   export let data = {};
 
-    let nodePoint:number = 0;
+    let nodePoint:number = 0; // variable to retrieve x point of node
 
     let container: HTMLElement;
     let graph: Graph | null;
@@ -44,15 +44,15 @@
             graph.translate(0,0); // to disable nonInteractive mode
         }
         else{
-            let oldNodePoint:number = nodePoint;
-            let scrollDistance:number  = 0;
-            let scrollDistanceWithRatio:number = 0;
+            let oldNodePoint:number = nodePoint; // give initial value of nodepoint to new variable
+            let scrollDistance:number  = 0; // variable to calculate how far apart the two latest nodes on the graph are
+            let scrollDistanceWithRatio:number = 0; // variable to calculate scroll distance variable multiplied with zoom ratio of graph
             let zoomRatio:number = graph.getZoom(); 
-            nodePoint = e.x - container.scrollWidth;
-            if(nodePoint != oldNodePoint){ // find out if node has moved to new position
-              scrollDistance = nodePoint - oldNodePoint; 
-              scrollDistanceWithRatio = scrollDistance*zoomRatio // to recalculate translation based on zoom ratio
-              graph.translate(-scrollDistanceWithRatio,0);
+            nodePoint = e.x - container.scrollWidth;// grab latest node on the graph and find its point
+            if(nodePoint != oldNodePoint){ // find out if latest node has moved to new horizontal position  
+              scrollDistance = nodePoint - oldNodePoint; // if it has moved, find out how far it is from the nearest node to the left
+              scrollDistanceWithRatio = scrollDistance*zoomRatio // multiple with zoom ratio for accurate graph translation
+              graph.translate(-scrollDistanceWithRatio,0); // negate distance to indicate left translation
             }
         }
     }

@@ -90,18 +90,20 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
     $interactiveMode = false;
-    console.log("recieved no new node")
+    console.log("received no new node")
   }else{
     show_message = false;
   }
   
 }
 
-  let ms = 60000;
- let interval= setInterval( displayInfoMessage, ms);
+ let ms = 60000;
+ let interval= setInterval( displayInfoMessage, ms); // set timer to run every 1 minute
 
- const startTimer = () =>{
-  clearInterval(interval);
+ // timer function to wait 1 minute to check if nodes are still being received, 
+ // if no new nodes after 1 minute, message for latest node received is displayed
+ const resetTimer = () =>{
+  clearInterval(interval); // interval is reset every minute 
   interval= setInterval( displayInfoMessage, ms);
 }
 
@@ -138,7 +140,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     }
     recievedNewNode = false; 
     console.log("stoped recieving nodes")
-    startTimer();
+    resetTimer();// method to reset timer
     
   };
   const submit_state_query = () => submit_query(current_query);
