@@ -34,19 +34,24 @@
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
   let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
+
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
+
   let qhistory: FixedQuery[] = [];
+
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
     event_filters: [empty_fixed_event_filters()],
     collection: { type: "Forward" },
   };
+
   $: current_query_changed =
     qhistory.length > 0 &&
     !query_eq(
       fixed_query_to_norm(current_query),
       fixed_query_to_norm(qhistory[qhistory.length - 1])
     );
+
   let graph_options: GraphSettings = {
     offset: 0,
     time_diff: 1000,
@@ -55,6 +60,7 @@
     y_sep: 60,
     hue: 360,
   };
+
   $: {
     if (graph_elem) {
       // TODO: split up?
@@ -114,6 +120,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     awaiting_query_request = false;
     graph_elem.reset();
     let once = true;
+
     for await (const event of iter) {
       layout.apply(event, graph_options);
       graph_elem.push(event);
@@ -143,7 +150,9 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     resetTimer();// method to reset timer
     
   };
+
   const submit_state_query = () => submit_query(current_query);
+
   const submit_query = (fquery: FixedQuery) => {
     const new_query = fixed_query_to_norm(fquery);
     active_stream = (() => {
@@ -161,12 +170,15 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         return ret;
       }
     })();
+
     consume_query();
     qhistory = [...qhistory, deep_copy(fquery)];
     show_timebar = false;
     graph_elem.updateTimeBar(show_timebar);
   };
+
   const add_filter = () => {};
+
   // TODO: add loading for this
   const on_node_selected = async (e: any) => {
     if (e.detail?.target) {
@@ -177,14 +189,18 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       selected_node = null;
     }
   };
+
   const use_selected_as_root = () => {
     current_query.collection = { type: "AsRoots" };
     current_query.range_filter = { begin: null, end: null };
+
     const filters = empty_fixed_event_filters();
     filters.ids.pred.ids = [selected_node.meta.id];
     current_query.event_filters = [filters];
+
     submit_state_query();
   };
+
   const reset_graph_options = () => {
     graph_options = {
       offset: 0,
@@ -196,12 +212,14 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     };
     consume_query();
   };
+
   const toggleMenu = () => {
     if (show_legend) {
        toggleLegend();
       }
     show_menu = !show_menu;
   };
+
   const toggleLegend = () => {
     if (show_menu) {
        toggleMenu();
@@ -312,6 +330,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   />
 </div>
 </div>
+
 <style lang="postcss" global>
   @tailwind base;
   @tailwind components;
@@ -327,9 +346,9 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     -webkit-appearance: none;
     margin: 0;
   }
+
   /* Firefox */
   input[type="number"] {
     -moz-appearance: textfield;
   }
-
 </style>

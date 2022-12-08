@@ -58,7 +58,7 @@
     }
 
 
-    export const push = (ev: any) => {
+  export const push = (ev: any) => {
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
     for (const edge of ev.edges) {
@@ -68,12 +68,15 @@
         label: edge.type,
       }); // the type of link is connected to the label of the edge here.
     }
+    
     edgesToBack(ev); // put all edges attached to the node behind the nodes (needed when using groupByTypes: false);
+    
     timeBarData.push({
       date: ev.date,
       value: "1",
     });
   };
+
   /**
    * Helper method that will rearrange the order of items on the z-index (edges behind the nodes)
    * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
@@ -84,6 +87,7 @@
     const node: Item = graph.findById(event.id);
     if (node instanceof Node) {
       const edges = node.getEdges();
+
       for(const edge of edges){
         edge.toBack();
       }
@@ -270,8 +274,7 @@
 
 <svelte:window on:resize={resizeGraph} />
 
-<div bind:this={container} class="container" >
-  </div>
+<div bind:this={container} class="container" />
 
 <style global>
   .container {
