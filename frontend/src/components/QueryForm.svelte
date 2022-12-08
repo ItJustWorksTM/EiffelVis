@@ -10,6 +10,7 @@
     let end_mode: string = "None";
 
     export let query: FixedQuery;
+    export let filterWidget;
 
     const mkk = (
         type: "Time" | "Absolute" | "Ids",
@@ -73,6 +74,7 @@
                     bind:types={filter.types}
                     bind:sourcehosts={filter.sourcehosts}
                     bind:sourcenames={filter.sourcenames}
+                    bind:this={filterWidget}
                 />
             </div>
         </div>
