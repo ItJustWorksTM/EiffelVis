@@ -35,7 +35,7 @@ This makes it easy to deploy in a larger setup, as only a single routing rule ne
 Security-wise, while in practice for local use HTTP is just fine, our general recommendation is to put this image behind
 a reverse-proxy you own and control, itself requiring HTTPS with strong algorithms.
 Since our image itself handles all traffic through an Nginx instance, you can also modify the [configuration](deployment/nginx/eiffelvis.conf)
-to use SSL/TLS with your own keys and certificates.
+to use SSL/TLS with your own keys and certificates, and set `EIFFELVIS_SSL` to `true` in the [Dockerfile](Dockerfile).
 
 
 ### Connecting to RabbitMQ
