@@ -11,7 +11,11 @@
   export let options = {};
   export let data = {};
 
-    let nodePoint:number = 0; // variable to retrieve x point of node
+  let nodePoint:number = 0; // variable to retrieve x point of node
+
+  let container: HTMLElement;
+  let graph: Graph | null;
+  let timeBarData: TimeBarData[] = [];
 
     let container: HTMLElement;
     let graph: Graph | null;
