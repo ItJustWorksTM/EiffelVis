@@ -3,7 +3,7 @@
   import G6 from "@antv/g6";
   import { QueryStream, EiffelVisConnection } from "./eiffelvis";
   import { GraphSettings, StatefulLayout } from "./layout";
-  import { interactiveMode} from './store';
+  import { nonInteractiveState} from './store';
   import G6Graph from "./components/G6Graph.svelte";
   import SideBar from "./components/SideBar.svelte";
   import Panel from "./components/Panel.svelte";
@@ -28,7 +28,7 @@
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
-  $interactiveMode = false;
+  $nonInteractiveState = true;
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -95,7 +95,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
-    $interactiveMode = false;
+    $nonInteractiveState = true;
     console.log("received no new node")
   }else{
     show_message = false;
@@ -125,7 +125,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       layout.apply(event, graph_options);
       graph_elem.push(event);
 
-      graph_elem.nonInteractiveMode(event,$interactiveMode);
+      graph_elem.nonInteractiveMode(event,$nonInteractiveState);
     
       //every time a node is pushed to the graph the variables are updated
       let timeJson:number = event.time;
@@ -234,7 +234,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 
   const toggleInteractiveMode = () =>{  
-            ($interactiveMode = !$interactiveMode)
+            ($nonInteractiveState = !$nonInteractiveState)
   };
 
   const options = {
@@ -284,7 +284,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     show_timebar= {show_timebar}
     show_legend = {show_legend}
     show_menu = {show_menu} 
-    interactiveMode = {$interactiveMode}
+    interactiveMode = {$nonInteractiveState}
     toggleMenuPlaceholder = {toggleMenu} 
     toggleLegendPlaceholder = {toggleLegend} 
     updateTimeBarPlaceholder = {updateTimebar}

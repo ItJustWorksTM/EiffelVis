@@ -3,7 +3,7 @@
   import G6, { Graph, IG6GraphEvent, Item, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
-  import { interactiveMode} from '../store';
+  import { nonInteractiveState} from '../store';
 
   const dispatch = createEventDispatcher();
   const graph_translation: number = 50;
@@ -11,11 +11,7 @@
   export let options = {};
   export let data = {};
 
-  let nodePoint:number = 0; // variable to retrieve x point of node
-
-  let container: HTMLElement;
-  let graph: Graph | null;
-  let timeBarData: TimeBarData[] = [];
+    let nodePoint:number = 0; // variable to retrieve x point of node
 
     let container: HTMLElement;
     let graph: Graph | null;
@@ -44,7 +40,7 @@
 
      //non-InteractiveMode function to calculate how much translation the graph should make
     export const nonInteractiveMode = (e:any , modeDisabled:boolean) =>{
-        if(modeDisabled == true){
+        if(modeDisabled == false){
             graph.translate(0,0); // to disable nonInteractive mode
         }
         else{
@@ -231,8 +227,8 @@
       graph.on("node:mouseenter", (e) => {
         if (e.item instanceof Node){
           showRelations(e.item);
-          $interactiveMode= true;
-          nonInteractiveMode(e,$interactiveMode);
+          $nonInteractiveState= false;
+          nonInteractiveMode(e,$nonInteractiveState);
         }
       });
       graph.on("node:mouseleave", (e) => {
@@ -253,13 +249,13 @@
         
         // deactivate on graph interactions such as drag ,mouseenter and node click   
         graph.on("canvas:drag", (e:IG6GraphEvent) => { 
-                $interactiveMode= true;
-                nonInteractiveMode(e,$interactiveMode);
+                $nonInteractiveState= false;
+                nonInteractiveMode(e,$nonInteractiveState);
             })
         
         graph.on("node:click", (e:IG6GraphEvent) => { 
-              $interactiveMode= true;
-              nonInteractiveMode(e,$interactiveMode);
+              $nonInteractiveState= false;
+              nonInteractiveMode(e,$nonInteractiveState);
         })
 
       graph.changeData(data);
