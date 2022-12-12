@@ -72,24 +72,24 @@
 
 
                                                                // non-interactive mode variables
-  let show_message:boolean = false; 
-  let dayToDisplay:string = null; 
-  let dayLastEventRecieved:number = 0; 
-  let recievedNewNode:boolean = false; 
-  let displayTime:string = null;
-  let displayDate:string = null;
+  let show_message: boolean = false; 
+  let dayToDisplay: string = null; 
+  let dayLastEventRecieved: number = 0; 
+  let recievedNewNode: boolean = false; 
+  let displayTime: string = null;
+  let displayDate: string = null;
   
 
 
 const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
-  let time:Date = new Date();
+  let time: Date = new Date();
   if ( time.getDate() == dayLastEventRecieved){
-      dayToDisplay = "TODAY"; 
-      
-  }else if (time.getDate() - dayLastEventRecieved == 1){
-    
+      dayToDisplay = "TODAY";     
+  }
+  else if (time.getDate() - dayLastEventRecieved == 1){   
       dayToDisplay = "YESTERDAY"; 
-  }else if (time.getDate() - dayLastEventRecieved> 1){
+  }
+  else if (time.getDate() - dayLastEventRecieved> 1){
       dayToDisplay = displayDate;
   }
 
@@ -97,10 +97,10 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     show_message = true; 
     $nonInteractiveState = true;
     console.log("received no new node")
-  }else{
-    show_message = false;
   }
-  
+  else {
+    show_message = false;
+  } 
 }
 
  let ms = 60000;
@@ -128,8 +128,8 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       graph_elem.nonInteractiveMode(event,$nonInteractiveState);
     
       //every time a node is pushed to the graph the variables are updated
-      let timeJson:number = event.time;
-      let time:Date = new Date(timeJson);
+      let timeJson: number = event.time;
+      let time: Date = new Date(timeJson);
       dayLastEventRecieved = time.getDate(); 
       displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
       displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
@@ -145,6 +145,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
       legend = layout.getNodeStyle();
     }
+
     recievedNewNode = false; 
     console.log("stoped recieving nodes")
     resetTimer();// method to reset timer
