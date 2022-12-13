@@ -3,15 +3,16 @@
   import G6, { Graph, IG6GraphEvent, Item, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
-  import { nonInteractiveState} from '../store';
 
   const dispatch = createEventDispatcher();
   const graph_translation: number = 50;
 
   export let options = {};
   export let data = {};
+  export let nonInteractiveState: boolean;
 
     let nodePoint: number = 0;
+    
 
     let container: HTMLElement;
     let graph: Graph | null;
@@ -229,8 +230,8 @@
       graph.on("node:mouseenter", (e) => {
         if (e.item instanceof Node){
           showRelations(e.item);
-          $nonInteractiveState= false;
-          nonInteractiveMode(e,$nonInteractiveState);
+          nonInteractiveState= false;
+          nonInteractiveMode(e,nonInteractiveState);
         }
       });
       graph.on("node:mouseleave", (e) => {
@@ -251,13 +252,13 @@
         
         // deactivate on graph interactions such as drag ,mouseenter and node click   
         graph.on("canvas:drag", (e:IG6GraphEvent) => { 
-                $nonInteractiveState= false;
-                nonInteractiveMode(e,$nonInteractiveState);
+                nonInteractiveState= false;
+                nonInteractiveMode(e,nonInteractiveState);
             })
         
         graph.on("node:click", (e:IG6GraphEvent) => { 
-              $nonInteractiveState= false;
-              nonInteractiveMode(e,$nonInteractiveState);
+              nonInteractiveState= false;
+              nonInteractiveMode(e,nonInteractiveState);
         })
 
       graph.changeData(data);
@@ -276,7 +277,7 @@
 
 <svelte:window on:resize={resizeGraph} />
 
-<div bind:this={container} class="container" />
+<div bind:this={container} class="container"/>
 
 <style global>
   .container {
