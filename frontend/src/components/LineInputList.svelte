@@ -12,7 +12,7 @@
                 <th> Value </th>
                 <th> Exclude </th>
                 <th> Active </th>
-                <th> Wildcard </th>
+                <th> SubString </th>
             </tr>
         </thead>
         {#each values as value, i}
