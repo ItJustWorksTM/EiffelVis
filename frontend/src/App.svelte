@@ -61,6 +61,7 @@
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
+  $: nonInteractiveState = true
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -103,6 +104,7 @@
     }
   }
 
+<<<<<<< HEAD
   // non-interactive mode variables
   let show_message: boolean = false;
   let dayToDisplay: string = null;
@@ -140,6 +142,50 @@
     clearInterval(interval); // interval is reset every minute
     interval = setInterval(displayInfoMessage, ms);
   };
+=======
+
+                                                               // non-interactive mode variables
+  let show_message: boolean = false; 
+  let dayToDisplay: string = null; 
+  let dayLastEventRecieved: number = 0; 
+  let recievedNewNode: boolean = false; 
+  let displayTime: string = null;
+  let displayDate: string = null;
+  
+
+
+const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
+  let time: Date = new Date();
+  if ( time.getDate() == dayLastEventRecieved){
+      dayToDisplay = "TODAY";     
+  }
+  else if (time.getDate() - dayLastEventRecieved == 1){   
+      dayToDisplay = "YESTERDAY"; 
+  }
+  else if (time.getDate() - dayLastEventRecieved> 1){
+      dayToDisplay = displayDate;
+  }
+
+  if (recievedNewNode==false && dayToDisplay != null  ){
+    show_message = true; 
+    nonInteractiveState = true;
+    console.log("received no new node")
+  }
+  else {
+    show_message = false;
+  } 
+}
+
+ let ms = 60000;
+ let interval= setInterval( displayInfoMessage, ms); // set timer to run every 1 minute
+
+ // timer function to wait 1 minute to check if nodes are still being received, 
+ // if no new nodes after 1 minute, message for latest node received is displayed
+ const resetTimer = () =>{
+  clearInterval(interval); // interval is reset every minute 
+  interval= setInterval( displayInfoMessage, ms);
+}
+>>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
 
   const consume_query = async () => {
     const layout = new StatefulLayout();
@@ -153,6 +199,7 @@
       layout.apply(event, graph_options);
       graph_elem.push(event);
 
+<<<<<<< HEAD
       graph_elem.nonInteractiveMode(event, nonInteractiveState);
 
       //every time a node is pushed to the graph the variables are updated
@@ -172,6 +219,20 @@
       recievedNewNode = true;
       show_message = false;
 
+=======
+      graph_elem.nonInteractiveMode(event,nonInteractiveState);
+    
+      //every time a node is pushed to the graph the variables are updated
+      let timeJson: number = event.time;
+      let time: Date = new Date(timeJson);
+      dayLastEventRecieved = time.getDate(); 
+      displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
+      displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+      recievedNewNode = true;
+      show_message = false; 
+
+       
+>>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
       // TODO: Find a better way to do this
       if (once) {
         graph_elem.focusNode(event.id);
@@ -181,9 +242,16 @@
       legend = layout.getNodeStyle();
     }
 
+<<<<<<< HEAD
     recievedNewNode = false;
     console.log("stoped recieving nodes");
     resetTimer(); // method to reset timer
+=======
+    recievedNewNode = false; 
+    console.log("stoped recieving nodes")
+    resetTimer();// method to reset timer
+    
+>>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
   };
 
   const submit_state_query = () => submit_query(current_query);
@@ -287,12 +355,21 @@
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   };
 
+  const toggleInteractiveMode = () =>{  
+            (nonInteractiveState = !nonInteractiveState)
+  };
+
   const options = {
     width: 400,
     height: 400,
     workerEnabled: false,
     fitView: true,
+<<<<<<< HEAD
     groupByTypes: false, // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
+=======
+    fitViewPadding:[0,0,0,600],
+    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
+>>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
     defaultEdge: {
       labelCfg: {
         position: "center",
@@ -483,10 +560,16 @@
     show_timebar= {show_timebar}
     show_legend = {show_legend}
     show_menu = {show_menu} 
+    interactiveMode = {nonInteractiveState}
     toggleMenuPlaceholder = {toggleMenu} 
     toggleLegendPlaceholder = {toggleLegend} 
     updateTimeBarPlaceholder = {updateTimebar}
+<<<<<<< HEAD
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
+=======
+    toggleInteractiveModePlaceholder = {toggleInteractiveMode}
+
+>>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
   />
   <div class="grid w-screen h-screens"
         style="z-index:1"
@@ -507,14 +590,26 @@
         graph_options = {graph_options}
         styles = {styles}
       />
-      <!-- Graph with listeners -->
-    <G6Graph
-        on:nodeselected={on_node_selected}
-        bind:this={graph_elem}
-        {options}
-        data={{}}
-    />
+  <div class="right-5
+             top-10
+             fixed
+             mr-10
+             mb-6           
+             "
+       style="white-space: nowrap;"      
+             class:hidden={!show_message}
+             class:show= {show_message}
+             >
+    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
   </div>
+  <G6Graph
+    on:nodeselected={on_node_selected}
+    bind:this={graph_elem}
+    bind:nonInteractiveState = {nonInteractiveState}
+    {options}
+    data={{}}
+  />
+</div>
 </div>
 
 <style lang="postcss" global>
