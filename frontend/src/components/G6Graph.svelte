@@ -9,6 +9,9 @@
 
   export let options = {};
   export let data = {};
+  export let nonInteractiveState: boolean;
+
+  let nodePoint: number = 0;
 
   let container: HTMLElement;
   let graph: Graph | null;
@@ -235,12 +238,10 @@
 
     graph.changeData(data);
     resizeGraph();
-
     return () => {
       graph.destroy();
     };
   });
-
   $: {
     if (data && graph) {
       graph.changeData(data);
