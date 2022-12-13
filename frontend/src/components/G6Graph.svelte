@@ -7,6 +7,10 @@
   const graph_translation: number = 50;
   export let options = {};
   export let data = {};
+  export let nonInteractiveState: boolean;
+
+  let nodePoint: number = 0;
+
   let container: HTMLElement;
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
@@ -27,6 +31,28 @@
   export const focusNode = (id: any) => {
     graph.focusItem(id);
   };
+
+  //non-InteractiveMode function to calculate how much translation the graph should make
+  export const nonInteractiveMode = (e: any, modeDisabled: boolean) => {
+    if (modeDisabled == false) {
+      graph.translate(0, 0); // to disable nonInteractive mode
+    } else {
+      /* we take the x points of the latest two nodes, find out how far they are from one another,
+               that distance is negated and multiplied with zoom ratio for accurate graph translation */
+      let oldNodePoint: number = nodePoint;
+      let scrollDistance: number = 0;
+      let scrollDistanceWithRatio: number = 0;
+      let zoomRatio: number = graph.getZoom();
+      nodePoint = e.x - container.scrollWidth;
+      if (nodePoint != oldNodePoint) {
+        // find out if latest node has moved to new horizontal position
+        scrollDistance = nodePoint - oldNodePoint;
+        scrollDistanceWithRatio = scrollDistance * zoomRatio;
+        graph.translate(-scrollDistanceWithRatio, 0);
+      }
+    }
+  };
+
   export const push = (ev: any) => {
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
@@ -192,6 +218,8 @@
     graph.on("node:mouseenter", (e) => {
       if (e.item instanceof Node) {
         showRelations(e.item);
+        nonInteractiveState = false;
+        nonInteractiveMode(e, nonInteractiveState);
       }
     });
     graph.on("node:mouseleave", (e) => {
@@ -208,6 +236,18 @@
         weight("ArrowDown", "ArrowUp") * graph_translation
       );
     });
+
+    // deactivate on graph interactions such as drag ,mouseenter and node click
+    graph.on("canvas:drag", (e: IG6GraphEvent) => {
+      nonInteractiveState = false;
+      nonInteractiveMode(e, nonInteractiveState);
+    });
+
+    graph.on("node:click", (e: IG6GraphEvent) => {
+      nonInteractiveState = false;
+      nonInteractiveMode(e, nonInteractiveState);
+    });
+
     graph.changeData(data);
     resizeGraph();
     return () => {
