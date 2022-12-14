@@ -5,11 +5,13 @@
    export let show_legend: boolean;
    export let show_timebar: boolean;
    export let interactiveMode: boolean;
+   export let show_filter_panel: boolean;
 
    export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
    export let toggleMenuPlaceholder: () => void;  
    export let toggleLegendPlaceholder: () => void;
    export let toggleInteractiveModePlaceholder: () => void;
+   export let toggleFilterPanelPlaceholder: () => void;
 
 </script>
 <div class="flex h-screen w-16">
@@ -33,6 +35,13 @@
             btnState= {show_legend} 
             data = "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268
                      2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+      </li>
+      <li>
+        <SvgButton 
+            onClickAction= {toggleFilterPanelPlaceholder} 
+            btnState= {show_filter_panel} 
+            data="M3, 11 a 8,8 0 1,0 16, 0 a 8,8 0 1, 0 -16, 0  M 21 21 16.65 16.65"
         />
       </li>
       <li> 
