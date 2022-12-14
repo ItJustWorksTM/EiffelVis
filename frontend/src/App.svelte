@@ -30,6 +30,7 @@
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
+  let show_filter_panel: boolean = false;
   $: nonInteractiveState = true;
 
   let customTheme: Object = config.Theme.ColorBlind;
@@ -241,6 +242,10 @@
     show_legend = !show_legend;
   };
 
+  const toggleFilterPanel = () => {
+    show_filter_panel = !show_filter_panel;
+  };
+
   //Updates the timebar each time the show timebar button is clicked
   const updateTimebar = () => {
     (show_timebar = !show_timebar), graph_elem.updateTimeBar(show_timebar);
@@ -300,14 +305,17 @@
     {show_legend}
     {show_menu}
     interactiveMode={nonInteractiveState}
+    {show_filter_panel}
     toggleMenuPlaceholder={toggleMenu}
     toggleLegendPlaceholder={toggleLegend}
+    toggleFilterPanelPlaceholder={toggleFilterPanel}
     updateTimeBarPlaceholder={updateTimebar}
     toggleInteractiveModePlaceholder={toggleInteractiveMode}
   />
   <div class="grid w-screen h-screens" style="z-index:1">
     <!-- panels  -->
     <Panel
+      {show_filter_panel}
       bind:event_filters_sets
       show_legend_placeholder={show_legend}
       show_menu_placeholder={show_menu}
