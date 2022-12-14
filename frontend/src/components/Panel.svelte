@@ -12,6 +12,7 @@
     export let show_menu_placeholder: boolean; 
     export let awaiting_query_request: boolean; 
     export let current_query_changed: boolean; 
+    export let show_filter_panel: boolean;
 
     $: current_query_changed =
     qhistory.length > 0 &&
@@ -58,9 +59,10 @@
         </li>
         <li>
             <div
-              class="p-3 bg-base-200 shadow-md h-fit bottom-0 fixed w-fit m-0 rounded-r-lg" 
+              class="overflow-x-auto overflow-y-auto bottom-0 bg-base-200  fixed shadow-md h-fit fixed w-0 m-0 rounded-r-lg" 
+              class:show={show_filter_panel}
             >
-              <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
+              <div class="container h-full w-full p-3 overflow-hidden scroll-auto">
                 <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
                   <EventDetail {selected_node} on:useroot={use_selected_as_root} />
                 </div>
