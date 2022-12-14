@@ -17,6 +17,8 @@
   export let awaiting_query_request: boolean;
   export let current_query_changed: boolean;
   export let event_filters_sets: TemperateFilterArray[];
+  //Boolean variables
+  export let show_filter_panel: boolean;
 
   $: current_query_changed =
     qhistory.length > 0 &&
