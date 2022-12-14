@@ -8,11 +8,14 @@
 <<<<<<< HEAD
    export let interactiveMode: boolean;
    export let show_filter_panel: boolean;
+<<<<<<< HEAD
 =======
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 =======
    export let interactiveMode: boolean;
 >>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
+=======
+>>>>>>> 8973299 (frontend: allow filter panel to be toggled from sidebar  (#145))
 
    export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
    export let toggleMenuPlaceholder: () => void;  
@@ -21,11 +24,14 @@
 <<<<<<< HEAD
    export let toggleInteractiveModePlaceholder: () => void;
    export let toggleFilterPanelPlaceholder: () => void;
+<<<<<<< HEAD
 =======
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 =======
    export let toggleInteractiveModePlaceholder: () => void;
 >>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
+=======
+>>>>>>> 8973299 (frontend: allow filter panel to be toggled from sidebar  (#145))
 
 </script>
 <div class="flex h-screen w-16">
@@ -61,6 +67,9 @@
         />
       </li>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8973299 (frontend: allow filter panel to be toggled from sidebar  (#145))
       <li>
         <SvgButton 
             onClickAction= {toggleFilterPanelPlaceholder} 
@@ -68,8 +77,11 @@
             data="M3, 11 a 8,8 0 1,0 16, 0 a 8,8 0 1, 0 -16, 0  M 21 21 16.65 16.65"
         />
       </li>
+<<<<<<< HEAD
 =======
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
+=======
+>>>>>>> 8973299 (frontend: allow filter panel to be toggled from sidebar  (#145))
       <li> 
         <SvgButton onClickAction={updateTimeBarPlaceholder} 
                 btnState= {show_timebar} 

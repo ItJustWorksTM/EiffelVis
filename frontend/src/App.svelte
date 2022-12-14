@@ -61,7 +61,9 @@
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
+  let show_filter_panel: boolean = false; 
   $: nonInteractiveState = true
+
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -340,6 +342,11 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     show_legend = !show_legend;
   };
 
+  const toggleFilterPanel = () => {
+    show_filter_panel = !show_filter_panel;
+  };
+  
+
   //Updates the timebar each time the show timebar button is clicked
 <<<<<<< HEAD
   const updateTimebar = () => {
@@ -561,8 +568,10 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     show_legend = {show_legend}
     show_menu = {show_menu} 
     interactiveMode = {nonInteractiveState}
+    show_filter_panel = {show_filter_panel}
     toggleMenuPlaceholder = {toggleMenu} 
     toggleLegendPlaceholder = {toggleLegend} 
+    toggleFilterPanelPlaceholder = {toggleFilterPanel}
     updateTimeBarPlaceholder = {updateTimebar}
 <<<<<<< HEAD
 >>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
@@ -575,6 +584,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         style="z-index:1"
       >   <!-- panels  -->
       <Panel 
+        show_filter_panel = {show_filter_panel}
         show_legend_placeholder = {show_legend} 
         show_menu_placeholder = {show_menu} 
         reset_graph_options_placeholder = {reset_graph_options}
