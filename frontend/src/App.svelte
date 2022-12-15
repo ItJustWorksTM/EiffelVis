@@ -9,7 +9,6 @@
   import { FullEvent, query_eq } from "./apidefinition";
   import { deep_copy } from "./utils";
   import config from "./config.json";
-
   import {
     empty_fixed_event_filters,
     FixedQuery,
@@ -216,16 +215,10 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 
   const toggleMenu = () => {
-    if (show_legend) {
-       toggleLegend();
-      }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
-    if (show_menu) {
-       toggleMenu();
-      }
     show_legend = !show_legend;
   };
 
@@ -285,22 +278,24 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 </script>
 
-<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
+<div class="app-container bg-base-100"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
-  <SideBar 
-    show_timebar= {show_timebar}
-    show_legend = {show_legend}
-    show_menu = {show_menu} 
-    interactiveMode = {nonInteractiveState}
-    show_filter_panel = {show_filter_panel}
-    toggleMenuPlaceholder = {toggleMenu} 
-    toggleLegendPlaceholder = {toggleLegend} 
-    toggleFilterPanelPlaceholder = {toggleFilterPanel}
-    updateTimeBarPlaceholder = {updateTimebar}
-    toggleInteractiveModePlaceholder = {toggleInteractiveMode}
+  <div class="sidebar-container">
+    <SideBar 
+      show_timebar= {show_timebar}
+      show_legend = {show_legend}
+      show_menu = {show_menu} 
+      interactiveMode = {nonInteractiveState}
+      show_filter_panel = {show_filter_panel}
+      toggleMenuPlaceholder = {toggleMenu} 
+      toggleLegendPlaceholder = {toggleLegend} 
+      toggleFilterPanelPlaceholder = {toggleFilterPanel}
+      updateTimeBarPlaceholder = {updateTimebar}
+      toggleInteractiveModePlaceholder = {toggleInteractiveMode}
 
-  />
-  <div class="grid w-screen h-screens"
+    />
+  </div>
+  <div class="panel-container grid"
         style="z-index:1"
       >   <!-- panels  -->
       <Panel 
@@ -320,26 +315,23 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         graph_options = {graph_options}
         styles = {styles}
       />
-  <div class="right-5
-             top-10
-             fixed
-             mr-10
-             mb-6           
-             "
-       style="white-space: nowrap;"      
-             class:hidden={!show_message}
-             class:show= {show_message}
-             >
-    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
   </div>
-  <G6Graph
-    on:nodeselected={on_node_selected}
-    bind:this={graph_elem}
-    bind:nonInteractiveState = {nonInteractiveState}
-    {options}
-    data={{}}
-  />
-</div>
+  <div class="graph-container">
+    <div
+        style="white-space: nowrap;"      
+              class:hidden={!show_message}
+              class:show= {show_message}
+              >
+      <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
+    </div>
+    <G6Graph
+      on:nodeselected={on_node_selected}
+      bind:this={graph_elem}
+      bind:nonInteractiveState = {nonInteractiveState}
+      {options}
+      data={{}}
+    />
+  </div>
 </div>
 
 <style lang="postcss" global>
@@ -361,5 +353,39 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   /* Firefox */
   input[type="number"] {
     -moz-appearance: textfield;
+  }
+
+/* Main container */
+  .app-container {
+    /* organise the elements on the app page */
+    display: flex;
+
+    /* set size of the app to the size of the screen */
+    width: 100vw;
+    height: 100vh;
+    /* create a stacking context for using z-index on child elements */
+    position: relative;
+  }
+
+  .sidebar-container {
+    /* position sidebar on top of all elements */
+    z-index: 2;
+  }
+
+  .panel-container {
+    /* position the panels in the middle of all elements */
+    z-index: 1;
+    /* Prevents the container to stop user interaction with elements under it */
+    pointer-events: none;
+  }
+
+  .graph-container {
+    /* prevents the fixed syze of the canvas to conflict with other elements */
+    position: fixed;
+    /* position the panels behind all elements */
+    z-index: 0;
+    /* organise child elements */
+    display: flex;
+    flex-direction: column;
   }
 </style>

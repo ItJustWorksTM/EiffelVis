@@ -35,20 +35,20 @@
   
   </script>
 
-<div class="grid fixed bottom-0 bg-base-1" style="z-index:1" >
-    <ul class="menu menu-compact">
-        <li>
+<div class="panels bg-base-1">
+  
           <div
-          class="overflow-x-auto overflow-y-auto top-0 shadow-md fixed bg-base-200 w-0 h-fit rounded-r-lg"
+          class="shadow-md bg-base-200 rounded-r-lg"
           class:show={show_legend_placeholder}
+          class:hidden={!show_legend_placeholder}
           >
             <ColorLegend {styles} />
           </div>
-        </li>
-        <li>
+          
           <div
-            class="overflow-x-auto overflow-y-auto fixed top-0 shadow-md bg-base-200 w-0 h-fit mb-0 rounded-r-lg"
+            class="shadow-md bg-base-200 mb-0 rounded-r-lg"
             class:show={show_menu_placeholder}
+            class:hidden={!show_menu_placeholder}
           >
             <GraphOptions
               bind:graph_options
@@ -56,13 +56,13 @@
               on:apply={consume_query}
             />
           </div>
-        </li>
-        <li>
+          
             <div
-              class="overflow-x-auto overflow-y-auto bottom-0 bg-base-200  fixed shadow-md h-fit fixed w-0 m-0 rounded-r-lg" 
+              class="bg-base-200 shadow-md rounded-r-lg" 
               class:show={show_filter_panel}
+              class:hidden={!show_filter_panel}
             >
-              <div class="container h-full w-full p-3 overflow-hidden scroll-auto">
+              <div class="container h-full w-full p-3 scroll-auto">
                 <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
                   <EventDetail {selected_node} on:useroot={use_selected_as_root} />
                 </div>
@@ -94,7 +94,26 @@
                 </div>
               </div>
             </div>
-        </li>
-      </ul>
   </div>
+
+  <style>
+    .panels {
+    /* size of the panels */
+    height: fit-content;
+    width: fit-content;
+    
+    /* organisation of the child elements */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    /* reactivate the user interaction for the child elements */
+    pointer-events: auto; 
+
+    /* handles when the scrolling starts within the panel container */
+    max-height: 100vh;
+    overflow-y: scroll;
+    }
+
+  </style>
   
