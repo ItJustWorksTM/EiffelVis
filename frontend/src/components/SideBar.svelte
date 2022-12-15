@@ -14,7 +14,7 @@
    export let toggleFilterPanelPlaceholder: () => void;
 
 </script>
-<div class="flex h-screen w-16">
+<div class="flex h-screen">
     <ul class="menu grid justify-items-center content-end py-3  h-screen shadow-large bg-base-300">
       <li> 
         <SvgButton onClickAction={toggleInteractiveModePlaceholder} 
