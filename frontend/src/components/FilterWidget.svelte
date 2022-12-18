@@ -15,11 +15,17 @@
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 
     // TODO: Maybe just fixed filter?
-    export let ids: EventFilter<Id>;
-    export let tags: EventFilter<Tag>;
-    export let types: EventFilter<Type>;
-    export let sourcehosts: EventFilter<SourceHost>;
-    export let sourcenames: EventFilter<SourceName>;
+    export let ids: EventFilter<Id>[];
+
+    export let tags: EventFilter<Tag>[];
+    export let types: EventFilter<Type>[];
+    export let sourcehosts: EventFilter<SourceHost>[];
+    export let sourcenames: EventFilter<SourceName>[];
+    let id: EventFilter<Id>;
+    let tag: EventFilter<Tag>;
+    let type: EventFilter<Type>;
+    let sourcehost: EventFilter<SourceHost>;
+    let sourcename: EventFilter<SourceName>;
     let selected = filter_types[0];
     let inputValue = "";
     let tempFilterArray: TemperateFilterArray;
@@ -33,6 +39,11 @@
         };
         tempFilterArray = [...tempFilterArray, newFilter];
         add_tempfilter_to_query();
+        console.log(ids);
+        console.log(tags);
+        console.log(types);
+        console.log(sourcehosts);
+        console.log(sourcenames);
         inputValue = "";
     };
 
@@ -41,47 +52,45 @@
             if (filter.active) {
                 switch (filter.filterField) {
                     case FilterType.ID:
-                        ids.pred.ids = [...ids.pred.ids, filter.value];
+                        id.rev = filter.exclude;
+                        id.pred.ids[0] = filter.value;
+                        ids = [...ids, id];
                         break;
                     case FilterType.Type:
-                        types.pred.names = [
-                            ...types.pred.names,
-                            {
-                                lower_case: filter.isWildCard,
-                                partial: filter.isWildCard,
-                                value: filter.value,
-                            },
-                        ];
+                        type.rev = filter.exclude;
+                        type.pred.names[0] = {
+                            lower_case: filter.isWildCard,
+                            partial: filter.isWildCard,
+                            value: filter.value,
+                        };
+                        types = [...types, type];
                         break;
                     case FilterType.Source:
-                        sourcenames.pred.names = [
-                            ...sourcenames.pred.names,
-                            {
-                                lower_case: filter.isWildCard,
-                                partial: filter.isWildCard,
-                                value: filter.value,
-                            },
-                        ];
-                        break;
-                    case FilterType.Host:
-                        sourcehosts.pred.hosts = [
-                            ...sourcehosts.pred.hosts,
-                            {
-                                lower_case: filter.isWildCard,
-                                partial: filter.isWildCard,
-                                value: filter.value,
-                            },
-                        ];
+                        sourcehost.rev = filter.exclude;
+                        sourcehost.pred.hosts[0] = {
+                            lower_case: filter.isWildCard,
+                            partial: filter.isWildCard,
+                            value: filter.value,
+                        };
+                        sourcehosts = [...sourcehosts, sourcehost];
                         break;
                     case FilterType.Tag:
-                        tags.pred.tags = [
-                            ...tags.pred.tags,
-                            {
-                                lower_case: filter.isWildCard,
-                                partial: filter.isWildCard,
-                                value: filter.value,
-                            },
-                        ];
+                        tag.rev = filter.exclude;
+                        tag.pred.tags[0] = {
+                            lower_case: filter.isWildCard,
+                            partial: filter.isWildCard,
+                            value: filter.value,
+                        };
+                        tags = [...tags, tag];
+                        break;
+                    case FilterType.Source:
+                        sourcename.rev = filter.exclude;
+                        sourcename.pred.names[0] = {
+                            lower_case: filter.isWildCard,
+                            partial: filter.isWildCard,
+                            value: filter.value,
+                        };
+                        sourcenames = [...sourcenames, sourcename];
                         break;
                     default:
                         break;
