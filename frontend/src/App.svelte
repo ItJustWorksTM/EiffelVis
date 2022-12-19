@@ -23,7 +23,7 @@
 
   let selected_node: FullEvent = null;
 
-  let show_menu: boolean = false;
+  let show_settings: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
   let show_filter_panel: boolean = false; 
@@ -215,7 +215,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 
   const toggleMenu = () => {
-    show_menu = !show_menu;
+    show_settings = !show_settings;
   };
 
   const toggleLegend = () => {
@@ -278,13 +278,13 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 </script>
 
-<div class="app-container bg-base-100"> 
+<div class="flex w-screen h-screen relative bg-base-100"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
-  <div class="sidebar-container">
+  <div class="z-20">
     <SideBar 
       show_timebar= {show_timebar}
       show_legend = {show_legend}
-      show_menu = {show_menu} 
+      show_settings = {show_settings} 
       interactiveMode = {nonInteractiveState}
       show_filter_panel = {show_filter_panel}
       toggleMenuPlaceholder = {toggleMenu} 
@@ -295,13 +295,12 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
     />
   </div>
-  <div class="panel-container grid"
-        style="z-index:1"
+  <div class="flex z-10 pointer-events-none"
       >   <!-- panels  -->
       <Panel 
         show_filter_panel = {show_filter_panel}
         show_legend_placeholder = {show_legend} 
-        show_menu_placeholder = {show_menu} 
+        show_menu_placeholder = {show_settings} 
         reset_graph_options_placeholder = {reset_graph_options}
         use_selected_as_root = {use_selected_as_root}
         current_query = {current_query}
@@ -316,7 +315,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         styles = {styles}
       />
   </div>
-  <div class="graph-container">
+  <div class="flex flex-col fixed z-0">
     <div
         style="white-space: nowrap;"      
               class:hidden={!show_message}
@@ -355,37 +354,4 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     -moz-appearance: textfield;
   }
 
-/* Main container */
-  .app-container {
-    /* organise the elements on the app page */
-    display: flex;
-
-    /* set size of the app to the size of the screen */
-    width: 100vw;
-    height: 100vh;
-    /* create a stacking context for using z-index on child elements */
-    position: relative;
-  }
-
-  .sidebar-container {
-    /* position sidebar on top of all elements */
-    z-index: 2;
-  }
-
-  .panel-container {
-    /* position the panels in the middle of all elements */
-    z-index: 1;
-    /* Prevents the container to stop user interaction with elements under it */
-    pointer-events: none;
-  }
-
-  .graph-container {
-    /* prevents the fixed syze of the canvas to conflict with other elements */
-    position: fixed;
-    /* position the panels behind all elements */
-    z-index: 0;
-    /* organise child elements */
-    display: flex;
-    flex-direction: column;
-  }
 </style>

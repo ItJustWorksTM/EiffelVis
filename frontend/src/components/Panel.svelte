@@ -9,7 +9,7 @@
 
     //Boolean variables
     export let show_legend_placeholder: boolean; 
-    export let show_menu_placeholder: boolean; 
+    /* export let show_settings_placeholder: boolean;  */
     export let awaiting_query_request: boolean; 
     export let current_query_changed: boolean; 
     export let show_filter_panel: boolean;
@@ -35,20 +35,18 @@
   
   </script>
 
-<div class="panels bg-base-1">
+<div class="h-screen w-fit flex flex-col pointer-events-none bg-base-1">
   
           <div
-          class="shadow-md bg-base-200 rounded-r-lg"
+          class="mb-auto pointer-events-auto shadow-md bg-base-200 rounded-r-lg"
           class:show={show_legend_placeholder}
           class:hidden={!show_legend_placeholder}
           >
             <ColorLegend {styles} />
           </div>
-          
+          <!-- TODO: Make this GraphOption a modal that opens when show_settings_placeholder -->
           <div
-            class="shadow-md bg-base-200 mb-0 rounded-r-lg"
-            class:show={show_menu_placeholder}
-            class:hidden={!show_menu_placeholder}
+            class="shadow-md bg-base-200 mb-0 rounded-r-lg hidden"
           >
             <GraphOptions
               bind:graph_options
@@ -58,7 +56,7 @@
           </div>
           
             <div
-              class="bg-base-200 shadow-md rounded-r-lg" 
+              class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg" 
               class:show={show_filter_panel}
               class:hidden={!show_filter_panel}
             >
@@ -95,25 +93,4 @@
               </div>
             </div>
   </div>
-
-  <style>
-    .panels {
-    /* size of the panels */
-    height: fit-content;
-    width: fit-content;
-    
-    /* organisation of the child elements */
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    /* reactivate the user interaction for the child elements */
-    pointer-events: auto; 
-
-    /* handles when the scrolling starts within the panel container */
-    max-height: 100vh;
-    overflow-y: scroll;
-    }
-
-  </style>
   
