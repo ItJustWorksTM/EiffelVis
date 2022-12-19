@@ -26,19 +26,21 @@
                      2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
         />
       </li>
-      <li>
-        <SvgButton 
-            onClickAction= {toggleFilterPanelPlaceholder} 
-            btnState= {show_filter_panel} 
-            data="M3, 11 a 8,8 0 1,0 16, 0 a 8,8 0 1, 0 -16, 0  M 21 21 16.65 16.65"
-        />
-      </li>
+
       <li>
         <SvgButton
             onClickAction= {toggleMenuPlaceholder} 
             btnState= {show_menu}  
             data = "M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3" 
          />
+      </li>
+      
+      <li>
+        <SvgButton 
+            onClickAction= {toggleFilterPanelPlaceholder} 
+            btnState= {show_filter_panel} 
+            data="M3, 11 a 8,8 0 1,0 16, 0 a 8,8 0 1, 0 -16, 0  M 21 21 16.65 16.65"
+        />
       </li>
 
       <ButtonSeparator></ButtonSeparator>
