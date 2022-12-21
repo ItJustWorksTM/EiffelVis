@@ -7,8 +7,7 @@
     export let graph_options: GraphSettings;
 </script>
 
-<div class="p-3 flex flex-col w-full" >
-    <h1 class="text-lg py-2">Graph Options</h1>
+<div class="p-3 flex flex-col w-full h-full">
     <label class="input-group input-group-sm mt-1">
         <span
             class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100"
