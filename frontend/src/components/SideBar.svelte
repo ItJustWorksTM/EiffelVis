@@ -1,15 +1,15 @@
 <script lang="ts">
   import SvgButton from "./SvgButton.svelte";
-  import ButtonSeparator from "./ButtonSeparator.svelte";
+  import ButtonSeparator from "./Sidebar/ButtonSeparator.svelte";
 
-   export let show_menu: boolean;
+   export let show_settings: boolean;
    export let show_legend: boolean;
    export let show_timebar: boolean;
    export let interactiveMode: boolean;
    export let show_filter_panel: boolean;
 
    export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
-   export let toggleMenuPlaceholder: () => void;  
+   export let toggleSettingsPlaceholder: () => void;  
    export let toggleLegendPlaceholder: () => void;
    export let toggleInteractiveModePlaceholder: () => void;
    export let toggleFilterPanelPlaceholder: () => void;
@@ -26,14 +26,6 @@
                      2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
         />
       </li>
-
-      <li>
-        <SvgButton
-            onClickAction= {toggleMenuPlaceholder} 
-            btnState= {show_menu}  
-            data = "M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3" 
-         />
-      </li>
       
       <li>
         <SvgButton 
@@ -41,6 +33,17 @@
             btnState= {show_filter_panel} 
             data="M3, 11 a 8,8 0 1,0 16, 0 a 8,8 0 1, 0 -16, 0  M 21 21 16.65 16.65"
         />
+      </li>
+
+      <ButtonSeparator></ButtonSeparator>
+
+      <li>
+        <!-- TODO: ADD RIGHT SVG FOR SETTINGS -->
+        <SvgButton
+            onClickAction= {toggleSettingsPlaceholder} 
+            btnState= {show_settings}  
+            data = "M9, 12 a 3,3 0 1,0 6, 0 a 3,3 0 1, 0 -6, 0 M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+         />
       </li>
 
       <ButtonSeparator></ButtonSeparator>

@@ -9,7 +9,7 @@
 
     //Boolean variables
     export let show_legend_placeholder: boolean; 
-    /* export let show_settings_placeholder: boolean;  */
+    /* export let show_settings_placeholder: boolean; */ 
     export let awaiting_query_request: boolean; 
     export let current_query_changed: boolean; 
     export let show_filter_panel: boolean;
@@ -22,15 +22,12 @@
     );
 
     //Object variables; used for onClick actions.
-    export let reset_graph_options_placeholder: () => void; 
-    export let consume_query: () => void; 
     export let use_selected_as_root: () => void; 
     export let add_filter: () => void; 
     export let submit_state_query_placeholder: () => void; 
     export let current_query: FixedQuery; 
     export let  qhistory: FixedQuery[];  
     export let selected_node: FullEvent;
-    export let graph_options: GraphSettings;
     export let styles: Object; 
   
   </script>
@@ -43,18 +40,7 @@
           class:hidden={!show_legend_placeholder}
           >
             <ColorLegend {styles} />
-          </div>
-          <!-- TODO: Make this GraphOption a modal that opens when show_settings_placeholder -->
-          <div
-            class="shadow-md bg-base-200 mb-0 rounded-r-lg hidden"
-          >
-            <GraphOptions
-              bind:graph_options
-              on:reset={reset_graph_options_placeholder}
-              on:apply={consume_query}
-            />
-          </div>
-          
+          </div>       
             <div
               class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg" 
               class:show={show_filter_panel}
@@ -64,7 +50,7 @@
                 <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
                   <EventDetail {selected_node} on:useroot={use_selected_as_root} />
                 </div>
-                <h1 class="text-lg py-2">Filter Options:</h1>
+                <h1 class="text-lg py-2">Filter Options</h1>
                 <QueryForm bind:query={current_query} />
                 <div class="btn-group w-full flex flex-row mt-2">
                   <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>

@@ -14,6 +14,7 @@
     FixedQuery,
     fixed_query_to_norm,
   } from "./uitypes";
+  import Settings from "./components/settings/Settings.svelte";
 
   export let connection: EiffelVisConnection;
 
@@ -95,7 +96,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
   if (recievedNewNode==false && dayToDisplay != null  ){
     show_message = true; 
-    nonInteractiveState = true;
+    nonInteractiveState = false;
     console.log("received no new node")
   }
   else {
@@ -259,7 +260,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     },
       style: {          // default styling for the edge should come here
         lineWidth: 1, 
-        opacity: 0.15,
+        opacity: 0.2,
         fill: '#fff',
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
@@ -276,9 +277,14 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       ],
     }
   };
+
+ const  handle_close_request = () => {
+    console.log('received in app')
+    show_settings = !show_settings
+ }
 </script>
 
-<div class="flex w-screen h-screen relative bg-base-100"> 
+<div class="flex w-screen h-screen relative bg-base-100 jus"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <div class="z-20">
     <SideBar 
@@ -287,7 +293,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       show_settings = {show_settings} 
       interactiveMode = {nonInteractiveState}
       show_filter_panel = {show_filter_panel}
-      toggleMenuPlaceholder = {toggleMenu} 
+      toggleSettingsPlaceholder = {toggleMenu} 
       toggleLegendPlaceholder = {toggleLegend} 
       toggleFilterPanelPlaceholder = {toggleFilterPanel}
       updateTimeBarPlaceholder = {updateTimebar}
@@ -300,8 +306,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       <Panel 
         show_filter_panel = {show_filter_panel}
         show_legend_placeholder = {show_legend} 
-        show_menu_placeholder = {show_settings} 
-        reset_graph_options_placeholder = {reset_graph_options}
         use_selected_as_root = {use_selected_as_root}
         current_query = {current_query}
         current_query_changed= {current_query_changed}
@@ -309,13 +313,11 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         qhistory = {qhistory}
         awaiting_query_request = {awaiting_query_request}
         submit_state_query_placeholder = {submit_state_query}
-        consume_query = {consume_query}
         selected_node = {selected_node}
-        graph_options = {graph_options}
         styles = {styles}
       />
   </div>
-  <div class="flex flex-col fixed z-0">
+  <div class="flex flex-col fixed z-0 items-center">
     <div
         style="white-space: nowrap;"      
               class:hidden={!show_message}
@@ -324,16 +326,29 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
     </div>
     <G6Graph
-      on:nodeselected={on_node_selected}
+      on:nodeselected={(on_node_selected)}
       bind:this={graph_elem}
       bind:nonInteractiveState = {nonInteractiveState}
       {options}
       data={{}}
     />
   </div>
+  <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
+    <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
+      class:hidden={!show_settings}
+    >
+      <Settings 
+      on:close_request={() => {show_settings = !show_settings}}
+      consume_query = {consume_query}
+      reset_graph_options_placeholder = {reset_graph_options}
+      graph_options = {graph_options}
+      />
+    </div>
+  </div>
 </div>
 
 <style lang="postcss" global>
+
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
