@@ -260,7 +260,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     },
       style: {          // default styling for the edge should come here
         lineWidth: 1, 
-        opacity: 0.2,
+        opacity: 0.3,
         fill: '#fff',
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
@@ -284,7 +284,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
  }
 </script>
 
-<div class="flex w-screen h-screen relative bg-base-100 jus"> 
+<div class="flex w-screen h-screen relative bg-base-100"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <div class="z-20">
     <SideBar 
