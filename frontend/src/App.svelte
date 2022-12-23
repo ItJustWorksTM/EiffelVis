@@ -27,9 +27,8 @@
   let show_settings: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
-  let show_filter_panel: boolean = false; 
-  $: nonInteractiveState = true
-
+  let show_filter_panel: boolean = false;
+  $: nonInteractiveState = true;
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
@@ -39,6 +38,8 @@
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
 
   let qhistory: FixedQuery[] = [];
+
+  let appKeyMap: Object = {};
 
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
@@ -71,48 +72,43 @@
     }
   }
 
-
-                                                               // non-interactive mode variables
-  let show_message: boolean = false; 
-  let dayToDisplay: string = null; 
-  let dayLastEventRecieved: number = 0; 
-  let recievedNewNode: boolean = false; 
+  // non-interactive mode variables
+  let show_message: boolean = false;
+  let dayToDisplay: string = null;
+  let dayLastEventRecieved: number = 0;
+  let recievedNewNode: boolean = false;
   let displayTime: string = null;
   let displayDate: string = null;
-  
 
-
-const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
-  let time: Date = new Date();
-  if ( time.getDate() == dayLastEventRecieved){
-      dayToDisplay = "TODAY";     
-  }
-  else if (time.getDate() - dayLastEventRecieved == 1){   
-      dayToDisplay = "YESTERDAY"; 
-  }
-  else if (time.getDate() - dayLastEventRecieved> 1){
+  const displayInfoMessage = () => {
+    //After 1 minute of no nodes recieved, a message is displayed.
+    let time: Date = new Date();
+    if (time.getDate() == dayLastEventRecieved) {
+      dayToDisplay = "TODAY";
+    } else if (time.getDate() - dayLastEventRecieved == 1) {
+      dayToDisplay = "YESTERDAY";
+    } else if (time.getDate() - dayLastEventRecieved > 1) {
       dayToDisplay = displayDate;
-  }
+    }
 
-  if (recievedNewNode==false && dayToDisplay != null  ){
-    show_message = true; 
-    nonInteractiveState = false;
-    console.log("received no new node")
-  }
-  else {
-    show_message = false;
-  } 
-}
+    if (recievedNewNode == false && dayToDisplay != null) {
+      show_message = true;
+      nonInteractiveState = false;
+      console.log("received no new node");
+    } else {
+      show_message = false;
+    }
+  };
 
- let ms = 60000;
- let interval= setInterval( displayInfoMessage, ms); // set timer to run every 1 minute
+  let ms = 60000;
+  let interval = setInterval(displayInfoMessage, ms); // set timer to run every 1 minute
 
- // timer function to wait 1 minute to check if nodes are still being received, 
- // if no new nodes after 1 minute, message for latest node received is displayed
- const resetTimer = () =>{
-  clearInterval(interval); // interval is reset every minute 
-  interval= setInterval( displayInfoMessage, ms);
-}
+  // timer function to wait 1 minute to check if nodes are still being received,
+  // if no new nodes after 1 minute, message for latest node received is displayed
+  const resetTimer = () => {
+    clearInterval(interval); // interval is reset every minute
+    interval = setInterval(displayInfoMessage, ms);
+  };
 
   const consume_query = async () => {
     const layout = new StatefulLayout();
@@ -126,18 +122,25 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       layout.apply(event, graph_options);
       graph_elem.push(event);
 
-      graph_elem.nonInteractiveMode(event,nonInteractiveState);
-    
+      graph_elem.nonInteractiveMode(event, nonInteractiveState);
+
       //every time a node is pushed to the graph the variables are updated
       let timeJson: number = event.time;
       let time: Date = new Date(timeJson);
-      dayLastEventRecieved = time.getDate(); 
-      displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
-      displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+      dayLastEventRecieved = time.getDate();
+      displayDate = time.toLocaleDateString([], {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      displayTime = time.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
       recievedNewNode = true;
-      show_message = false; 
+      show_message = false;
 
-       
       // TODO: Find a better way to do this
       if (once) {
         graph_elem.focusNode(event.id);
@@ -147,10 +150,9 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       legend = layout.getNodeStyle();
     }
 
-    recievedNewNode = false; 
-    console.log("stoped recieving nodes")
-    resetTimer();// method to reset timer
-    
+    recievedNewNode = false;
+    console.log("stoped recieving nodes");
+    resetTimer(); // method to reset timer
   };
 
   const submit_state_query = () => submit_query(current_query);
@@ -215,7 +217,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     consume_query();
   };
 
-  const toggleMenu = () => {
+  const toggleSettings = () => {
     show_settings = !show_settings;
   };
 
@@ -226,16 +228,14 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   const toggleFilterPanel = () => {
     show_filter_panel = !show_filter_panel;
   };
-  
 
   //Updates the timebar each time the show timebar button is clicked
-  const updateTimebar = () =>{  
-            (show_timebar = !show_timebar),
-            graph_elem.updateTimeBar(show_timebar)
+  const updateTimebar = () => {
+    (show_timebar = !show_timebar), graph_elem.updateTimeBar(show_timebar);
   };
 
-  const toggleInteractiveMode = () =>{  
-            (nonInteractiveState = !nonInteractiveState)
+  const toggleInteractiveMode = () => {
+    nonInteractiveState = !nonInteractiveState;
   };
 
   const options = {
@@ -243,25 +243,27 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     height: 400,
     workerEnabled: false,
     fitView: true,
-    fitViewPadding:[0,0,0,600],
-    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
+    fitViewPadding: [0, 0, 0, 600],
+    groupByTypes: false, // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
-        position: 'center', 
-        style:{           // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+        position: "center",
+        style: {
+          // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
           fontSize: 10,
-          fill: '#ffffff',
+          fill: "#ffffff",
           fillOpacity: 0,
           shadowColor: "#151517",
           shadowOffsetY: 10,
           shoadowOffsetX: 10,
-          shadowBlur: 10
-        }
-    },
-      style: {          // default styling for the edge should come here
-        lineWidth: 1, 
+          shadowBlur: 10,
+        },
+      },
+      style: {
+        // default styling for the edge should come here
+        lineWidth: 1,
         opacity: 0.3,
-        fill: '#fff',
+        fill: "#fff",
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
@@ -275,80 +277,144 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
           enableOptimize: true,
         },
       ],
+    },
+  };
+
+  const handle_close_request = () => {
+    console.log("received in app");
+    show_settings = !show_settings;
+  };
+
+  const handleKeyDown = (e: KeyboardEvent): void => {
+    appKeyMap[e.key] = e.type == "keydown";
+
+    if (
+      (appKeyMap["ArrowRight"] ||
+        appKeyMap["ArrowLeft"] ||
+        appKeyMap["ArrowUp"] ||
+        appKeyMap["ArrowDown"]) &&
+      nonInteractiveState
+    ) {
+      nonInteractiveState = false;
+    }
+
+    // Hide all panels
+    if (appKeyMap["h"] || appKeyMap["H"]) {
+      if (show_legend) toggleLegend();
+
+      if (show_settings) toggleSettings();
+
+      if (show_filter_panel) toggleFilterPanel();
+
+      if (show_timebar) updateTimebar();
+    }
+
+    // Legend panel
+    if (appKeyMap["l"] || appKeyMap["L"]) {
+      toggleLegend();
+    }
+
+    // Options panel
+    if (appKeyMap["s"] || appKeyMap["S"]) {
+      toggleSettings();
+    }
+
+    // Non-interactive mode
+    if (appKeyMap["n"] || appKeyMap["N"]) {
+      toggleInteractiveMode();
+    }
+
+    // Timebar
+    if (appKeyMap["t"] || appKeyMap["T"]) {
+      updateTimebar();
+    }
+
+    // Filter panel (waiting for implementation of toggle filter panel)
+    if (appKeyMap["f"] || appKeyMap["F"]) {
+      toggleFilterPanel();
+    }
+
+    // WIP: Shortcut view
+    if (appKeyMap["i"] || appKeyMap["I"]) {
+      console.log("WIP: Shortcut view");
     }
   };
 
- const  handle_close_request = () => {
-    console.log('received in app')
-    show_settings = !show_settings
- }
+  const handleKeyUp = (e: KeyboardEvent): void => {
+    appKeyMap[e.key] = e.type == "keydown";
+  };
 </script>
 
-<div class="flex w-screen h-screen relative bg-base-100"> 
+<div class="flex w-screen h-screen relative bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <div class="z-20">
-    <SideBar 
-      show_timebar= {show_timebar}
-      show_legend = {show_legend}
-      show_settings = {show_settings} 
-      interactiveMode = {nonInteractiveState}
-      show_filter_panel = {show_filter_panel}
-      toggleSettingsPlaceholder = {toggleMenu} 
-      toggleLegendPlaceholder = {toggleLegend} 
-      toggleFilterPanelPlaceholder = {toggleFilterPanel}
-      updateTimeBarPlaceholder = {updateTimebar}
-      toggleInteractiveModePlaceholder = {toggleInteractiveMode}
-
+    <SideBar
+      {show_timebar}
+      {show_legend}
+      {show_settings}
+      interactiveMode={nonInteractiveState}
+      {show_filter_panel}
+      toggleSettingsPlaceholder={toggleSettings}
+      toggleLegendPlaceholder={toggleLegend}
+      toggleFilterPanelPlaceholder={toggleFilterPanel}
+      updateTimeBarPlaceholder={updateTimebar}
+      toggleInteractiveModePlaceholder={toggleInteractiveMode}
     />
   </div>
-  <div class="flex z-10 pointer-events-none"
-      >   <!-- panels  -->
-      <Panel 
-        show_filter_panel = {show_filter_panel}
-        show_legend_placeholder = {show_legend} 
-        use_selected_as_root = {use_selected_as_root}
-        current_query = {current_query}
-        current_query_changed= {current_query_changed}
-        add_filter = {add_filter}
-        qhistory = {qhistory}
-        awaiting_query_request = {awaiting_query_request}
-        submit_state_query_placeholder = {submit_state_query}
-        selected_node = {selected_node}
-        styles = {styles}
-      />
+  <div class="flex z-10 pointer-events-none">
+    <!-- panels  -->
+    <Panel
+      {show_filter_panel}
+      show_legend_placeholder={show_legend}
+      {use_selected_as_root}
+      {current_query}
+      {current_query_changed}
+      {add_filter}
+      {qhistory}
+      {awaiting_query_request}
+      submit_state_query_placeholder={submit_state_query}
+      {selected_node}
+      {styles}
+    />
   </div>
   <div class="flex flex-col fixed z-0 items-center">
     <div
-        style="white-space: nowrap;"      
-              class:hidden={!show_message}
-              class:show= {show_message}
-              >
-      <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
+      style="white-space: nowrap;"
+      class:hidden={!show_message}
+      class:show={show_message}
+    >
+      <span class="text-sm text-left w-full h-full"
+        >LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span
+      >
     </div>
     <G6Graph
-      on:nodeselected={(on_node_selected)}
+      on:nodeselected={on_node_selected}
       bind:this={graph_elem}
-      bind:nonInteractiveState = {nonInteractiveState}
+      bind:nonInteractiveState
       {options}
       data={{}}
     />
   </div>
-  <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
-    <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
+  <div
+    class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg"
+  >
+    <div
+      class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
       class:hidden={!show_settings}
     >
-      <Settings 
-      on:close_request={() => {show_settings = !show_settings}}
-      consume_query = {consume_query}
-      reset_graph_options_placeholder = {reset_graph_options}
-      graph_options = {graph_options}
+      <Settings
+        on:close_request={() => {
+          show_settings = !show_settings;
+        }}
+        {consume_query}
+        reset_graph_options_placeholder={reset_graph_options}
+        {graph_options}
       />
     </div>
   </div>
 </div>
 
 <style lang="postcss" global>
-
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
@@ -368,5 +434,4 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   input[type="number"] {
     -moz-appearance: textfield;
   }
-
 </style>
