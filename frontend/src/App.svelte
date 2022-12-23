@@ -319,6 +319,11 @@
     console.log("received in app");
     show_settings = !show_settings;
   };
+
+  const handle_close_request = () => {
+    console.log("received in app");
+    show_settings = !show_settings;
+  };
 </script>
 
 <div class="flex w-screen h-screen relative bg-base-100">
