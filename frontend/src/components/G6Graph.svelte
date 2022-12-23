@@ -263,12 +263,10 @@
 </script>
 
 <svelte:window on:resize={resizeGraph} />
-<div bind:this={container} class="container" />
+
+<div bind:this={container} />
 
 <style global>
-  .container {
-    height: 100%;
-  }
   .g6TimeBar {
     background: rgb(33, 33, 32);
     border-radius: 20px;

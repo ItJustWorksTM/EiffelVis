@@ -9,13 +9,13 @@
   import { FullEvent, query_eq } from "./apidefinition";
   import { deep_copy } from "./utils";
   import config from "./config.json";
-
   import {
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
     TemperateFilterArray,
   } from "./uitypes";
+  import Settings from "./components/settings/Settings.svelte";
 
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
@@ -27,7 +27,7 @@
 
   let selected_node: FullEvent = null;
 
-  let show_menu: boolean = false;
+  let show_settings: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
   let show_filter_panel: boolean = false;
@@ -94,7 +94,7 @@
 
     if (recievedNewNode == false && dayToDisplay != null) {
       show_message = true;
-      nonInteractiveState = true;
+      nonInteractiveState = false;
       console.log("received no new node");
     } else {
       show_message = false;
@@ -229,16 +229,10 @@
   };
 
   const toggleMenu = () => {
-    if (show_legend) {
-      toggleLegend();
-    }
-    show_menu = !show_menu;
+    show_settings = !show_settings;
   };
 
   const toggleLegend = () => {
-    if (show_menu) {
-      toggleMenu();
-    }
     show_legend = !show_legend;
   };
 
@@ -279,7 +273,7 @@
       style: {
         // default styling for the edge should come here
         lineWidth: 1,
-        opacity: 0.15,
+        opacity: 0.3,
         fill: "#fff",
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
@@ -296,29 +290,35 @@
       ],
     },
   };
+
+  const handle_close_request = () => {
+    console.log("received in app");
+    show_settings = !show_settings;
+  };
 </script>
 
-<div class="fixed flex m-0 h-screen w-screen bg-base-100">
+<div class="flex w-screen h-screen relative bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
-  <SideBar
-    {show_timebar}
-    {show_legend}
-    {show_menu}
-    interactiveMode={nonInteractiveState}
-    {show_filter_panel}
-    toggleMenuPlaceholder={toggleMenu}
-    toggleLegendPlaceholder={toggleLegend}
-    toggleFilterPanelPlaceholder={toggleFilterPanel}
-    updateTimeBarPlaceholder={updateTimebar}
-    toggleInteractiveModePlaceholder={toggleInteractiveMode}
-  />
-  <div class="grid w-screen h-screens" style="z-index:1">
+  <div class="z-20">
+    <SideBar
+      {show_timebar}
+      {show_legend}
+      {show_settings}
+      interactiveMode={nonInteractiveState}
+      {show_filter_panel}
+      toggleSettingsPlaceholder={toggleMenu}
+      toggleLegendPlaceholder={toggleLegend}
+      toggleFilterPanelPlaceholder={toggleFilterPanel}
+      updateTimeBarPlaceholder={updateTimebar}
+      toggleInteractiveModePlaceholder={toggleInteractiveMode}
+    />
+  </div>
+  <div class="flex z-10 pointer-events-none">
     <!-- panels  -->
     <Panel
       {show_filter_panel}
       bind:event_filters_sets
       show_legend_placeholder={show_legend}
-      show_menu_placeholder={show_menu}
       reset_graph_options_placeholder={reset_graph_options}
       {use_selected_as_root}
       bind:current_query
@@ -332,13 +332,9 @@
       {graph_options}
       {styles}
     />
+  </div>
+  <div class="flex flex-col fixed z-0 items-center">
     <div
-      class="right-5
-             top-10
-             fixed
-             mr-10
-             mb-6           
-             "
       style="white-space: nowrap;"
       class:hidden={!show_message}
       class:show={show_message}
@@ -354,6 +350,23 @@
       {options}
       data={{}}
     />
+  </div>
+  <div
+    class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg"
+  >
+    <div
+      class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
+      class:hidden={!show_settings}
+    >
+      <Settings
+        on:close_request={() => {
+          show_settings = !show_settings;
+        }}
+        {consume_query}
+        reset_graph_options_placeholder={reset_graph_options}
+        {graph_options}
+      />
+    </div>
   </div>
 </div>
 
