@@ -345,6 +345,8 @@
   };
 </script>
 
+<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
+
 <div class="flex w-screen h-screen relative bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <div class="z-20">
