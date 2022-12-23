@@ -3,13 +3,11 @@
     import ColorLegend from "./ColorLegend.svelte";
     import EventDetail from "./EventDetail.svelte";
     import QueryForm from "./QueryForm.svelte";
-    import type { GraphSettings } from "../layout";
     import { FixedQuery, fixed_query_to_norm } from "../uitypes";
     import { FullEvent, query_eq } from "../apidefinition";
 
     //Boolean variables
     export let show_legend_placeholder: boolean; 
-    /* export let show_settings_placeholder: boolean; */ 
     export let awaiting_query_request: boolean; 
     export let current_query_changed: boolean; 
     export let show_filter_panel: boolean;

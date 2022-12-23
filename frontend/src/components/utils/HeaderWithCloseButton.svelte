@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+    const dispatch: Function = createEventDispatcher();
 
     /* Title of the component the header is going to be attached to */
     export let title: String; 
