@@ -21,11 +21,20 @@
     export let types: EventFilter<Type>[];
     export let sourcehosts: EventFilter<SourceHost>[];
     export let sourcenames: EventFilter<SourceName>[];
-    let id: EventFilter<Id>;
-    let tag: EventFilter<Tag>;
-    let type: EventFilter<Type>;
-    let sourcehost: EventFilter<SourceHost>;
-    let sourcename: EventFilter<SourceName>;
+    let id: EventFilter<Id> = { rev: false, pred: { type: "Id", ids: [] } };
+    let tag: EventFilter<Tag> = { rev: false, pred: { type: "Tag", tags: [] } };
+    let type: EventFilter<Type> = {
+        rev: false,
+        pred: { type: "Type", names: [] },
+    };
+    let sourcehost: EventFilter<SourceHost> = {
+        rev: false,
+        pred: { type: "SourceHost", hosts: [] },
+    };
+    let sourcename: EventFilter<SourceName> = {
+        rev: false,
+        pred: { type: "SourceName", names: [] },
+    };
     let selected = filter_types[0];
     let inputValue = "";
     let tempFilterArray: TemperateFilterArray;
