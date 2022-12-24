@@ -134,7 +134,10 @@
     current_query.range_filter = { begin: null, end: null };
 
     const filters = empty_fixed_event_filters();
-    filters.ids.pred.ids = [selected_node.meta.id];
+    filters.ids[0] = {
+      rev: false,
+      pred: { type: "Id", ids: [selected_node.meta.id] },
+    };
     current_query.event_filters = [filters];
 
     submit_state_query();
@@ -154,22 +157,21 @@
 
   const toggleMenu = () => {
     if (show_legend) {
-       toggleLegend();
-      }
+      toggleLegend();
+    }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
     if (show_menu) {
-       toggleMenu();
-      }
+      toggleMenu();
+    }
     show_legend = !show_legend;
   };
 
   //Updates the timebar each time the show timebar button is clicked
-  const updateTimebar = () =>{  
-            (show_timebar = !show_timebar),
-            graph_elem.updateTimeBar(show_timebar)
+  const updateTimebar = () => {
+    (show_timebar = !show_timebar), graph_elem.updateTimeBar(show_timebar);
   };
 
   const options = {
@@ -177,24 +179,26 @@
     height: 400,
     workerEnabled: false,
     fitView: true,
-    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
+    groupByTypes: false, // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
-        position: 'center', 
-        style:{           // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+        position: "center",
+        style: {
+          // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
           fontSize: 10,
-          fill: '#ffffff',
+          fill: "#ffffff",
           fillOpacity: 0,
           shadowColor: "#151517",
           shadowOffsetY: 10,
           shoadowOffsetX: 10,
-          shadowBlur: 10
-        }
-    },
-      style: {          // default styling for the edge should come here
-        lineWidth: 1, 
+          shadowBlur: 10,
+        },
+      },
+      style: {
+        // default styling for the edge should come here
+        lineWidth: 1,
         opacity: 0.15,
-        fill: '#fff',
+        fill: "#fff",
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
@@ -208,45 +212,44 @@
           enableOptimize: true,
         },
       ],
-    }
+    },
   };
 </script>
 
-<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
+<div class="fixed flex m-0 h-screen w-screen bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
-  <SideBar 
-    show_timebar= {show_timebar}
-    show_legend = {show_legend}
-    show_menu = {show_menu} 
-    toggleMenuPlaceholder = {toggleMenu} 
-    toggleLegendPlaceholder = {toggleLegend} 
-    updateTimeBarPlaceholder = {updateTimebar}
+  <SideBar
+    {show_timebar}
+    {show_legend}
+    {show_menu}
+    toggleMenuPlaceholder={toggleMenu}
+    toggleLegendPlaceholder={toggleLegend}
+    updateTimeBarPlaceholder={updateTimebar}
   />
-  <div class="grid w-screen h-screens"
-        style="z-index:1"
-      >   <!-- panels  -->
-      <Panel 
-        show_legend_placeholder = {show_legend} 
-        show_menu_placeholder = {show_menu} 
-        reset_graph_options_placeholder = {reset_graph_options}
-        use_selected_as_root = {use_selected_as_root}
-        current_query = {current_query}
-        current_query_changed= {current_query_changed}
-        add_filter = {add_filter}
-        qhistory = {qhistory}
-        awaiting_query_request = {awaiting_query_request}
-        submit_state_query_placeholder = {submit_state_query}
-        consume_query = {consume_query}
-        selected_node = {selected_node}
-        graph_options = {graph_options}
-        styles = {styles}
-      />
-      <!-- Graph with listeners -->
+  <div class="grid w-screen h-screens" style="z-index:1">
+    <!-- panels  -->
+    <Panel
+      show_legend_placeholder={show_legend}
+      show_menu_placeholder={show_menu}
+      reset_graph_options_placeholder={reset_graph_options}
+      {use_selected_as_root}
+      {current_query}
+      {current_query_changed}
+      {add_filter}
+      {qhistory}
+      {awaiting_query_request}
+      submit_state_query_placeholder={submit_state_query}
+      {consume_query}
+      {selected_node}
+      {graph_options}
+      {styles}
+    />
+    <!-- Graph with listeners -->
     <G6Graph
-        on:nodeselected={on_node_selected}
-        bind:this={graph_elem}
-        {options}
-        data={{}}
+      on:nodeselected={on_node_selected}
+      bind:this={graph_elem}
+      {options}
+      data={{}}
     />
   </div>
 </div>
