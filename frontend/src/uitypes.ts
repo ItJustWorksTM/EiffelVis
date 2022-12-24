@@ -35,15 +35,21 @@ export const fixed_query_to_norm = ({ range_filter, collection, event_filters }:
         event_filters: event_filters.map((v) => {
             const ret = []
 
-            const push_if = (arr: any[], obj: any) => {
-                if (arr.length > 0) ret.push(obj);
+            const push_if = (arr: any[]) => {
+                if (arr.length > 0) {
+                    arr.map((filter) => {
+                        ret.push(filter)
+
+                    })
+                }
+
             };
 
-            push_if(v.ids, v.ids);
-            push_if(v.tags, v.tags);
-            push_if(v.types, v.types);
-            push_if(v.sourcehosts, v.sourcehosts);
-            push_if(v.sourcenames, v.sourcenames);
+            push_if(v.ids);
+            push_if(v.tags);
+            push_if(v.types);
+            push_if(v.sourcehosts);
+            push_if(v.sourcenames);
 
             return ret;
         }).filter((arr) => arr.length > 0),
