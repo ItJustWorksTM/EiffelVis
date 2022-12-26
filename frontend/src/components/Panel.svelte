@@ -73,7 +73,7 @@
             <EventDetail {selected_node} on:useroot={use_selected_as_root} />
           </div>
           <h1 class="text-lg py-2">Filter Options:</h1>
-          <QueryForm bind:query={current_query} bind:filterWidget={widget} />
+          <QueryForm bind:query={current_query} filterWidget={widget} />
           <div class="btn-group w-full flex flex-row mt-2">
             <button
               class="btn btn-sm btn-primary basis-1/3"
