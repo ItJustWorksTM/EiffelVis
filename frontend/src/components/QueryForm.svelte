@@ -10,7 +10,7 @@
     let end_mode: string = "None";
 
     export let query: FixedQuery;
-    export let filterWidget;
+    let filterWidget;
 
     const mkk = (
         type: "Time" | "Absolute" | "Ids",
