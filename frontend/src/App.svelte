@@ -14,9 +14,11 @@
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
+    TemperateFilterArray,
   } from "./uitypes";
 
   export let connection: EiffelVisConnection;
+  let event_filters_sets: TemperateFilterArray[] = [[]];
 
   let graph_elem: G6Graph = null;
   let active_stream: QueryStream = null;
@@ -116,7 +118,15 @@
     graph_elem.updateTimeBar(show_timebar);
   };
 
-  const add_filter = () => {};
+  const add_filter_set = () => {
+    if (event_filters_sets) {
+      let empty_filter_set = [];
+      event_filters_sets.push(empty_filter_set);
+    } else {
+      event_filters_sets = [];
+    }
+    console.log(event_filters_sets);
+  };
 
   // TODO: add loading for this
   const on_node_selected = async (e: any) => {
@@ -229,13 +239,14 @@
   <div class="grid w-screen h-screens" style="z-index:1">
     <!-- panels  -->
     <Panel
+      {event_filters_sets}
       show_legend_placeholder={show_legend}
       show_menu_placeholder={show_menu}
       reset_graph_options_placeholder={reset_graph_options}
       {use_selected_as_root}
       {current_query}
       {current_query_changed}
-      {add_filter}
+      {add_filter_set}
       {qhistory}
       {awaiting_query_request}
       submit_state_query_placeholder={submit_state_query}
