@@ -2,6 +2,7 @@
   import HeaderWithCloseButton from "../utils/HeaderWithCloseButton.svelte";
   import GraphOptions from "../GraphOptions.svelte";
   import type { GraphSettings } from "../../layout";
+  import ShortcutPanel from "../shortcut/ShortcutPanel.svelte";
 
   /*  Graph options elements */
   export let graph_options: GraphSettings;
@@ -18,6 +19,10 @@
     {
       name: "Graph Options",
       selected: true,
+    },
+    {
+      name: "Shortcuts",
+      selected: false,
     },
   ];
   
@@ -58,13 +63,16 @@
       <div
       class="bg-base-200 h-full"
       class:hidden={!setting_list[0].selected}
-    >
+      >
       <GraphOptions
         bind:graph_options
         on:reset={reset_graph_options_placeholder}
         on:apply={consume_query}
       />
-      </div>  
+      </div> 
+      <div>
+        <ShortcutPanel />
+      </div> 
     </div>
   </div>
 </div>
