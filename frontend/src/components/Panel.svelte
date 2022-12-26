@@ -8,6 +8,7 @@
     empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
+    TemperateFilterArray,
   } from "../uitypes";
   import { FullEvent, query_eq } from "../apidefinition";
 
@@ -16,6 +17,7 @@
   export let show_menu_placeholder: boolean;
   export let awaiting_query_request: boolean;
   export let current_query_changed: boolean;
+  export let event_filters_sets: TemperateFilterArray[];
 
   let widget;
 
@@ -30,7 +32,7 @@
   export let reset_graph_options_placeholder: () => void;
   export let consume_query: () => void;
   export let use_selected_as_root: () => void;
-  export let add_filter: () => void;
+  export let add_filter_set: () => void;
   export let submit_state_query_placeholder: () => void;
   export let current_query: FixedQuery;
   export let qhistory: FixedQuery[];
@@ -73,13 +75,13 @@
             <EventDetail {selected_node} on:useroot={use_selected_as_root} />
           </div>
           <h1 class="text-lg py-2">Filter Options:</h1>
-          <QueryForm bind:query={current_query} />
+          <QueryForm bind:query={current_query} bind:event_filters_sets />
           <div class="btn-group w-full flex flex-row mt-2">
             <button
               class="btn btn-sm btn-primary basis-1/3"
-              on:click={add_filter}
+              on:click={add_filter_set}
             >
-              + new filter</button
+              + new filter set</button
             >
             <button
               class="btn btn-sm btn-primary basis-1/3"
