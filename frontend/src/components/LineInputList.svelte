@@ -8,11 +8,9 @@
     <table>
         <thead>
             <tr>
-                <th> Field </th>
-                <th> Value </th>
-                <th> Exclude </th>
-                <th> Active </th>
-                <th> SubString </th>
+                <th align="center"> Field </th>
+                <th align="center" colspan="2"> Value </th>
+                <th />
             </tr>
         </thead>
         {#each values as value, i}
@@ -27,7 +25,7 @@
                         {/each}
                     </select>
                 </td>
-                <td>
+                <td colspan="2">
                     <input
                         type="text"
                         placeholder={value.filterField}
@@ -35,28 +33,33 @@
                         class="input input-sm input-bordered flex-1 w-40"
                     />
                 </td>
-                <td
-                    ><input
+            </tr>
+            <tr>
+                <td align="center"
+                    ><p>Exclude</p>
+                    <input
                         type="checkbox"
                         class="toggle toggle-md toggle-primary flex-none "
                         bind:checked={value.exclude}
                     /></td
                 >
-                <td>
+                <td align="center">
+                    <p>Active</p>
                     <input
                         type="checkbox"
                         class="toggle toggle-md toggle-primary flex-none "
                         bind:checked={value.active}
-                    /></td
-                >
-                <td>
+                    />
+                </td>
+                <td align="center">
+                    <p>Substring</p>
                     <input
                         type="checkbox"
                         class="toggle toggle-md toggle-primary flex-none "
                         bind:checked={value.isWildCard}
-                    /></td
-                >
-                <td>
+                    />
+                </td>
+                <td align="center">
                     <button
                         class="btn btn-circle btn-xs my-auto mr-1"
                         on:click={() => {
@@ -80,6 +83,9 @@
                     </button>
                     <slot index={i} />
                 </td>
+            </tr>
+            <tr>
+                <div class="divider-vertical" />
             </tr>
         {/each}
     </table>
