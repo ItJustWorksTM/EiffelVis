@@ -5,13 +5,17 @@
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-  const graph_translation: number = 50;
+  let graph_translation: number = 50;
 
   export let options = {};
   export let data = {};
   export let nonInteractiveState: boolean;
 
+
     let nodePoint: number = 0;
+    let arrowKeyDistance: number = 0;
+    let totalKeyDistance: number = 0;
+    
     
 
     let container: HTMLElement;
@@ -45,16 +49,20 @@
             graph.translate(0,0); // to disable nonInteractive mode
         }
         else{
+             
             /* we take the x points of the latest two nodes, find out how far they are from one another,
                that distance is negated and multiplied with zoom ratio for accurate graph translation */
             let oldNodePoint: number = nodePoint; 
             let scrollDistance: number  = 0; 
-            let scrollDistanceWithRatio: number = 0; 
-            let zoomRatio: number = graph.getZoom(); 
+            let scrollDistanceWithRatio: number = 0;
+            let zoomRatio: number= graph.getZoom();
             nodePoint = e.x - container.scrollWidth;
-            if(nodePoint != oldNodePoint){ // find out if latest node has moved to new horizontal position  
+            if(nodePoint != oldNodePoint ){ // find out if latest node has moved to new horizontal position  
               scrollDistance = nodePoint - oldNodePoint;
-              scrollDistanceWithRatio = scrollDistance*zoomRatio;
+              scrollDistanceWithRatio = scrollDistance*zoomRatio
+              scrollDistanceWithRatio = scrollDistanceWithRatio +totalKeyDistance;
+              totalKeyDistance=0;
+              console.log(scrollDistanceWithRatio)
               graph.translate(-scrollDistanceWithRatio,0); 
             }
         }
@@ -244,16 +252,18 @@
       graph.on("keydown", (e: IG6GraphEvent) => {
         let weight: Function = (k1: string, k2: string) =>
           e.key == k1 ? -1 : e.key == k2 ? 1 : 0;
+
         graph.translate(
-          weight("ArrowRight", "ArrowLeft") * graph_translation,
+          arrowKeyDistance = weight("ArrowRight", "ArrowLeft") * graph_translation,
                     weight("ArrowDown", "ArrowUp") * graph_translation,
                 )
+          totalKeyDistance = totalKeyDistance + arrowKeyDistance
         })         
         
         // deactivate on graph interactions such as drag ,mouseenter and node click   
         graph.on("canvas:drag", (e:IG6GraphEvent) => { 
                 nonInteractiveState= false;
-                nonInteractiveMode(e,nonInteractiveState);
+                nonInteractiveMode(e,nonInteractiveState)
             })
         
         graph.on("node:click", (e:IG6GraphEvent) => { 
