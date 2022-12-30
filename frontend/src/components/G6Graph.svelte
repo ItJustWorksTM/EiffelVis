@@ -5,7 +5,7 @@
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-  let graph_translation: number = 50;
+  const graph_translation: number = 50;
 
   export let options = {};
   export let data = {};
