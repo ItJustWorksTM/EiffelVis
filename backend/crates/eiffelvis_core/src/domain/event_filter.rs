@@ -14,8 +14,6 @@ pub struct EventFilterMeta {
 #[serde(tag = "type")]
 pub enum EventFilter {
     /// Event Type
-<<<<<<< HEAD
-<<<<<<< HEAD
     Type { names: Vec<StringCompare> },
     /// Specific ids
     Id { ids: Vec<Uuid> },
@@ -25,24 +23,6 @@ pub enum EventFilter {
     SourceHost { hosts: Vec<StringCompare> },
     /// meta.source.name
     SourceName { names: Vec<StringCompare> },
-=======
-    Type { names: Vec<String> },
-=======
-    Type { names: Vec<StringCompare> },
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
-    /// Specific ids
-    Id { ids: Vec<Uuid> },
-    /// meta.tags
-    Tag { tags: Vec<StringCompare> },
-    /// meta.source.host
-    SourceHost { hosts: Vec<StringCompare> },
-    /// meta.source.name
-<<<<<<< HEAD
-    SourceName { names: Vec<String> },
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
-    SourceName { names: Vec<StringCompare> },
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 }
 
 impl EventFilterMeta {
@@ -52,21 +32,9 @@ impl EventFilterMeta {
         I: Idx,
     {
         let res = match &self.pred {
-<<<<<<< HEAD
-<<<<<<< HEAD
             EventFilter::Type { names: ref name } => name
                 .iter()
                 .any(|name| name.eq(&node.data().meta.event_type)),
-=======
-            EventFilter::Type { names: ref name } => {
-                name.iter().any(|name| &node.data().meta.event_type == name)
-            }
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
-            EventFilter::Type { names: ref name } => name
-                .iter()
-                .any(|name| name.eq(&node.data().meta.event_type)),
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 
             EventFilter::Id { ids } => ids
                 .iter()
@@ -77,15 +45,7 @@ impl EventFilterMeta {
                     .meta
                     .tags
                     .as_ref()
-<<<<<<< HEAD
-<<<<<<< HEAD
                     .map(|v| v.iter().any(|t| tag.eq(t)))
-=======
-                    .map(|v| v.contains(tag))
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
-                    .map(|v| v.iter().any(|t| tag.eq(t)))
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
                     .unwrap_or(false)
             }),
 
@@ -95,15 +55,7 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.host.as_ref())
-<<<<<<< HEAD
-<<<<<<< HEAD
                     .map(|h| host.eq(h))
-=======
-                    .map(|h| h == host)
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
-                    .map(|h| host.eq(h))
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
                     .unwrap_or(false)
             }),
 
@@ -113,15 +65,7 @@ impl EventFilterMeta {
                     .source
                     .as_ref()
                     .and_then(|s| s.name.as_ref())
-<<<<<<< HEAD
-<<<<<<< HEAD
                     .map(|n| name.eq(n))
-=======
-                    .map(|n| n == name)
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
-                    .map(|n| name.eq(n))
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
                     .unwrap_or(false)
             }),
         };
@@ -129,10 +73,6 @@ impl EventFilterMeta {
         res ^ self.rev
     }
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct StringCompare {
@@ -168,8 +108,3 @@ impl PartialEq<String> for StringCompare {
         self.equal(other.as_str())
     }
 }
-<<<<<<< HEAD
-=======
->>>>>>> 1967a85 (backend/domain: split out filter and collection)
-=======
->>>>>>> bfe06c7 (backend: allow client to somewhat control string matching)
