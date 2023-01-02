@@ -36,12 +36,12 @@
 
 </script>
 
-<div class="flex flex-col h-full w-full point-events-auto bg-base-200">
+<div class="flex flex-col h-full w-full point-events-auto bg-base-200 rounded-lg">
   <!-- Header of the setting component -->
   <HeaderWithCloseButton title={header_title} on:close_request/>
-  <div class="flex overflow-y-auto h-full w-full justify-between">
+  <div class="flex overflow-y-auto h-full w-full justify-between rounded-lg">
     <!-- To add a new choice, add an object in the variable setting_list -->
-    <div class="p-3 flex flex-col overflow-y-auto h-full w-1/3">
+    <div class="p-3 flex flex-col overflow-y-auto h-full w-1/3 rounded-lg">
       <ul>
         {#each setting_list as setting_choice}
           <li>
@@ -58,7 +58,7 @@
         {/each}
       </ul>
     </div> 
-    <div class="w-2/3 overflow-y-auto h-full">
+    <div class="w-2/3 overflow-y-auto h-full rounded-lg">
       <!-- Use class:hidden{<selected value of the button controlling the visibility>} to give visibility control to the button -->
       <div
       class="bg-base-200 h-full"
@@ -70,7 +70,10 @@
         on:apply={consume_query}
       />
       </div> 
-      <div>
+      <div
+      class="bg-base-200 h-full"
+      class:hidden={!setting_list[1].selected}
+      >
         <ShortcutPanel />
       </div> 
     </div>

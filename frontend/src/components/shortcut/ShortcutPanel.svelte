@@ -24,7 +24,7 @@
 
 </script>
 
-<div class="p-3 shortcut_container flex flex-col max-height-full overflow-scroll" >
+<div class="p-3 shortcut_container flex flex-col max-height-full" >
     {#each shortcuts as shortcut}
         <Shortcut shortcut_label={shortcut.label} shortcut_key={shortcut.key.toUpperCase()}/>
     {/each}
