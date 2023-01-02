@@ -126,7 +126,6 @@
     } else {
       event_filters_sets = [];
     }
-    console.log(event_filters_sets);
   };
 
   // TODO: add loading for this
