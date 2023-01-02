@@ -59,8 +59,7 @@
             nodePoint = e.x - container.scrollWidth;
             if(nodePoint != oldNodePoint ){ // find out if latest node has moved to new horizontal position  
               scrollDistance = nodePoint - oldNodePoint;
-              scrollDistanceWithRatio = scrollDistance*zoomRatio
-              scrollDistanceWithRatio = scrollDistanceWithRatio +totalKeyDistance;
+              scrollDistanceWithRatio = (scrollDistance*zoomRatio) +totalKeyDistance
               totalKeyDistance=0;
               console.log(scrollDistanceWithRatio)
               graph.translate(-scrollDistanceWithRatio,0); 
