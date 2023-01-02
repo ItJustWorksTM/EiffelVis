@@ -1,4 +1,7 @@
 /* eslint-disable camelcase */
+
+import type { TemperateFilterArray } from "./uitypes"
+
 // Interally tagged type for types that are part of a enum
 type TypeTag<T, K> = K & { type: T }
 
