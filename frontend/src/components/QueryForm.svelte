@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { RangeFilterBound } from "../apidefinition";
-    import type { FixedQuery } from "../uitypes";
+    import type { FixedQuery, TemperateFilterArray } from "../uitypes";
     import FilterWidget from "./FilterWidget.svelte";
 
     const range_modes: string[] = ["None", "Time", "Absolute", "Ids"];
@@ -10,6 +10,7 @@
     let end_mode: string = "None";
 
     export let query: FixedQuery;
+    export let event_filters_sets: TemperateFilterArray[];
     let filterWidget;
 
     const mkk = (
@@ -58,23 +59,27 @@
 </script>
 
 <div>
-    {#each query.event_filters as filter, i}
+    {#each event_filters_sets as filter, i}
         <div
             tabindex="0"
             class="grow collapse w-full border rounded-box border-base-300 collapse-arrow"
         >
             <input type="checkbox" />
             <div class="collapse-title text-base font-medium">
-                {`Filter ${i}`}
+                {`Graph ${i}`}
             </div>
             <div class="collapse-content">
-                <FilterWidget
+                <!-- <FilterWidget
                     bind:ids={filter.ids}
                     bind:tags={filter.tags}
                     bind:types={filter.types}
                     bind:sourcehosts={filter.sourcehosts}
                     bind:sourcenames={filter.sourcenames}
                     bind:this={filterWidget}
+                /> -->
+                <FilterWidget
+                    bind:this={filterWidget}
+                    bind:tempFilterArray={filter}
                 />
             </div>
         </div>
