@@ -16,17 +16,6 @@
     fixed_query_to_norm,
     TemperateFilterArray,
   } from "./uitypes";
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  import { deep_copy } from "./utils";
-  import G6Graph from "./components/G6Graph.svelte";
-  import config from "./config.json";
-
-  let graph_elem: G6Graph | null;
->>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
-=======
->>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
 
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
@@ -38,37 +27,13 @@
 
   let selected_node: FullEvent = null;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   let show_menu: boolean = false;
   let show_legend: boolean = true;
   let show_timebar: boolean = false;
-  $: nonInteractiveState = true;
 
   let customTheme: Object = config.Theme.ColorBlind;
   let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
   let legend: Map<string, any> = themeMap;
-=======
-  let show_menu = false;
-  let show_legend = true;
-  let show_timebar = false;
-
-  let customTheme = config.Theme.ColorBlind;
-  let themeMap = new Map(Object.entries(customTheme));
-  let legend = themeMap;
->>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
-=======
-  let show_menu: boolean = false;
-  let show_legend: boolean = true;
-  let show_timebar: boolean = false;
-  let show_filter_panel: boolean = false; 
-  $: nonInteractiveState = true
-
-
-  let customTheme: Object = config.Theme.ColorBlind;
-  let themeMap: Map<string, any> = new Map(Object.entries(customTheme));
-  let legend: Map<string, any> = themeMap;
->>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
   $: styles = [...legend.entries()];
 
   let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
@@ -106,89 +71,6 @@
     }
   }
 
-<<<<<<< HEAD
-  // non-interactive mode variables
-  let show_message: boolean = false;
-  let dayToDisplay: string = null;
-  let dayLastEventRecieved: number = 0;
-  let recievedNewNode: boolean = false;
-  let displayTime: string = null;
-  let displayDate: string = null;
-
-  const displayInfoMessage = () => {
-    //After 1 minute of no nodes recieved, a message is displayed.
-    let time: Date = new Date();
-    if (time.getDate() == dayLastEventRecieved) {
-      dayToDisplay = "TODAY";
-    } else if (time.getDate() - dayLastEventRecieved == 1) {
-      dayToDisplay = "YESTERDAY";
-    } else if (time.getDate() - dayLastEventRecieved > 1) {
-      dayToDisplay = displayDate;
-    }
-
-    if (recievedNewNode == false && dayToDisplay != null) {
-      show_message = true;
-      nonInteractiveState = true;
-      console.log("received no new node");
-    } else {
-      show_message = false;
-    }
-  };
-
-  let ms = 60000;
-  let interval = setInterval(displayInfoMessage, ms); // set timer to run every 1 minute
-
-  // timer function to wait 1 minute to check if nodes are still being received,
-  // if no new nodes after 1 minute, message for latest node received is displayed
-  const resetTimer = () => {
-    clearInterval(interval); // interval is reset every minute
-    interval = setInterval(displayInfoMessage, ms);
-  };
-=======
-
-                                                               // non-interactive mode variables
-  let show_message: boolean = false; 
-  let dayToDisplay: string = null; 
-  let dayLastEventRecieved: number = 0; 
-  let recievedNewNode: boolean = false; 
-  let displayTime: string = null;
-  let displayDate: string = null;
-  
-
-
-const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
-  let time: Date = new Date();
-  if ( time.getDate() == dayLastEventRecieved){
-      dayToDisplay = "TODAY";     
-  }
-  else if (time.getDate() - dayLastEventRecieved == 1){   
-      dayToDisplay = "YESTERDAY"; 
-  }
-  else if (time.getDate() - dayLastEventRecieved> 1){
-      dayToDisplay = displayDate;
-  }
-
-  if (recievedNewNode==false && dayToDisplay != null  ){
-    show_message = true; 
-    nonInteractiveState = true;
-    console.log("received no new node")
-  }
-  else {
-    show_message = false;
-  } 
-}
-
- let ms = 60000;
- let interval= setInterval( displayInfoMessage, ms); // set timer to run every 1 minute
-
- // timer function to wait 1 minute to check if nodes are still being received, 
- // if no new nodes after 1 minute, message for latest node received is displayed
- const resetTimer = () =>{
-  clearInterval(interval); // interval is reset every minute 
-  interval= setInterval( displayInfoMessage, ms);
-}
->>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
-
   const consume_query = async () => {
     const layout = new StatefulLayout();
     awaiting_query_request = true;
@@ -200,41 +82,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     for await (const event of iter) {
       layout.apply(event, graph_options);
       graph_elem.push(event);
-
-<<<<<<< HEAD
-      graph_elem.nonInteractiveMode(event, nonInteractiveState);
-
-      //every time a node is pushed to the graph the variables are updated
-      let timeJson: number = event.time;
-      let time: Date = new Date(timeJson);
-      dayLastEventRecieved = time.getDate();
-      displayDate = time.toLocaleDateString([], {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      displayTime = time.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      recievedNewNode = true;
-      show_message = false;
-
-=======
-      graph_elem.nonInteractiveMode(event,nonInteractiveState);
-    
-      //every time a node is pushed to the graph the variables are updated
-      let timeJson: number = event.time;
-      let time: Date = new Date(timeJson);
-      dayLastEventRecieved = time.getDate(); 
-      displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
-      displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
-      recievedNewNode = true;
-      show_message = false; 
-
-       
->>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
       // TODO: Find a better way to do this
       if (once) {
         graph_elem.focusNode(event.id);
@@ -243,17 +90,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
       legend = layout.getNodeStyle();
     }
-
-<<<<<<< HEAD
-    recievedNewNode = false;
-    console.log("stoped recieving nodes");
-    resetTimer(); // method to reset timer
-=======
-    recievedNewNode = false; 
-    console.log("stoped recieving nodes")
-    resetTimer();// method to reset timer
-    
->>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
   };
 
   const submit_state_query = () => submit_query(current_query);
@@ -289,7 +125,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     } else {
       event_filters_sets = [];
     }
-    console.log(event_filters_sets);
   };
 
   // TODO: add loading for this
@@ -331,40 +166,21 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
   const toggleMenu = () => {
     if (show_legend) {
-       toggleLegend();
-      }
+      toggleLegend();
+    }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
     if (show_menu) {
-       toggleMenu();
-      }
+      toggleMenu();
+    }
     show_legend = !show_legend;
   };
 
-  const toggleFilterPanel = () => {
-    show_filter_panel = !show_filter_panel;
-  };
-  
-
   //Updates the timebar each time the show timebar button is clicked
-<<<<<<< HEAD
   const updateTimebar = () => {
     (show_timebar = !show_timebar), graph_elem.updateTimeBar(show_timebar);
-  };
-
-  const toggleInteractiveMode = () => {
-    nonInteractiveState = !nonInteractiveState;
-=======
-  const updateTimebar = () =>{  
-            (show_timebar = !show_timebar),
-            graph_elem.updateTimeBar(show_timebar)
->>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
-  };
-
-  const toggleInteractiveMode = () =>{  
-            (nonInteractiveState = !nonInteractiveState)
   };
 
   const options = {
@@ -372,12 +188,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     height: 400,
     workerEnabled: false,
     fitView: true,
-<<<<<<< HEAD
     groupByTypes: false, // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
-=======
-    fitViewPadding:[0,0,0,600],
-    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
->>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
     defaultEdge: {
       labelCfg: {
         position: "center",
@@ -414,8 +225,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
 </script>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 <div class="fixed flex m-0 h-screen w-screen bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <SideBar
@@ -444,7 +253,6 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       {selected_node}
       {graph_options}
       {styles}
-      {show_filter_panel}
     />
     <!-- Graph with listeners -->
     <G6Graph
@@ -453,174 +261,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       {options}
       data={{}}
     />
-=======
-<div class="m-0 h-screen bg-base-300">
-  <div
-    class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
-    style="z-index:1"
-  >
-    <div class="block m-6">
-      <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
-        <li>
-          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a
-            class=""
-            class:btn-active={show_timebar}
-            on:click={() => (
-              (show_timebar = !show_timebar),
-              graph_elem.updateTimeBar(show_timebar)
-            )}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21.5 12H12V2.5"
-              />
-              <circle
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div
-      class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
-      style="z-index:1"
-      class:hidden={!show_menu}
-    >
-      <GraphOptions
-        bind:graph_options
-        on:reset={reset_graph_options}
-        on:apply={consume_query}
-      />
-    </div>
-    <div
-      style="z-index:1"
-      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
-      class:show={show_legend}
-    >
-      <ColorLegend {styles} />
-    </div>
->>>>>>> ebdd8b1 (Frontend: Graph Legend Update (#124))
   </div>
-  <G6Graph
-    on:nodeselected={on_node_selected}
-    bind:this={graph_elem}
-    bind:nonInteractiveState
-    {options}
-    data={{}}
-=======
-<div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
-  <!-- SideBar component: the variables are updated inside App.svelte -->
-  <SideBar 
-    show_timebar= {show_timebar}
-    show_legend = {show_legend}
-    show_menu = {show_menu} 
-    interactiveMode = {nonInteractiveState}
-    show_filter_panel = {show_filter_panel}
-    toggleMenuPlaceholder = {toggleMenu} 
-    toggleLegendPlaceholder = {toggleLegend} 
-    toggleFilterPanelPlaceholder = {toggleFilterPanel}
-    updateTimeBarPlaceholder = {updateTimebar}
-<<<<<<< HEAD
->>>>>>> db0a866 (FrontEnd: Re-factor the overall layout (#141))
-=======
-    toggleInteractiveModePlaceholder = {toggleInteractiveMode}
-
->>>>>>> 9a09114 (frontend: Add non-Interactive mode (#142))
-  />
-  <div class="grid w-screen h-screens"
-        style="z-index:1"
-      >   <!-- panels  -->
-      <Panel 
-        show_filter_panel = {show_filter_panel}
-        show_legend_placeholder = {show_legend} 
-        show_menu_placeholder = {show_menu} 
-        reset_graph_options_placeholder = {reset_graph_options}
-        use_selected_as_root = {use_selected_as_root}
-        current_query = {current_query}
-        current_query_changed= {current_query_changed}
-        add_filter = {add_filter}
-        qhistory = {qhistory}
-        awaiting_query_request = {awaiting_query_request}
-        submit_state_query_placeholder = {submit_state_query}
-        consume_query = {consume_query}
-        selected_node = {selected_node}
-        graph_options = {graph_options}
-        styles = {styles}
-      />
-  <div class="right-5
-             top-10
-             fixed
-             mr-10
-             mb-6           
-             "
-       style="white-space: nowrap;"      
-             class:hidden={!show_message}
-             class:show= {show_message}
-             >
-    <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
-  </div>
-  <G6Graph
-    on:nodeselected={on_node_selected}
-    bind:this={graph_elem}
-    bind:nonInteractiveState = {nonInteractiveState}
-    {options}
-    data={{}}
-  />
-</div>
 </div>
 
 <style lang="postcss" global>
