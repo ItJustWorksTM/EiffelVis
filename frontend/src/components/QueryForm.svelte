@@ -50,8 +50,6 @@
     }
     function add_tempfilter_to_query(value) {
         if (value.length > 0) {
-            console.log("add filter to query");
-            console.log(value);
             ids = [];
             types = [];
             tags = [];
@@ -111,8 +109,6 @@
             query.event_filters[0].sourcenames = sourcenames;
             query.event_filters[0].tags = tags;
             query.event_filters[0].types = types;
-            console.log("query");
-            console.log(query.event_filters);
         } else {
             query.event_filters = [];
             query.event_filters[0] = empty_fixed_event_filters();
@@ -182,7 +178,6 @@
                     } else {
                         select_filter_set = [];
                     }
-                    console.log(select_filter_set);
                 }}
             >
                 <FilterWidget
