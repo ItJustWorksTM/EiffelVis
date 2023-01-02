@@ -1,6 +1,19 @@
 <script lang="ts">
-    import type { RangeFilterBound } from "../apidefinition";
-    import type { FixedQuery, TemperateFilterArray } from "../uitypes";
+    import type {
+        EventFilter,
+        Id,
+        RangeFilterBound,
+        SourceHost,
+        SourceName,
+        Tag,
+        Type,
+    } from "../apidefinition";
+    import {
+        empty_fixed_event_filters,
+        FilterType,
+        FixedQuery,
+        TemperateFilterArray,
+    } from "../uitypes";
     import FilterWidget from "./FilterWidget.svelte";
 
     const range_modes: string[] = ["None", "Time", "Absolute", "Ids"];
@@ -12,7 +25,99 @@
     export let query: FixedQuery;
     export let event_filters_sets: TemperateFilterArray[];
     let filterWidget;
-
+    let ids: EventFilter<Id>[] = [];
+    let tags: EventFilter<Tag>[] = [];
+    let types: EventFilter<Type>[] = [];
+    let sourcehosts: EventFilter<SourceHost>[] = [];
+    let sourcenames: EventFilter<SourceName>[] = [];
+    let id: EventFilter<Id> = { rev: false, pred: { type: "Id", ids: [] } };
+    let tag: EventFilter<Tag> = { rev: false, pred: { type: "Tag", tags: [] } };
+    let type: EventFilter<Type> = {
+        rev: false,
+        pred: { type: "Type", names: [] },
+    };
+    let sourcehost: EventFilter<SourceHost> = {
+        rev: false,
+        pred: { type: "SourceHost", hosts: [] },
+    };
+    let sourcename: EventFilter<SourceName> = {
+        rev: false,
+        pred: { type: "SourceName", names: [] },
+    };
+    let select_filter_set = [];
+    $: {
+        add_tempfilter_to_query(select_filter_set);
+    }
+    function add_tempfilter_to_query(value) {
+        if (value.length > 0) {
+            console.log("add filter to query");
+            console.log(value);
+            ids = [];
+            types = [];
+            tags = [];
+            sourcehosts = [];
+            sourcenames = [];
+            value.forEach((filter) => {
+                if (filter.active) {
+                    switch (filter.filterField) {
+                        case FilterType.ID:
+                            id.rev = filter.exclude;
+                            id.pred.ids[0] = filter.value;
+                            ids = [...ids, id];
+                            break;
+                        case FilterType.Type:
+                            type.rev = filter.exclude;
+                            type.pred.names[0] = {
+                                lower_case: filter.isWildCard,
+                                partial: filter.isWildCard,
+                                value: filter.value,
+                            };
+                            types = [...types, type];
+                            break;
+                        case FilterType.Source:
+                            sourcehost.rev = filter.exclude;
+                            sourcehost.pred.hosts[0] = {
+                                lower_case: filter.isWildCard,
+                                partial: filter.isWildCard,
+                                value: filter.value,
+                            };
+                            sourcehosts = [...sourcehosts, sourcehost];
+                            break;
+                        case FilterType.Tag:
+                            tag.rev = filter.exclude;
+                            tag.pred.tags[0] = {
+                                lower_case: filter.isWildCard,
+                                partial: filter.isWildCard,
+                                value: filter.value,
+                            };
+                            tags = [...tags, tag];
+                            break;
+                        case FilterType.Source:
+                            sourcename.rev = filter.exclude;
+                            sourcename.pred.names[0] = {
+                                lower_case: filter.isWildCard,
+                                partial: filter.isWildCard,
+                                value: filter.value,
+                            };
+                            sourcenames = [...sourcenames, sourcename];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+            query.event_filters[0].ids = ids;
+            query.event_filters[0].sourcehosts = sourcehosts;
+            query.event_filters[0].sourcenames = sourcenames;
+            query.event_filters[0].tags = tags;
+            query.event_filters[0].types = types;
+            console.log("query");
+            console.log(query.event_filters);
+        } else {
+            query.event_filters = [];
+            query.event_filters[0] = empty_fixed_event_filters();
+        }
+    }
     const mkk = (
         type: "Time" | "Absolute" | "Ids",
         val: string
@@ -66,9 +171,35 @@
         >
             <input type="checkbox" />
             <div class="collapse-title text-base font-medium">
-                {`Graph ${i}`}
+                {`filters set ${i}`}
             </div>
-            <div class="collapse-content">
+
+            <div
+                class="collapse-content"
+                on:click={() => {
+                    if (filter.length > 0) {
+                        select_filter_set = filter;
+                    } else {
+                        select_filter_set = [];
+                    }
+                    console.log(select_filter_set);
+                }}
+            >
+                <FilterWidget
+                    bind:this={filterWidget}
+                    bind:tempFilterArray={filter}
+                />
+                {#if i != 0}
+                    <button
+                        class="btn overflow-auto w-full mt-2"
+                        on:click={() => {
+                            event_filters_sets.splice(i, 1);
+                            event_filters_sets = [...event_filters_sets];
+                        }}
+                    >
+                        delet filter set
+                    </button>
+                {/if}
                 <!-- <FilterWidget
                     bind:ids={filter.ids}
                     bind:tags={filter.tags}
@@ -77,10 +208,6 @@
                     bind:sourcenames={filter.sourcenames}
                     bind:this={filterWidget}
                 /> -->
-                <FilterWidget
-                    bind:this={filterWidget}
-                    bind:tempFilterArray={filter}
-                />
             </div>
         </div>
     {/each}

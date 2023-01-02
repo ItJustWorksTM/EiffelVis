@@ -13,7 +13,6 @@
     import LineInputList from "./LineInputList.svelte";
 
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
-
     // TODO: Maybe just fixed filter?
     let ids: EventFilter<Id>[];
 
@@ -109,7 +108,7 @@
     };
 </script>
 
-<div class="w-full h-full">
+<div class="w-full h-auto">
     <div>
         <LineInputList bind:values={tempFilterArray} />
         <select class="select select-primary max-w-xs" bind:value={selected}>

@@ -5,7 +5,6 @@
   import QueryForm from "./QueryForm.svelte";
   import type { GraphSettings } from "../layout";
   import {
-    empty_fixed_event_filters,
     FixedQuery,
     fixed_query_to_norm,
     TemperateFilterArray,
@@ -18,8 +17,6 @@
   export let awaiting_query_request: boolean;
   export let current_query_changed: boolean;
   export let event_filters_sets: TemperateFilterArray[];
-
-  let widget;
 
   $: current_query_changed =
     qhistory.length > 0 &&
@@ -101,9 +98,7 @@
               class:loading={awaiting_query_request}
               disabled={awaiting_query_request || !current_query_changed}
               on:click={() => {
-                empty_fixed_event_filters;
-                widget.add_tempfilter_to_query();
-                // submit_state_query_placeholder;
+                submit_state_query_placeholder();
               }}>submit</button
             >
           </div>

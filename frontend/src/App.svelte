@@ -19,6 +19,7 @@
 
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
+  $: event_filters_sets;
 
   let graph_elem: G6Graph = null;
   let active_stream: QueryStream = null;
@@ -239,16 +240,16 @@
   <div class="grid w-screen h-screens" style="z-index:1">
     <!-- panels  -->
     <Panel
-      {event_filters_sets}
+      bind:event_filters_sets
       show_legend_placeholder={show_legend}
       show_menu_placeholder={show_menu}
       reset_graph_options_placeholder={reset_graph_options}
       {use_selected_as_root}
-      {current_query}
-      {current_query_changed}
+      bind:current_query
+      bind:current_query_changed
       {add_filter_set}
-      {qhistory}
-      {awaiting_query_request}
+      bind:qhistory
+      bind:awaiting_query_request
       submit_state_query_placeholder={submit_state_query}
       {consume_query}
       {selected_node}
