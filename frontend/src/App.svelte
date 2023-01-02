@@ -353,7 +353,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   @tailwind components;
   @tailwind utilities;
   .show {
-    width: 320px;
+    width: 375px;
   }
   .move {
     margin-right: 350px;

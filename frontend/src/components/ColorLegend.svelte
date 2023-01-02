@@ -6,8 +6,8 @@
     import { defaultNode } from "../layout";
     const options = {
         container: "mountNode",
-        width: 280,
-        height: 220,
+        width: 335,
+        height: 210,
         workerEnabled: true,
         nodeSize: 20,
     };
