@@ -15,12 +15,12 @@
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 
     // TODO: Maybe just fixed filter?
-    export let ids: EventFilter<Id>[];
+    let ids: EventFilter<Id>[];
 
-    export let tags: EventFilter<Tag>[];
-    export let types: EventFilter<Type>[];
-    export let sourcehosts: EventFilter<SourceHost>[];
-    export let sourcenames: EventFilter<SourceName>[];
+    let tags: EventFilter<Tag>[];
+    let types: EventFilter<Type>[];
+    let sourcehosts: EventFilter<SourceHost>[];
+    let sourcenames: EventFilter<SourceName>[];
     let id: EventFilter<Id> = { rev: false, pred: { type: "Id", ids: [] } };
     let tag: EventFilter<Tag> = { rev: false, pred: { type: "Tag", tags: [] } };
     let type: EventFilter<Type> = {
@@ -37,7 +37,7 @@
     };
     let selected = filter_types[0];
     let inputValue = "";
-    let tempFilterArray: TemperateFilterArray;
+    export let tempFilterArray: TemperateFilterArray = [];
     const add_filter_to_TempFilterArray = () => {
         let newFilter = <FilterInput>{
             active: true,
@@ -47,12 +47,12 @@
             value: inputValue,
         };
         tempFilterArray = [...tempFilterArray, newFilter];
-        add_tempfilter_to_query();
-        console.log(ids);
-        console.log(tags);
-        console.log(types);
-        console.log(sourcehosts);
-        console.log(sourcenames);
+        // add_tempfilter_to_query();
+        // console.log(ids);
+        // console.log(tags);
+        // console.log(types);
+        // console.log(sourcehosts);
+        // console.log(sourcenames);
         inputValue = "";
     };
 
