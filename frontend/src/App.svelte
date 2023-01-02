@@ -329,14 +329,9 @@
       updateTimebar();
     }
 
-    // Filter panel (waiting for implementation of toggle filter panel)
+    // Filter panel
     if (appKeyMap["f"] || appKeyMap["F"]) {
       toggleFilterPanel();
-    }
-
-    // WIP: Shortcut view
-    if (appKeyMap["i"] || appKeyMap["I"]) {
-      console.log("WIP: Shortcut view");
     }
   };
 
