@@ -12,6 +12,8 @@
   export let nonInteractiveState: boolean;
 
     let nodePoint: number = 0;
+    let arrowKeyDistance: number = 0;
+    let totalKeyDistance: number = 0;
     
 
     let container: HTMLElement;
@@ -54,7 +56,8 @@
             nodePoint = e.x - container.scrollWidth;
             if(nodePoint != oldNodePoint){ // find out if latest node has moved to new horizontal position  
               scrollDistance = nodePoint - oldNodePoint;
-              scrollDistanceWithRatio = scrollDistance*zoomRatio;
+              scrollDistanceWithRatio = (scrollDistance*zoomRatio) +totalKeyDistance
+              totalKeyDistance=0;
               graph.translate(-scrollDistanceWithRatio,0); 
             }
         }
@@ -245,9 +248,10 @@
         let weight: Function = (k1: string, k2: string) =>
           e.key == k1 ? -1 : e.key == k2 ? 1 : 0;
         graph.translate(
-          weight("ArrowRight", "ArrowLeft") * graph_translation,
+          arrowKeyDistance = weight("ArrowRight", "ArrowLeft") * graph_translation,
                     weight("ArrowDown", "ArrowUp") * graph_translation,
                 )
+          totalKeyDistance = totalKeyDistance + arrowKeyDistance
         })         
         
         // deactivate on graph interactions such as drag ,mouseenter and node click   
