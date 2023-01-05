@@ -4,7 +4,6 @@
 </script>
 
 <div class="form-control">
-    <div class="flex flex-row px-1.5" />
     <table>
         <thead>
             <tr>
@@ -17,7 +16,7 @@
             <tr>
                 <td>
                     <select
-                        class="select select-primary max-w-xs"
+                        class="select select-primary"
                         bind:value={value.filterField}
                     >
                         {#each filter_types as type}
@@ -30,7 +29,7 @@
                         type="text"
                         placeholder={value.filterField}
                         bind:value={value.value}
-                        class="input input-sm input-bordered flex-1 w-40"
+                        class="input input-sm input-bordered w-32 h-8"
                     />
                 </td>
             </tr>

@@ -2,7 +2,6 @@
 <script lang="ts">
     import type { FilterInput, TemperateFilterArray } from "../uitypes";
     import LineInputList from "./LineInputList.svelte";
-    import Input from "./TextInput.svelte";
 
     const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
 
@@ -23,29 +22,34 @@
 </script>
 
 <div class="w-full h-auto">
-    <div>
-        <LineInputList bind:values={tempFilterArray} />
-        <select class="select select-primary max-w-xs" bind:value={selected}>
-            {#each filter_types as type}
-                <option>{type}</option>
-            {/each}
-        </select>
-        <input
-            type="text"
-            placeholder={selected}
-            bind:value={inputValue}
-            class="input input-sm input-bordered basis-full"
-        />
-        <button
-            class="btn btn-xs"
-            on:click={() => add_filter_to_TempFilterArray()}
-            disabled={inputValue == ""}>+</button
-        >
-    </div>
+    <LineInputList bind:values={tempFilterArray} />
+    <select class="select select-primary" bind:value={selected}>
+        {#each filter_types as type}
+            <option>{type}</option>
+        {/each}
+    </select>
+    <input
+        type="text"
+        placeholder={selected}
+        bind:value={inputValue}
+        class="input input-sm input-bordered w-32 h-8"
+    />
+    <button
+        class="btn btn-xs"
+        on:click={() => add_filter_to_TempFilterArray()}
+        disabled={inputValue == ""}>+</button
+    >
 </div>
 
 <style lang="postcss" global>
     .hidden {
         display: none;
+    }
+    .select.select-primary {
+        min-height: 2rem;
+        padding-left: 0.6rem;
+        padding-right: 1.7rem;
+        margin-right: 0.5rem;
+        height: 2rem;
     }
 </style>
