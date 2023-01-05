@@ -319,7 +319,6 @@
       {show_filter_panel}
       bind:event_filters_sets
       show_legend_placeholder={show_legend}
-      reset_graph_options_placeholder={reset_graph_options}
       {use_selected_as_root}
       bind:current_query
       bind:current_query_changed
@@ -327,9 +326,7 @@
       bind:qhistory
       bind:awaiting_query_request
       submit_state_query_placeholder={submit_state_query}
-      {consume_query}
       {selected_node}
-      {graph_options}
       {styles}
     />
   </div>

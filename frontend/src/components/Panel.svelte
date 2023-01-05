@@ -1,9 +1,7 @@
 <script lang="ts">
-  import GraphOptions from "./GraphOptions.svelte";
   import ColorLegend from "./ColorLegend.svelte";
   import EventDetail from "./EventDetail.svelte";
   import QueryForm from "./QueryForm.svelte";
-  import type { GraphSettings } from "../layout";
   import {
     FixedQuery,
     fixed_query_to_norm,
@@ -26,15 +24,12 @@
     );
 
   //Object variables; used for onClick actions.
-  export let reset_graph_options_placeholder: () => void;
-  export let consume_query: () => void;
   export let use_selected_as_root: () => void;
   export let add_filter_set: () => void;
   export let submit_state_query_placeholder: () => void;
   export let current_query: FixedQuery;
   export let qhistory: FixedQuery[];
   export let selected_node: FullEvent;
-  export let graph_options: GraphSettings;
   export let styles: Object;
 </script>
 
