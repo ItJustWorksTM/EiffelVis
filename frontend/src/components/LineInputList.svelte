@@ -26,7 +26,7 @@
                     />
                 </svg>
             </button>
-            <slot index={i}></slot>
+            <slot index={i} />
         </div>
     {/each}
 </div>
