@@ -57,7 +57,7 @@
           class="btn btn-sm btn-primary basis-1/3"
           on:click={add_filter_set}
         >
-          + new filter set</button
+          + filter set</button
         >
         <button
           class="btn btn-sm btn-primary basis-1/3"
