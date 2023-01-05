@@ -11,32 +11,39 @@
   export let data = {};
   export let nonInteractiveState: boolean;
 
-  let nodePoint: number = 0;
+  let keyMap: Object = {};
+  const modifierStrength: number = 4;
 
+  let nodePoint: number = 0;
+  let arrowKeyDistance: number = 0;
+  let totalKeyDistance: number = 0;
+    
   let container: HTMLElement;
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
 
-  let keyMap: Object = {};
-  const modifierStrength: number = 4;
 
-  export const reset = () => {
-    graph?.changeData({});
-    timeBarData = [];
-    graph?.render();
-    dispatch("nodeselected", null);
-  };
-  // This is a hack to get the graph to render the entire window width
-  export const resizeGraph = () => {
-    if (graph && container) {
-      const width = Number(window.innerWidth);
-      const height = Number(window.innerHeight);
-      graph.changeSize(width, height);
-    }
-  };
-  export const focusNode = (id: any) => {
-    graph.focusItem(id);
-  };
+    export const reset = () => {
+      graph?.changeData({});
+      timeBarData = [];
+      graph?.render();
+      dispatch("nodeselected", null);
+    };
+      // This is a hack to get the graph to render the entire window width
+      export const resizeGraph = () => {
+          if (graph && container) {
+              const width = Number(
+                  window.innerWidth
+              );
+              const height = Number(
+                  window.innerHeight
+              );
+              graph.changeSize(width, height);
+          }
+      };
+    export const focusNode = (id: any) => {
+      graph.focusItem(id);
+    };
 
   //non-InteractiveMode function to calculate how much translation the graph should make
   export const nonInteractiveMode = (e: any, modeDisabled: boolean) => {
@@ -45,19 +52,20 @@
     } else {
       /* we take the x points of the latest two nodes, find out how far they are from one another,
                that distance is negated and multiplied with zoom ratio for accurate graph translation */
-      let oldNodePoint: number = nodePoint;
-      let scrollDistance: number = 0;
-      let scrollDistanceWithRatio: number = 0;
-      let zoomRatio: number = graph.getZoom();
-      nodePoint = e.x - container.scrollWidth;
-      if (nodePoint != oldNodePoint) {
-        // find out if latest node has moved to new horizontal position
-        scrollDistance = nodePoint - oldNodePoint;
-        scrollDistanceWithRatio = scrollDistance * zoomRatio;
-        graph.translate(-scrollDistanceWithRatio, 0);
-      }
+            let oldNodePoint: number = nodePoint; 
+            let scrollDistance: number  = 0; 
+            let scrollDistanceWithRatio: number = 0; 
+            let zoomRatio: number = graph.getZoom(); 
+            nodePoint = e.x - container.scrollWidth;
+            if(nodePoint != oldNodePoint){ // find out if latest node has moved to new horizontal position  
+              scrollDistance = nodePoint - oldNodePoint;
+              scrollDistanceWithRatio = (scrollDistance*zoomRatio) +totalKeyDistance
+              totalKeyDistance=0;
+              graph.translate(-scrollDistanceWithRatio,0); 
+            }
+        }
     }
-  };
+
 
   export const push = (ev: any) => {
     ev.date = String(ev.time);
@@ -247,12 +255,13 @@
       let weight: Function = (k1: string, k2: string) =>
         keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
       graph.translate(
-        weight("ArrowRight", "ArrowLeft") * graph_translation,
+        arrowKeyDistance = weight("ArrowRight", "ArrowLeft") * graph_translation,
         weight("ArrowDown", "ArrowUp") * graph_translation
       );
     });
 
     // Register key release and update object
+          totalKeyDistance = totalKeyDistance + arrowKeyDistance
     graph.on("keyup", (e: IG6GraphEvent) => {
       keyMap[e.key] = e.type == "keydown";
     });
