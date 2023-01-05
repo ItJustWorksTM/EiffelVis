@@ -6,7 +6,7 @@ weight = 115
 background = "dark"
 align = "top"
 
-title = "Node Hover"
+title = "Easily highlight Events"
 subtitle= "By hovering over the nodes you can have a quick way of knowing the time in which the node was append on to the graph"
 
 [asset]

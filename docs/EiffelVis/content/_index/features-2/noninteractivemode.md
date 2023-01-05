@@ -6,7 +6,7 @@ weight = 115
 background = "dark"
 align = "top"
 
-title = "Non-interactive Mode"
+title = "Watch as the pipeline grows"
 subtitle= "The graph is displayed in this mode on default. The mode can be disabled using the arrow button directly but will also disable automatically on interactions with the graph, example: Hovering a node, dragging the graph, etc. Keyboard Shortcut : Press the N key to re-activate the mode."
 
 [asset]

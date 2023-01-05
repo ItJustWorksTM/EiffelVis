@@ -6,7 +6,7 @@ weight = 115
 background = "dark"
 align = "top"
 
-title = "Legend"
+title = "All event types at a glance"
 subtitle= "The legend is a chart that will explain which of the Eiffelvis Events the node indicates. Each event is indicated based on a unique shape and colour combination."
 
 [asset]
