@@ -167,9 +167,8 @@
         >
             <input type="checkbox" />
             <div class="collapse-title text-base font-medium">
-                {`filters set ${i}`}
+                {`Filters Set ${i}`}
             </div>
-
             <div
                 class="collapse-content"
                 on:click={() => {
@@ -195,14 +194,6 @@
                         delet filter set
                     </button>
                 {/if}
-                <!-- <FilterWidget
-                    bind:ids={filter.ids}
-                    bind:tags={filter.tags}
-                    bind:types={filter.types}
-                    bind:sourcehosts={filter.sourcehosts}
-                    bind:sourcenames={filter.sourcenames}
-                    bind:this={filterWidget}
-                /> -->
             </div>
         </div>
     {/each}
