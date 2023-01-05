@@ -66,36 +66,36 @@
                         case FilterType.Type:
                             type.rev = filter.exclude;
                             type.pred.names[0] = {
-                                lower_case: filter.isWildCard,
+                                lower_case: true,
                                 partial: filter.isWildCard,
-                                value: filter.value,
+                                value: filter.value.toLowerCase(),
                             };
                             types = [...types, type];
                             break;
                         case FilterType.Source:
                             sourcehost.rev = filter.exclude;
                             sourcehost.pred.hosts[0] = {
-                                lower_case: filter.isWildCard,
+                                lower_case: true,
                                 partial: filter.isWildCard,
-                                value: filter.value,
+                                value: filter.value.toLowerCase(),
                             };
                             sourcehosts = [...sourcehosts, sourcehost];
                             break;
                         case FilterType.Tag:
                             tag.rev = filter.exclude;
                             tag.pred.tags[0] = {
-                                lower_case: filter.isWildCard,
+                                lower_case: true,
                                 partial: filter.isWildCard,
-                                value: filter.value,
+                                value: filter.value.toLowerCase(),
                             };
                             tags = [...tags, tag];
                             break;
                         case FilterType.Source:
                             sourcename.rev = filter.exclude;
                             sourcename.pred.names[0] = {
-                                lower_case: filter.isWildCard,
+                                lower_case: true,
                                 partial: filter.isWildCard,
-                                value: filter.value,
+                                value: filter.value.toLowerCase(),
                             };
                             sourcenames = [...sourcenames, sourcename];
                             break;
