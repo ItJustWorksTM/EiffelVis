@@ -9,28 +9,35 @@
   export let data = {};
   export let nonInteractiveState: boolean;
 
-  let nodePoint: number = 0;
+    let nodePoint: number = 0;
+    let arrowKeyDistance: number = 0;
+    let totalKeyDistance: number = 0;
+    
 
-  let container: HTMLElement;
-  let graph: Graph | null;
-  let timeBarData: TimeBarData[] = [];
-  export const reset = () => {
-    graph?.changeData({});
-    timeBarData = [];
-    graph?.render();
-    dispatch("nodeselected", null);
-  };
-  // This is a hack to get the graph to render the entire window width
-  export const resizeGraph = () => {
-    if (graph && container) {
-      const width = Number(window.innerWidth);
-      const height = Number(window.innerHeight);
-      graph.changeSize(width, height);
-    }
-  };
-  export const focusNode = (id: any) => {
-    graph.focusItem(id);
-  };
+    let container: HTMLElement;
+    let graph: Graph | null;
+    let timeBarData: TimeBarData[] = [];
+    export const reset = () => {
+      graph?.changeData({});
+      timeBarData = [];
+      graph?.render();
+      dispatch("nodeselected", null);
+    };
+      // This is a hack to get the graph to render the entire window width
+      export const resizeGraph = () => {
+          if (graph && container) {
+              const width = Number(
+                  window.innerWidth
+              );
+              const height = Number(
+                  window.innerHeight
+              );
+              graph.changeSize(width, height);
+          }
+      };
+    export const focusNode = (id: any) => {
+      graph.focusItem(id);
+    };
 
   //non-InteractiveMode function to calculate how much translation the graph should make
   export const nonInteractiveMode = (e: any, modeDisabled: boolean) => {
@@ -39,17 +46,18 @@
     } else {
       /* we take the x points of the latest two nodes, find out how far they are from one another,
                that distance is negated and multiplied with zoom ratio for accurate graph translation */
-      let oldNodePoint: number = nodePoint;
-      let scrollDistance: number = 0;
-      let scrollDistanceWithRatio: number = 0;
-      let zoomRatio: number = graph.getZoom();
-      nodePoint = e.x - container.scrollWidth;
-      if (nodePoint != oldNodePoint) {
-        // find out if latest node has moved to new horizontal position
-        scrollDistance = nodePoint - oldNodePoint;
-        scrollDistanceWithRatio = scrollDistance * zoomRatio;
-        graph.translate(-scrollDistanceWithRatio, 0);
-      }
+            let oldNodePoint: number = nodePoint; 
+            let scrollDistance: number  = 0; 
+            let scrollDistanceWithRatio: number = 0; 
+            let zoomRatio: number = graph.getZoom(); 
+            nodePoint = e.x - container.scrollWidth;
+            if(nodePoint != oldNodePoint){ // find out if latest node has moved to new horizontal position  
+              scrollDistance = nodePoint - oldNodePoint;
+              scrollDistanceWithRatio = (scrollDistance*zoomRatio) +totalKeyDistance
+              totalKeyDistance=0;
+              graph.translate(-scrollDistanceWithRatio,0); 
+            }
+        }
     }
   };
 
@@ -85,168 +93,170 @@
     }
     graph.paint();
   };
-  export const updateTimeBar = (timeBarEnabled: boolean) => {
-    graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
-    if (!timeBarEnabled) {
-      //TO-DO Reset the graph if wanted later
-    } else {
-      graph!.addPlugin(
-        new G6.TimeBar({
-          className: "g6TimeBar",
-          x: 0,
-          y: 0,
-          width: 500,
-          height: 110,
-          padding: 10,
-          type: "trend",
-          changeData: false,
-          trend: {
-            data: timeBarData,
-            smooth: true,
-          },
-          tick: {
-            tickLabelFormatter: (timeBarData: any) => {
-              return "";
+    export const updateTimeBar = (timeBarEnabled: boolean) => {
+      graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
+      if (!timeBarEnabled) {
+        //TO-DO Reset the graph if wanted later
+      } else {
+        graph!.addPlugin(
+          new G6.TimeBar({
+            className: "g6TimeBar",
+            x: 0,
+            y: 0,
+            width: 500,
+            height: 110,
+            padding: 10,
+            type: "trend",
+            changeData: false,
+            trend: {
+              data: timeBarData,
+              smooth: true,
             },
-            tickLineStyle: {
-              fill: "#f28c18",
-            },
-          },
-          slider: {
-            backgroundStyle: {
-              fill: "#131616",
-            },
-            foregroundStyle: {
-              fill: "#ffffff",
-            },
-            handlerStyle: {
-              style: {
+            tick: {
+              tickLabelFormatter: (timeBarData: any) => {
+                return "";
+              },
+              tickLineStyle: {
                 fill: "#f28c18",
-                stroke: "#f28c18",
               },
             },
-          },
-          controllerCfg: {
-            fill: "#131616",
-            stroke: "#131616",
-            timePointControllerText: " Point",
-            timeRangeControllerText: " Point",
-          },
+            slider: {
+              backgroundStyle: {
+                fill: "#131616",
+              },
+              foregroundStyle: {
+                fill: "#ffffff",
+              },
+              handlerStyle: {
+                style: {
+                  fill: "#f28c18",
+                  stroke: "#f28c18",
+                },
+              },
+            },
+            controllerCfg: {
+              fill: "#131616",
+              stroke: "#131616",
+              timePointControllerText: " Point",
+              timeRangeControllerText: " Point",
+            },
+          })
+        );
+      }
+    };
+    // Declare the tooltip. Styling happens below in the .g6tooltip section
+    // doc: https://g6.antv.vision/en/examples/tool/tooltip#tooltipPlugin
+    const tooltip = new G6.Tooltip({
+      className: "g6tooltip",
+      offsetX: 10,
+      offsetY: 10,
+      width: 10,
+      height: 8,
+      // the types of items that allow the tooltip show up
+      itemTypes: ["node"],
+      // custom the tooltip's content
+      getContent: (e) => {
+        const outDiv = document.createElement("div"); // create a new div to contain the info within the tootip.
+        if (e.item.getType() === "node") {
+          outDiv.innerHTML = `<h4>` + getNodeLocalTime(e) + `</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
+        }
+        return outDiv;
+      },
+    });
+    // Method that returns the local time contained in a node. The path to the time has been checked so it corresponds to the time when the node has been received by the rabbitMQ broker.
+    const getNodeLocalTime = (e: any) => {
+      let time = new Date(e.item._cfg.model.time); // create a new date from the timestamp in the node
+      return time.toLocaleTimeString(); // return the converted date to local time with a precision to the second.
+    };
+    /**
+     * Method that takes a node and highlights the edges, show the link type and activate the tool tip of the node with the time of the Eiffel event's creation
+     * @param node of type Node
+     */
+    const showRelations = (node) => {
+          // check if item is a Node to be able to access the getEdges() method.
+          const edges = node.getEdges();
+          edges.forEach((edge) => {
+            edge.toFront(); // put edge on top of the nodes (to see lables)
+            graph.updateItem(edge, {
+              //update the edges of the node (used here to style labels and edge)
+              labelCfg: {
+                style: {
+                  fillOpacity: 1, // change the opacity to 1(make it visible), as the default opacity is set to 0(invisible).
+                },
+              },
+              style: {
+                opacity: 1,
+                lineWidth: 1.5,
+              },
+            });
+          });
+    }
+    /**
+     * Method that takes a node:event and undoes the effect of showRelations()
+     * @param node of type Node 
+     */
+    const hideRelations = (node: Node) => {
+          const edges = node.getEdges();
+          edges.forEach((edge) => {
+            edge.toBack(); // put edge back behond the node
+            graph.updateItem(edge, {
+              labelCfg: {
+                style: {
+                  fillOpacity: 0, // make the link lable invisible again, as the mouse moves away from the node
+                },
+              },
+              style: {
+                opacity: 0.15,
+                lineWidth: 1,
+              },
+            });
+          });
+    }
+    onMount(() => {
+      if (graph) {
+        graph.destroy();
+      }
+      graph = new G6.Graph({
+        ...options,
+        container,
+        plugins: [tooltip], // add tooltip as plugin to the graph.
+      });
+      graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+      // Listeners that manipulates the nodes when they are hovered.
+      graph.on("node:mouseenter", (e) => {
+        if (e.item instanceof Node){
+          showRelations(e.item);
+          nonInteractiveState= false;
+          nonInteractiveMode(e,nonInteractiveState);
+        }
+      });
+      graph.on("node:mouseleave", (e) => {
+        if (e.item instanceof Node){
+          hideRelations(e.item);
+        }
+        
+      });
+      // Enable keyboard manipulation
+      graph.on("keydown", (e: IG6GraphEvent) => {
+        let weight: Function = (k1: string, k2: string) =>
+          e.key == k1 ? -1 : e.key == k2 ? 1 : 0;
+        graph.translate(
+          arrowKeyDistance = weight("ArrowRight", "ArrowLeft") * graph_translation,
+                    weight("ArrowDown", "ArrowUp") * graph_translation,
+                )
+          totalKeyDistance = totalKeyDistance + arrowKeyDistance
+        })         
+        
+        // deactivate on graph interactions such as drag ,mouseenter and node click   
+        graph.on("canvas:drag", (e:IG6GraphEvent) => { 
+                nonInteractiveState= false;
+                nonInteractiveMode(e,nonInteractiveState);
+            })
+        
+        graph.on("node:click", (e:IG6GraphEvent) => { 
+              nonInteractiveState= false;
+              nonInteractiveMode(e,nonInteractiveState);
         })
-      );
-    }
-  };
-  // Declare the tooltip. Styling happens below in the .g6tooltip section
-  // doc: https://g6.antv.vision/en/examples/tool/tooltip#tooltipPlugin
-  const tooltip = new G6.Tooltip({
-    className: "g6tooltip",
-    offsetX: 10,
-    offsetY: 10,
-    width: 10,
-    height: 8,
-    // the types of items that allow the tooltip show up
-    itemTypes: ["node"],
-    // custom the tooltip's content
-    getContent: (e) => {
-      const outDiv = document.createElement("div"); // create a new div to contain the info within the tootip.
-      if (e.item.getType() === "node") {
-        outDiv.innerHTML = `<h4>` + getNodeLocalTime(e) + `</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
-      }
-      return outDiv;
-    },
-  });
-  // Method that returns the local time contained in a node. The path to the time has been checked so it corresponds to the time when the node has been received by the rabbitMQ broker.
-  const getNodeLocalTime = (e: any) => {
-    let time = new Date(e.item._cfg.model.time); // create a new date from the timestamp in the node
-    return time.toLocaleTimeString(); // return the converted date to local time with a precision to the second.
-  };
-  /**
-   * Method that takes a node and highlights the edges, show the link type and activate the tool tip of the node with the time of the Eiffel event's creation
-   * @param node of type Node
-   */
-  const showRelations = (node) => {
-    // check if item is a Node to be able to access the getEdges() method.
-    const edges = node.getEdges();
-    edges.forEach((edge) => {
-      edge.toFront(); // put edge on top of the nodes (to see lables)
-      graph.updateItem(edge, {
-        //update the edges of the node (used here to style labels and edge)
-        labelCfg: {
-          style: {
-            fillOpacity: 1, // change the opacity to 1(make it visible), as the default opacity is set to 0(invisible).
-          },
-        },
-        style: {
-          opacity: 1,
-          lineWidth: 1.5,
-        },
-      });
-    });
-  };
-  /**
-   * Method that takes a node:event and undoes the effect of showRelations()
-   * @param node of type Node
-   */
-  const hideRelations = (node: Node) => {
-    const edges = node.getEdges();
-    edges.forEach((edge) => {
-      edge.toBack(); // put edge back behond the node
-      graph.updateItem(edge, {
-        labelCfg: {
-          style: {
-            fillOpacity: 0, // make the link lable invisible again, as the mouse moves away from the node
-          },
-        },
-        style: {
-          opacity: 0.15,
-          lineWidth: 1,
-        },
-      });
-    });
-  };
-  onMount(() => {
-    if (graph) {
-      graph.destroy();
-    }
-    graph = new G6.Graph({
-      ...options,
-      container,
-      plugins: [tooltip], // add tooltip as plugin to the graph.
-    });
-    graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
-    // Listeners that manipulates the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => {
-      if (e.item instanceof Node) {
-        showRelations(e.item);
-        nonInteractiveState = false;
-        nonInteractiveMode(e, nonInteractiveState);
-      }
-    });
-    graph.on("node:mouseleave", (e) => {
-      if (e.item instanceof Node) {
-        hideRelations(e.item);
-      }
-    });
-    // Enable keyboard manipulation
-    graph.on("keydown", (e: IG6GraphEvent) => {
-      let weight: Function = (k1: string, k2: string) =>
-        e.key == k1 ? -1 : e.key == k2 ? 1 : 0;
-      graph.translate(
-        weight("ArrowRight", "ArrowLeft") * graph_translation,
-        weight("ArrowDown", "ArrowUp") * graph_translation
-      );
-    });
-
-    // deactivate on graph interactions such as drag ,mouseenter and node click
-    graph.on("canvas:drag", (e: IG6GraphEvent) => {
-      nonInteractiveState = false;
-      nonInteractiveMode(e, nonInteractiveState);
-    });
-
-    graph.on("node:click", (e: IG6GraphEvent) => {
-      nonInteractiveState = false;
-      nonInteractiveMode(e, nonInteractiveState);
-    });
 
     graph.changeData(data);
     resizeGraph();
