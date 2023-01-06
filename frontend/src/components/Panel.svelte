@@ -40,7 +40,7 @@
             <ColorLegend {styles} />
           </div>       
             <div
-              class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg overflow-y-scroll" 
+              class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg overflow-y-auto" 
               class:show={show_filter_panel}
               class:hidden={!show_filter_panel}
             >
