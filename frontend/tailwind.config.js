@@ -14,4 +14,4 @@ module.exports = {
         utils: true,
         logs: true,
     },
-}
+};
