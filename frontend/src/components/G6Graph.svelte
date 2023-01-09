@@ -8,17 +8,6 @@
   export let options = {};
   export let data = {};
   export let nonInteractiveState: boolean;
-  import { onMount } from "svelte";
-  import G6, { Graph, IG6GraphEvent, Item, Node } from "@antv/g6";
-  import type { TimeBarData } from "../uitypes";
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-  const graph_translation: number = 50;
-
-  export let options = {};
-  export let data = {};
-  export let nonInteractiveState: boolean;
 
   let keyMap: Object = {};
   const modifierStrength: number = 4;
