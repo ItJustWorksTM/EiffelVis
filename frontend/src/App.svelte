@@ -45,6 +45,8 @@
 
   let qhistory: FixedQuery[] = [];
 
+  let appKeyMap: Object = {};
+
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
     event_filters: [empty_fixed_event_filters()],
@@ -252,7 +254,7 @@
     consume_query();
   };
 
-  const toggleMenu = () => {
+  const toggleSettings = () => {
     show_settings = !show_settings;
   };
 
@@ -320,11 +322,62 @@
     show_settings = !show_settings;
   };
 
-  const handle_close_request = () => {
-    console.log("received in app");
-    show_settings = !show_settings;
+  const handleKeyDown = (e: KeyboardEvent): void => {
+    appKeyMap[e.key] = e.type == "keydown";
+
+    if (
+      (appKeyMap["ArrowRight"] ||
+        appKeyMap["ArrowLeft"] ||
+        appKeyMap["ArrowUp"] ||
+        appKeyMap["ArrowDown"]) &&
+      nonInteractiveState
+    ) {
+      nonInteractiveState = false;
+    }
+
+    // Hide all panels
+    if (appKeyMap["h"] || appKeyMap["H"]) {
+      if (show_legend) toggleLegend();
+
+      if (show_settings) toggleSettings();
+
+      if (show_filter_panel) toggleFilterPanel();
+
+      if (show_timebar) updateTimebar();
+    }
+
+    // Legend panel
+    if (appKeyMap["l"] || appKeyMap["L"]) {
+      toggleLegend();
+    }
+
+    // Options panel
+    if (appKeyMap["s"] || appKeyMap["S"]) {
+      toggleSettings();
+    }
+
+    // Non-interactive mode
+    if (appKeyMap["n"] || appKeyMap["N"]) {
+      toggleInteractiveMode();
+    }
+
+    // Timebar
+    if (appKeyMap["t"] || appKeyMap["T"]) {
+      updateTimebar();
+    }
+
+    // Filter panel
+    if (appKeyMap["f"] || appKeyMap["F"]) {
+      toggleFilterPanel();
+    }
+  };
+
+  const handleKeyUp = (e: KeyboardEvent): void => {
+    appKeyMap[e.key] = e.type == "keydown";
   };
 </script>
+
+<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
 
 <div class="flex w-screen h-screen relative bg-base-100">
   <!-- SideBar component: the variables are updated inside App.svelte -->
@@ -335,7 +388,7 @@
       {show_settings}
       interactiveMode={nonInteractiveState}
       {show_filter_panel}
-      toggleSettingsPlaceholder={toggleMenu}
+      toggleSettingsPlaceholder={toggleSettings}
       toggleLegendPlaceholder={toggleLegend}
       toggleFilterPanelPlaceholder={toggleFilterPanel}
       updateTimeBarPlaceholder={updateTimebar}

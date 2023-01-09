@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import type { GraphSettings } from "../layout";
+    import { createEventDispatcher } from 'svelte';
+    import type { GraphSettings } from '../layout';
 
     const dispatch = createEventDispatcher();
 
@@ -9,10 +9,7 @@
 
 <div class="p-3 flex flex-col w-full h-full">
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100"
-            >Offset</span
-        >
+        <span class="border border-[rgba(255,255,255,0.2)] span w-1/2 bg-base-100">Offset</span>
         <input
             type="number"
             bind:value={graph_options.offset}
@@ -20,8 +17,7 @@
         />
     </label>
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+        <span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
             >Time Collapse</span
         >
         <input
@@ -31,8 +27,7 @@
         />
     </label>
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+        <span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
             >Y-axis Scaling</span
         >
         <input
@@ -42,8 +37,7 @@
         />
     </label>
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+        <span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
             >X-axis Node Separation</span
         >
         <input
@@ -53,8 +47,7 @@
         />
     </label>
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+        <span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
             >Y-axis Node Separation</span
         >
         <input
@@ -64,8 +57,7 @@
         />
     </label>
     <label class="input-group input-group-sm mt-1">
-        <span
-            class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
+        <span class="span border border-[rgba(255,255,255,0.2)] w-1/2 bg-base-100"
             >Hue (Node Color)</span
         >
         <input
@@ -75,13 +67,11 @@
         />
     </label>
     <div class="btn-group w-full flex flex-row mt-2">
-        <button
-            class="btn btn-sm grow btn-primary"
-            on:click={() => dispatch("apply")}>Update Graph</button
+        <button class="btn btn-sm grow btn-primary" on:click={() => dispatch('apply')}
+            >Update Graph</button
         >
-        <button
-            class="btn btn-sm grow btn-primary btn-outline"
-            on:click={() => dispatch("reset")}>Reset Default</button
+        <button class="btn btn-sm grow btn-primary btn-outline" on:click={() => dispatch('reset')}
+            >Reset Default</button
         >
     </div>
 </div>
