@@ -16,7 +16,7 @@
   export let event_filters_sets: TemperateFilterArray[];
   export let show_filter_panel: boolean;
   export let select_filter_set = 0;
-  $: select_filter_set;
+  $: event_filters_sets[select_filter_set];
 
   $: current_query_changed =
     qhistory.length > 0 &&
@@ -81,7 +81,9 @@
         <button
           class="btn btn-sm btn-primary basis-1/3"
           class:loading={awaiting_query_request}
-          disabled={awaiting_query_request || !current_query_changed}
+          disabled={awaiting_query_request ||
+            (!current_query_changed &&
+              event_filters_sets[select_filter_set].length == 0)}
           on:click={() => {
             submit_state_query_placeholder();
           }}>submit</button
