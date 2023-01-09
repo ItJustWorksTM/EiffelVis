@@ -15,6 +15,8 @@
   export let current_query_changed: boolean;
   export let event_filters_sets: TemperateFilterArray[];
   export let show_filter_panel: boolean;
+  export let select_filter_set = 0;
+  $: select_filter_set;
 
   $: current_query_changed =
     qhistory.length > 0 &&
@@ -51,7 +53,11 @@
         <EventDetail {selected_node} on:useroot={use_selected_as_root} />
       </div>
       <h1 class="text-lg py-2">Filter Options:</h1>
-      <QueryForm bind:query={current_query} bind:event_filters_sets />
+      <QueryForm
+        bind:query={current_query}
+        bind:event_filters_sets
+        bind:select_filter_set
+      />
       <div class="btn-group w-full flex flex-row mt-2">
         <button
           class="btn btn-sm btn-primary basis-1/3"

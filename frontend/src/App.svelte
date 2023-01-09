@@ -11,6 +11,8 @@
   import config from "./config.json";
   import {
     empty_fixed_event_filters,
+    FilterInput,
+    FilterType,
     FixedQuery,
     fixed_query_to_norm,
     TemperateFilterArray,
@@ -20,7 +22,8 @@
   export let connection: EiffelVisConnection;
   let event_filters_sets: TemperateFilterArray[] = [[]];
   $: event_filters_sets;
-
+  let select_filter_set = 0;
+  $: select_filter_set;
   let graph_elem: G6Graph = null;
   let active_stream: QueryStream = null;
   let awaiting_query_request: boolean = false;
@@ -213,7 +216,28 @@
     };
     current_query.event_filters = [filters];
 
-    submit_state_query();
+    add_selected_node_as_root_to_filter();
+  };
+  const add_selected_node_as_root_to_filter = () => {
+    let new_filter = <FilterInput>{
+      active: true,
+      isWildCard: true,
+      exclude: false,
+      filterField: FilterType.ID,
+      value: selected_node.meta.id,
+    };
+    console.log(select_filter_set);
+    let target_filter_set = event_filters_sets[select_filter_set];
+    target_filter_set.forEach((filter, i) => {
+      if (filter.filterField == FilterType.ID) {
+        target_filter_set.splice(i, 1);
+        target_filter_set = [...target_filter_set];
+        console.log(target_filter_set);
+      }
+    });
+    console.log(target_filter_set);
+    target_filter_set = [...target_filter_set, new_filter];
+    event_filters_sets[select_filter_set] = target_filter_set;
   };
 
   const reset_graph_options = () => {
@@ -328,6 +352,7 @@
       submit_state_query_placeholder={submit_state_query}
       {selected_node}
       {styles}
+      bind:select_filter_set
     />
   </div>
   <div class="flex flex-col fixed z-0 items-center">

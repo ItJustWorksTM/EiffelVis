@@ -44,18 +44,18 @@
         rev: false,
         pred: { type: "SourceName", names: [] },
     };
-    let select_filter_set = [];
+    export let select_filter_set = 0;
     $: {
         add_tempfilter_to_query(select_filter_set);
     }
     function add_tempfilter_to_query(value) {
-        if (value.length > 0) {
+        if (event_filters_sets[value].length > 0) {
             ids = [];
             types = [];
             tags = [];
             sourcehosts = [];
             sourcenames = [];
-            value.forEach((filter) => {
+            event_filters_sets[value].forEach((filter) => {
                 if (filter.active) {
                     switch (filter.filterField) {
                         case FilterType.ID:
@@ -172,11 +172,7 @@
             <div
                 class="collapse-content"
                 on:click={() => {
-                    if (filter.length > 0) {
-                        select_filter_set = filter;
-                    } else {
-                        select_filter_set = [];
-                    }
+                    select_filter_set = i;
                 }}
             >
                 <FilterWidget
