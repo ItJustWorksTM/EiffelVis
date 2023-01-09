@@ -381,7 +381,7 @@
         class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg"
     >
         <div
-            class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
+            class="pointer-events-auto rounded-lg w-3/6 min-w-min h-3/6 relative"
             class:hidden={!show_settings}
         >
             <Settings
