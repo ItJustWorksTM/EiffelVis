@@ -2,7 +2,7 @@
     import HeaderWithCloseButton from '../utils/HeaderWithCloseButton.svelte';
     import GraphOptions from '../GraphOptions.svelte';
     import type { GraphSettings } from '../../layout';
-  import ShortcutPanel from "../shortcut/ShortcutPanel.svelte";
+    import ShortcutPanel from '../shortcut/ShortcutPanel.svelte';
 
     /*  Graph options elements */
     export let graph_options: GraphSettings;
@@ -20,10 +20,10 @@
             name: 'Graph Options',
             selected: true,
         },
-    {
-      name: "Shortcuts",
-      selected: false,
-    },
+        {
+            name: 'Shortcuts',
+            selected: false,
+        },
     ];
 
     /* Method to hide all containers in the setting_list.
@@ -68,12 +68,9 @@
                     on:apply={consume_query}
                 />
             </div>
-            <div
-            class="bg-base-200 h-full"
-            class:hidden={!setting_list[1].selected}
-            >
-              <ShortcutPanel />
-            </div> 
+            <div class="bg-base-200 h-full" class:hidden={!setting_list[1].selected}>
+                <ShortcutPanel />
+            </div>
         </div>
     </div>
 </div>
