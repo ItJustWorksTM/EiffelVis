@@ -8,13 +8,13 @@
         string_compare_default,
         Tag,
         Type,
-    } from "../apidefinition";
+    } from '../apidefinition';
 
-    import LineInputList from "./LineInputList.svelte";
-    import Input from "./TextInput.svelte";
+    import LineInputList from './LineInputList.svelte';
+    import Input from './TextInput.svelte';
 
-    const filter_types: string[] = ["Id", "Type", "Source", "Host", "Tag"];
-    let active_filter: string = "Id";
+    const filter_types: string[] = ['Id', 'Type', 'Source', 'Host', 'Tag'];
+    let active_filter: string = 'Id';
 
     // TODO: Maybe just fixed filter?
     export let ids: EventFilter<Id>;
@@ -34,41 +34,26 @@
             >
         {/each}
     </div>
-    <div class:hidden={active_filter != "Id"}>
-        <label
-            class="cursor-pointer label"
-            class:hidden={ids.pred.ids.length == 0}
-        >
+    <div class:hidden={active_filter != 'Id'}>
+        <label class="cursor-pointer label" class:hidden={ids.pred.ids.length == 0}>
             <span class="label-text">Reversed</span>
-            <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                bind:checked={ids.rev}
-            />
+            <input type="checkbox" class="toggle toggle-primary" bind:checked={ids.rev} />
         </label>
         <LineInputList bind:values={ids.pred.ids} let:index={i}>
-            <Input placeholder={"uuid"} bind:value={ids.pred.ids[i]}/>
+            <Input placeholder={'uuid'} bind:value={ids.pred.ids[i]} />
         </LineInputList>
-        <button
-            class="btn btn-xs w-full"
-            on:click={() => (ids.pred.ids = [...ids.pred.ids, ""])}>+</button
+        <button class="btn btn-xs w-full" on:click={() => (ids.pred.ids = [...ids.pred.ids, ''])}
+            >+</button
         >
     </div>
 
-    <div class:hidden={active_filter != "Type"}>
-        <label
-            class="cursor-pointer label"
-            class:hidden={types.pred.names.length == 0}
-        >
+    <div class:hidden={active_filter != 'Type'}>
+        <label class="cursor-pointer label" class:hidden={types.pred.names.length == 0}>
             <span class="label-text">Reversed</span>
-            <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                bind:checked={types.rev}
-            />
+            <input type="checkbox" class="toggle toggle-primary" bind:checked={types.rev} />
         </label>
         <LineInputList bind:values={types.pred.names} let:index={i}>
-            <Input placeholder={"type name"} bind:value={types.pred.names[i].value} />
+            <Input placeholder={'type name'} bind:value={types.pred.names[i].value} />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -77,20 +62,13 @@
         >
     </div>
 
-    <div class:hidden={active_filter != "Source"}>
-        <label
-            class="cursor-pointer label"
-            class:hidden={sourcenames.pred.names.length == 0}
-        >
+    <div class:hidden={active_filter != 'Source'}>
+        <label class="cursor-pointer label" class:hidden={sourcenames.pred.names.length == 0}>
             <span class="label-text">Reversed</span>
-            <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                bind:checked={sourcenames.rev}
-            />
+            <input type="checkbox" class="toggle toggle-primary" bind:checked={sourcenames.rev} />
         </label>
         <LineInputList bind:values={sourcenames.pred.names} let:index={i}>
-            <Input placeholder={"source name"} bind:value={sourcenames.pred.names[i].value} />
+            <Input placeholder={'source name'} bind:value={sourcenames.pred.names[i].value} />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -100,20 +78,13 @@
         >
     </div>
 
-    <div class:hidden={active_filter != "Host"}>
-        <label
-            class="cursor-pointer label"
-            class:hidden={sourcehosts.pred.hosts.length == 0}
-        >
+    <div class:hidden={active_filter != 'Host'}>
+        <label class="cursor-pointer label" class:hidden={sourcehosts.pred.hosts.length == 0}>
             <span class="label-text">Reversed</span>
-            <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                bind:checked={sourcehosts.rev}
-            />
+            <input type="checkbox" class="toggle toggle-primary" bind:checked={sourcehosts.rev} />
         </label>
         <LineInputList values={sourcehosts.pred.hosts} let:index={i}>
-            <Input placeholder={"host name"} bind:value={sourcehosts.pred.hosts[i].value} />
+            <Input placeholder={'host name'} bind:value={sourcehosts.pred.hosts[i].value} />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -123,20 +94,13 @@
         >
     </div>
 
-    <div class:hidden={active_filter != "Tag"}>
-        <label
-            class="cursor-pointer label"
-            class:hidden={tags.pred.tags.length == 0}
-        >
+    <div class:hidden={active_filter != 'Tag'}>
+        <label class="cursor-pointer label" class:hidden={tags.pred.tags.length == 0}>
             <span class="label-text">Reversed</span>
-            <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                bind:checked={tags.rev}
-            />
+            <input type="checkbox" class="toggle toggle-primary" bind:checked={tags.rev} />
         </label>
         <LineInputList bind:values={tags.pred.tags} let:index={i}>
-            <Input placeholder={"tag name"} bind:value={tags.pred.tags[i].value} />
+            <Input placeholder={'tag name'} bind:value={tags.pred.tags[i].value} />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
