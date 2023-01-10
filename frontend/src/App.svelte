@@ -11,6 +11,7 @@
     import config from './config.json';
     import { empty_fixed_event_filters, FixedQuery, fixed_query_to_norm } from './uitypes';
     import Settings from './components/settings/Settings.svelte';
+    import { isFocused } from './components/TextInput.svelte';
 
     export let connection: EiffelVisConnection;
 
@@ -275,6 +276,8 @@
     };
 
     const handleKeyDown = (e: KeyboardEvent): void => {
+        if (isFocused) return;
+
         appKeyMap[e.key] = e.type == 'keydown';
 
         if (

@@ -3,6 +3,7 @@
     import G6, { Graph, IG6GraphEvent, Item, Node } from '@antv/g6';
     import type { TimeBarData } from '../uitypes';
     import { createEventDispatcher } from 'svelte';
+    import { isFocused } from './TextInput.svelte';
 
     const dispatch = createEventDispatcher();
     const graph_translation: number = 50;
@@ -242,6 +243,7 @@
         });
         // Enable keyboard manipulation
         graph.on('keydown', (e: IG6GraphEvent) => {
+            if (isFocused) return;
             keyMap[e.key] = e.type == 'keydown';
 
             let modifier: number = keyMap['Shift'] ? modifierStrength : 1;
