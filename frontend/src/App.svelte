@@ -413,7 +413,7 @@
     @tailwind components;
     @tailwind utilities;
     .show {
-        width: 320px;
+        width: 375px;
     }
     .move {
         margin-right: 350px;
