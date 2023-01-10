@@ -1,9 +1,18 @@
-<script lang="ts" context="module">
+<script lang="ts">
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch: Function = createEventDispatcher();
+
     export let value: string;
     export let placeholder: string;
-    export let isFocused: boolean = false;
-    const onFocus = () => (isFocused = true);
-    const onBlur = () => (isFocused = false);
+
+    const onFocus = (): void => {
+        dispatch('isFocused');
+    };
+
+    const onBlur = (): void => {
+        dispatch('isBlur');
+    };
 </script>
 
 <input

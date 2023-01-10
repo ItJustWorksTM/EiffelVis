@@ -3,10 +3,12 @@
     import G6, { Graph, IG6GraphEvent, Item, Node } from '@antv/g6';
     import type { TimeBarData } from '../uitypes';
     import { createEventDispatcher } from 'svelte';
-    import { isFocused } from './TextInput.svelte';
-
+    /*     import { isFocused } from './TextInput.svelte';
+     */
     const dispatch = createEventDispatcher();
     const graph_translation: number = 50;
+
+    export let isFocused: boolean;
 
     export let options = {};
     export let data = {};
