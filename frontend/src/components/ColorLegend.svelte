@@ -1,11 +1,11 @@
 <script lang="ts">
     export let styles;
-    import G6, { Graph } from "@antv/g6";
-    import { onMount } from "svelte";
-    import { createEventDispatcher } from "svelte";
-    import { defaultNode } from "../layout";
+    import G6, { Graph } from '@antv/g6';
+    import { onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
+    import { defaultNode } from '../layout';
     const options = {
-        container: "mountNode",
+        container: 'mountNode',
         width: 335,
         height: 210,
         workerEnabled: true,
@@ -16,7 +16,7 @@
     let data = {};
     let array = [];
     const loadNodeWithStyle = () => {
-        styles.map((event) => {
+        styles.map(event => {
             let node = {
                 id: event[0],
                 size: 10,
@@ -30,7 +30,7 @@
                     style: {
                         fill: event[1].Color,
                     },
-                    position: "bottom",
+                    position: 'bottom',
                     offset: 10,
                 },
             };
@@ -39,7 +39,7 @@
     };
     const loadDefaultNode = () => {
         let default_Node = {
-            id: "defaultNode",
+            id: 'defaultNode',
             size: 10,
             type: defaultNode.shape,
             style: {
@@ -51,7 +51,7 @@
                 style: {
                     fill: defaultNode.color,
                 },
-                position: "bottom",
+                position: 'bottom',
                 offset: 10,
             },
         };
@@ -65,17 +65,13 @@
     export const reset = () => {
         graph?.changeData({});
         graph?.render();
-        dispatch("nodeselected", null);
+        dispatch('nodeselected', null);
     };
 
     export const resizeGraph = () => {
         if (graph && container) {
-            const width = Number(
-                window.getComputedStyle(container).width.replace("px", "")
-            );
-            const height = Number(
-                window.getComputedStyle(container).height.replace("px", "")
-            );
+            const width = Number(window.getComputedStyle(container).width.replace('px', ''));
+            const height = Number(window.getComputedStyle(container).height.replace('px', ''));
             graph.changeSize(width, height);
         }
     };
@@ -92,8 +88,8 @@
             ...options,
             container,
         });
-        graph.on("nodeselectchange", (e) => {
-            dispatch("nodeselected", e), console.log(e);
+        graph.on('nodeselectchange', e => {
+            dispatch('nodeselected', e), console.log(e);
         });
         graph.changeData(data);
         resizeGraph();
@@ -105,9 +101,7 @@
 </script>
 
 <div class="flex flex-col w-full">
-    <div class="bg-base-200 text-base-content grid h-10 place-items-center">
-        Legend
-    </div>
+    <div class="bg-base-200 text-base-content grid h-10 place-items-center">Legend</div>
     <div bind:this={container} class="legend" />
 </div>
 
