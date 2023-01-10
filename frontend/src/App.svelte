@@ -12,10 +12,10 @@
     import { empty_fixed_event_filters, FixedQuery, fixed_query_to_norm } from './uitypes';
     import Settings from './components/settings/Settings.svelte';
 
-    /* Boolean to handle when a text field is focused to ignore keyboard shortcuts */
-    let isTextFieldFocused = false;
-
     export let connection: EiffelVisConnection;
+
+    /* Boolean to handle when a text field is focused to ignore keyboard shortcuts */
+    let isTextFieldFocused: boolean = false;
 
     let graph_elem: G6Graph = null;
     let active_stream: QueryStream = null;

@@ -6,11 +6,11 @@
     export let value: string;
     export let placeholder: string;
 
-    const onFocus = (): void => {
+    const onFocus: VoidFunction = (): void => {
         dispatch('isFocused');
     };
 
-    const onBlur = (): void => {
+    const onBlur: VoidFunction = (): void => {
         dispatch('isBlur');
     };
 </script>
