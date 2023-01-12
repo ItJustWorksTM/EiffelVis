@@ -2,6 +2,7 @@
     import type { RangeFilterBound } from '../apidefinition';
     import type { FixedQuery } from '../uitypes';
     import FilterWidget from './FilterWidget.svelte';
+    import Input from './TextInput.svelte';
 
     const range_modes: string[] = ['None', 'Time', 'Absolute', 'Ids'];
     const collection_modes: ('Forward' | 'AsRoots')[] = ['Forward', 'AsRoots'];
