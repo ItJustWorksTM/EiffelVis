@@ -1,6 +1,7 @@
 <script lang="ts">
-    export let values = [];
-    const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
+    import type { TemperateFilterArray } from '../uitypes';
+    export let values: TemperateFilterArray;
+    const filter_types: string[] = ['ID', 'Type', 'Source', 'Host', 'Tag'];
 </script>
 
 <div class="form-control">
@@ -15,10 +16,7 @@
         {#each values as value, i}
             <tr>
                 <td>
-                    <select
-                        class="select select-primary"
-                        bind:value={value.filterField}
-                    >
+                    <select class="select select-primary" bind:value={value.filterField}>
                         {#each filter_types as type}
                             <option>{type}</option>
                         {/each}
@@ -29,7 +27,7 @@
                         type="text"
                         placeholder={value.filterField}
                         bind:value={value.value}
-                        class="input input-sm input-bordered w-32 h-8"
+                        class="input input-sm input-bordered basis-2/3 h-8"
                     />
                 </td>
             </tr>

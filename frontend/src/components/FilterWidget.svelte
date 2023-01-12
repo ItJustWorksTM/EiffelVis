@@ -1,13 +1,12 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-    import type { FilterInput, TemperateFilterArray } from "../uitypes";
-    import LineInputList from "./LineInputList.svelte";
-    import Input from "./TextInput.svelte";
+    import type { FilterInput, TemperateFilterArray } from '../uitypes';
+    import LineInputList from './LineInputList.svelte';
 
-    const filter_types: string[] = ["ID", "Type", "Source", "Host", "Tag"];
+    const filter_types: string[] = ['ID', 'Type', 'Source', 'Host', 'Tag'];
 
     let selected = filter_types[0];
-    let inputValue = "";
+    let inputValue = '';
     export let tempFilterArray: TemperateFilterArray = [];
     const add_filter_to_TempFilterArray = () => {
         let newFilter = <FilterInput>{
@@ -18,7 +17,7 @@
             value: inputValue,
         };
         tempFilterArray = [...tempFilterArray, newFilter];
-        inputValue = "";
+        inputValue = '';
     };
 </script>
 
@@ -33,12 +32,12 @@
         type="text"
         placeholder={selected}
         bind:value={inputValue}
-        class="input input-sm input-bordered w-32 h-8"
+        class="input input-sm input-bordered basis-2/3 h-8"
     />
     <button
         class="btn btn-xs"
         on:click={() => add_filter_to_TempFilterArray()}
-        disabled={inputValue == ""}>+</button
+        disabled={inputValue == ''}>+</button
     >
 </div>
 

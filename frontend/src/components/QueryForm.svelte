@@ -7,20 +7,20 @@
         SourceName,
         Tag,
         Type,
-    } from "../apidefinition";
+    } from '../apidefinition';
     import {
         empty_fixed_event_filters,
         FilterType,
         FixedQuery,
         TemperateFilterArray,
-    } from "../uitypes";
-    import FilterWidget from "./FilterWidget.svelte";
+    } from '../uitypes';
+    import FilterWidget from './FilterWidget.svelte';
 
-    const range_modes: string[] = ["None", "Time", "Absolute", "Ids"];
-    const collection_modes: ("Forward" | "AsRoots")[] = ["Forward", "AsRoots"];
+    const range_modes: string[] = ['None', 'Time', 'Absolute', 'Ids'];
+    const collection_modes: ('Forward' | 'AsRoots')[] = ['Forward', 'AsRoots'];
 
-    let begin_mode: string = "None";
-    let end_mode: string = "None";
+    let begin_mode: string = 'None';
+    let end_mode: string = 'None';
 
     export let query: FixedQuery;
     export let event_filters_sets: TemperateFilterArray[];
@@ -30,19 +30,19 @@
     let types: EventFilter<Type>[] = [];
     let sourcehosts: EventFilter<SourceHost>[] = [];
     let sourcenames: EventFilter<SourceName>[] = [];
-    let id: EventFilter<Id> = { rev: false, pred: { type: "Id", ids: [] } };
-    let tag: EventFilter<Tag> = { rev: false, pred: { type: "Tag", tags: [] } };
+    let id: EventFilter<Id> = { rev: false, pred: { type: 'Id', ids: [] } };
+    let tag: EventFilter<Tag> = { rev: false, pred: { type: 'Tag', tags: [] } };
     let type: EventFilter<Type> = {
         rev: false,
-        pred: { type: "Type", names: [] },
+        pred: { type: 'Type', names: [] },
     };
     let sourcehost: EventFilter<SourceHost> = {
         rev: false,
-        pred: { type: "SourceHost", hosts: [] },
+        pred: { type: 'SourceHost', hosts: [] },
     };
     let sourcename: EventFilter<SourceName> = {
         rev: false,
-        pred: { type: "SourceName", names: [] },
+        pred: { type: 'SourceName', names: [] },
     };
     export let select_filter_set = 0;
     $: {
@@ -55,7 +55,7 @@
             tags = [];
             sourcehosts = [];
             sourcenames = [];
-            event_filters_sets[value].forEach((filter) => {
+            event_filters_sets[value].forEach(filter => {
                 if (filter.active) {
                     switch (filter.filterField) {
                         case FilterType.ID:
@@ -114,10 +114,7 @@
             query.event_filters[0] = empty_fixed_event_filters();
         }
     }
-    const mkk = (
-        type: "Time" | "Absolute" | "Ids",
-        val: string
-    ): RangeFilterBound => {
+    const mkk = (type: 'Time' | 'Absolute' | 'Ids', val: string): RangeFilterBound => {
         switch (type) {
             case 'Time':
                 return { type, val: parseInt(val) };
@@ -169,10 +166,7 @@
                     select_filter_set = i;
                 }}
             >
-                <FilterWidget
-                    bind:this={filterWidget}
-                    bind:tempFilterArray={filter}
-                />
+                <FilterWidget bind:this={filterWidget} bind:tempFilterArray={filter} />
                 {#if i != 0}
                     <button
                         class="btn overflow-auto w-full mt-2"
