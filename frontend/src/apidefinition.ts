@@ -159,4 +159,6 @@ export interface Query {
 export const query_eq = (lhs: Query, rhs: Query): boolean =>
     range_filter_eq(lhs.range_filter, rhs.range_filter) &&
     collection_eq(lhs.collection, rhs.collection) &&
-    lhs.event_filters.every((a) => rhs.event_filters.some((b) => a.every((c) => b.some((d) => event_filter_eq(c, d)))))
+    lhs.event_filters.every(a =>
+        rhs.event_filters.some(b => a.every(c => b.some(d => event_filter_eq(c, d)))),
+    );

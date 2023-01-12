@@ -41,33 +41,33 @@
   let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
 
-  let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
+    let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
 
   let qhistory: FixedQuery[] = [];
 
   let appKeyMap: Object = {};
 
-  let current_query: FixedQuery = {
-    range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
-    event_filters: [empty_fixed_event_filters()],
-    collection: { type: "Forward" },
-  };
+    let current_query: FixedQuery = {
+        range_filter: { begin: { type: 'Absolute', val: -500 }, end: null },
+        event_filters: [empty_fixed_event_filters()],
+        collection: { type: 'Forward' },
+    };
 
-  $: current_query_changed =
-    qhistory.length > 0 &&
-    !query_eq(
-      fixed_query_to_norm(current_query),
-      fixed_query_to_norm(qhistory[qhistory.length - 1])
-    );
+    $: current_query_changed =
+        qhistory.length > 0 &&
+        !query_eq(
+            fixed_query_to_norm(current_query),
+            fixed_query_to_norm(qhistory[qhistory.length - 1]),
+        );
 
-  let graph_options: GraphSettings = {
-    offset: 0,
-    time_diff: 1000,
-    y_scale: 0.99,
-    x_sep: 60,
-    y_sep: 60,
-    hue: 360,
-  };
+    let graph_options: GraphSettings = {
+        offset: 0,
+        time_diff: 1000,
+        y_scale: 0.99,
+        x_sep: 60,
+        y_sep: 60,
+        hue: 360,
+    };
 
   $: {
     if (graph_elem) {
@@ -116,13 +116,13 @@
     interval = setInterval(displayInfoMessage, ms);
   };
 
-  const consume_query = async () => {
-    const layout = new StatefulLayout();
-    awaiting_query_request = true;
-    const iter = await active_stream.iter();
-    awaiting_query_request = false;
-    graph_elem.reset();
-    let once = true;
+    const consume_query = async () => {
+        const layout = new StatefulLayout();
+        awaiting_query_request = true;
+        const iter = await active_stream.iter();
+        awaiting_query_request = false;
+        graph_elem.reset();
+        let once = true;
 
     for await (const event of iter) {
       layout.apply(event, graph_options);
@@ -147,11 +147,11 @@
       recievedNewNode = true;
       show_message = false;
 
-      // TODO: Find a better way to do this
-      if (once) {
-        graph_elem.focusNode(event.id);
-        once = false;
-      }
+            // TODO: Find a better way to do this
+            if (once) {
+                graph_elem.focusNode(event.id);
+                once = false;
+            }
 
       legend = layout.getNodeStyle();
     }
@@ -161,31 +161,26 @@
     resetTimer(); // method to reset timer
   };
 
-  const submit_state_query = () => submit_query(current_query);
+    const submit_state_query = () => submit_query(current_query);
 
-  const submit_query = (fquery: FixedQuery) => {
-    const new_query = fixed_query_to_norm(fquery);
-    active_stream = (() => {
-      const cached = query_cache.find((v) =>
-        query_eq(new_query, fixed_query_to_norm(v.query))
-      );
-      if (cached) {
-        return cached.stream;
-      } else {
-        const ret = new QueryStream(connection, deep_copy(new_query));
-        query_cache = [
-          ...query_cache,
-          { stream: ret, query: deep_copy(fquery) },
-        ];
-        return ret;
-      }
-    })();
+    const submit_query = (fquery: FixedQuery) => {
+        const new_query = fixed_query_to_norm(fquery);
+        active_stream = (() => {
+            const cached = query_cache.find(v => query_eq(new_query, fixed_query_to_norm(v.query)));
+            if (cached) {
+                return cached.stream;
+            } else {
+                const ret = new QueryStream(connection, deep_copy(new_query));
+                query_cache = [...query_cache, { stream: ret, query: deep_copy(fquery) }];
+                return ret;
+            }
+        })();
 
-    consume_query();
-    qhistory = [...qhistory, deep_copy(fquery)];
-    show_timebar = false;
-    graph_elem.updateTimeBar(show_timebar);
-  };
+        consume_query();
+        qhistory = [...qhistory, deep_copy(fquery)];
+        show_timebar = false;
+        graph_elem.updateTimeBar(show_timebar);
+    };
 
   const add_filter_set = () => {
     if (event_filters_sets) {
@@ -196,20 +191,18 @@
     }
   };
 
-  // TODO: add loading for this
-  const on_node_selected = async (e: any) => {
-    if (e.detail?.target) {
-      selected_node = await connection.fetch_node(
-        e.detail.target._cfg.model.id
-      );
-    } else {
-      selected_node = null;
-    }
-  };
+    // TODO: add loading for this
+    const on_node_selected = async (e: any) => {
+        if (e.detail?.target) {
+            selected_node = await connection.fetch_node(e.detail.target._cfg.model.id);
+        } else {
+            selected_node = null;
+        }
+    };
 
-  const use_selected_as_root = () => {
-    current_query.collection = { type: "AsRoots" };
-    current_query.range_filter = { begin: null, end: null };
+    const use_selected_as_root = () => {
+        current_query.collection = { type: 'AsRoots' };
+        current_query.range_filter = { begin: null, end: null };
 
     const filters = empty_fixed_event_filters();
     filters.ids[0] = {
@@ -242,17 +235,17 @@
     event_filters_sets[select_filter_set] = target_filter_set;
   };
 
-  const reset_graph_options = () => {
-    graph_options = {
-      offset: 0,
-      time_diff: 1000,
-      y_scale: 0.99,
-      x_sep: 60,
-      y_sep: 60,
-      hue: 360,
+    const reset_graph_options = () => {
+        graph_options = {
+            offset: 0,
+            time_diff: 1000,
+            y_scale: 0.99,
+            x_sep: 60,
+            y_sep: 60,
+            hue: 360,
+        };
+        consume_query();
     };
-    consume_query();
-  };
 
   const toggleSettings = () => {
     show_settings = !show_settings;
@@ -451,23 +444,23 @@
 </div>
 
 <style lang="postcss" global>
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-  .show {
-    width: 320px;
-  }
-  .move {
-    margin-right: 350px;
-  }
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    .show {
+        width: 375px;
+    }
+    .move {
+        margin-right: 350px;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-  /* Firefox */
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
+    /* Firefox */
+    input[type='number'] {
+        -moz-appearance: textfield;
+    }
 </style>

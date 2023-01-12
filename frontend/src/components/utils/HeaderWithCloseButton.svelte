@@ -6,7 +6,7 @@
     export let title: String;
 </script>
 
-<div class="flex bg-base-200 p-3 items-center">
+<div class="flex bg-base-200 p-3 items-center rounded-lg">
     <p class="mr-auto text-4xl">{title}</p>
     <!-- https://daisyui.com/components/button/ -> circle button -->
     <button

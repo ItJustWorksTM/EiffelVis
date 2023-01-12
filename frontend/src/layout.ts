@@ -1,5 +1,7 @@
 import config from './config.json';
 import type { Event } from './apidefinition';
+import config from './config.json';
+import type { Event } from './apidefinition';
 export interface GraphSettings {
   offset: number;
   time_diff: number;
@@ -71,6 +73,9 @@ export class StatefulLayout {
       this.posy += graphOptions.y_sep;
       this.timee = tempTime;
     }
+  }
+  getNodeShape(): Map<string, string> {
+    return this.shapes;
   }
 
   nodeColor(eventType: string): string {
