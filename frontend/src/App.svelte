@@ -14,6 +14,9 @@
 
     export let connection: EiffelVisConnection;
 
+    /* Boolean to handle when a text field is focused to ignore keyboard shortcuts */
+    let isTextFieldFocused: boolean = false;
+
     let graph_elem: G6Graph = null;
     let active_stream: QueryStream = null;
     let awaiting_query_request: boolean = false;
@@ -275,6 +278,8 @@
     };
 
     const handleKeyDown = (e: KeyboardEvent): void => {
+        if (isTextFieldFocused) return;
+
         appKeyMap[e.key] = e.type == 'keydown';
 
         if (
@@ -361,6 +366,12 @@
             submit_state_query_placeholder={submit_state_query}
             {selected_node}
             {styles}
+            on:isBlur={() => {
+                isTextFieldFocused = false;
+            }}
+            on:isFocused={() => {
+                isTextFieldFocused = true;
+            }}
         />
     </div>
     <div class="flex flex-col fixed z-0 items-center">
@@ -375,6 +386,7 @@
             bind:nonInteractiveState
             {options}
             data={{}}
+            bind:isFocused={isTextFieldFocused}
         />
     </div>
     <div

@@ -2,6 +2,7 @@
     import type { RangeFilterBound } from '../apidefinition';
     import type { FixedQuery } from '../uitypes';
     import FilterWidget from './FilterWidget.svelte';
+    import Input from './TextInput.svelte';
 
     const range_modes: string[] = ['None', 'Time', 'Absolute', 'Ids'];
     const collection_modes: ('Forward' | 'AsRoots')[] = ['Forward', 'AsRoots'];
@@ -49,6 +50,7 @@
 
 <div>
     {#each query.event_filters as filter, i}
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <div
             tabindex="0"
             class="grow collapse w-full border rounded-box border-base-300 collapse-arrow"
@@ -64,6 +66,8 @@
                     bind:types={filter.types}
                     bind:sourcehosts={filter.sourcehosts}
                     bind:sourcenames={filter.sourcenames}
+                    on:isFocused
+                    on:isBlur
                 />
             </div>
         </div>

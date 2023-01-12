@@ -27,6 +27,7 @@
 <div class="w-full h-full flex flex-col">
     <div class="tabs tabs-boxed">
         {#each filter_types as type}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <a
                 class="tab"
                 class:tab-active={active_filter == type}
@@ -40,7 +41,7 @@
             <input type="checkbox" class="toggle toggle-primary" bind:checked={ids.rev} />
         </label>
         <LineInputList bind:values={ids.pred.ids} let:index={i}>
-            <Input placeholder={'uuid'} bind:value={ids.pred.ids[i]} />
+            <Input placeholder={'uuid'} bind:value={ids.pred.ids[i]} on:isFocused on:isBlur />
         </LineInputList>
         <button class="btn btn-xs w-full" on:click={() => (ids.pred.ids = [...ids.pred.ids, ''])}
             >+</button
@@ -53,7 +54,12 @@
             <input type="checkbox" class="toggle toggle-primary" bind:checked={types.rev} />
         </label>
         <LineInputList bind:values={types.pred.names} let:index={i}>
-            <Input placeholder={'type name'} bind:value={types.pred.names[i].value} />
+            <Input
+                placeholder={'type name'}
+                bind:value={types.pred.names[i].value}
+                on:isFocused
+                on:isBlur
+            />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -68,7 +74,12 @@
             <input type="checkbox" class="toggle toggle-primary" bind:checked={sourcenames.rev} />
         </label>
         <LineInputList bind:values={sourcenames.pred.names} let:index={i}>
-            <Input placeholder={'source name'} bind:value={sourcenames.pred.names[i].value} />
+            <Input
+                placeholder={'source name'}
+                bind:value={sourcenames.pred.names[i].value}
+                on:isFocused
+                on:isBlur
+            />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -84,7 +95,12 @@
             <input type="checkbox" class="toggle toggle-primary" bind:checked={sourcehosts.rev} />
         </label>
         <LineInputList values={sourcehosts.pred.hosts} let:index={i}>
-            <Input placeholder={'host name'} bind:value={sourcehosts.pred.hosts[i].value} />
+            <Input
+                placeholder={'host name'}
+                bind:value={sourcehosts.pred.hosts[i].value}
+                on:isFocused
+                on:isBlur
+            />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
@@ -100,7 +116,12 @@
             <input type="checkbox" class="toggle toggle-primary" bind:checked={tags.rev} />
         </label>
         <LineInputList bind:values={tags.pred.tags} let:index={i}>
-            <Input placeholder={'tag name'} bind:value={tags.pred.tags[i].value} />
+            <Input
+                placeholder={'tag name'}
+                bind:value={tags.pred.tags[i].value}
+                on:isFocused
+                on:isBlur
+            />
         </LineInputList>
         <button
             class="btn btn-xs w-full"
