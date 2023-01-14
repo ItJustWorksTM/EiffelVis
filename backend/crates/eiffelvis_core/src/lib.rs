@@ -21,3 +21,5 @@ pub mod query;
 
 /// Generic tracked graph query functionality
 pub mod tracked_query;
+
+pub mod chunked_index_map;
