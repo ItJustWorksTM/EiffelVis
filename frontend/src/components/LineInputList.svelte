@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TemperateFilterArray } from '../uitypes';
+    import { FilterType, TemperateFilterArray } from '../uitypes';
     export let values: TemperateFilterArray;
     const filter_types: string[] = ['ID', 'Type', 'Source', 'Host', 'Tag'];
 </script>
@@ -53,6 +53,7 @@
                     <input
                         type="checkbox"
                         class="toggle toggle-md toggle-primary flex-none "
+                        disabled={value.filterField == FilterType.ID}
                         bind:checked={value.isWildCard}
                     />
                 </td>
