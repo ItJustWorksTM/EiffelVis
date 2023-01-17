@@ -216,7 +216,7 @@
     const add_selected_node_as_root_to_filter = () => {
         let new_filter = <FilterInput>{
             active: true,
-            isWildCard: true,
+            isWildCard: false,
             exclude: false,
             filterField: FilterType.ID,
             value: selected_node.meta.id,
