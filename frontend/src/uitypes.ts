@@ -16,35 +16,20 @@ export interface TimeBarData {
 }
 
 export interface FixedEventFilters {
-    ids: EventFilter<Id>;
-    tags: EventFilter<Tag>;
-    types: EventFilter<Type>;
-    sourcehosts: EventFilter<SourceHost>;
-    sourcenames: EventFilter<SourceName>;
+    ids: EventFilter<Id>[];
+    tags: EventFilter<Tag>[];
+    types: EventFilter<Type>[];
+    sourcehosts: EventFilter<SourceHost>[];
+    sourcenames: EventFilter<SourceName>[];
 }
 
 export const empty_fixed_event_filters = (): FixedEventFilters => {
     return {
-        ids: {
-            rev: false,
-            pred: { type: 'Id', ids: [] },
-        },
-        tags: {
-            rev: false,
-            pred: { type: 'Tag', tags: [] },
-        },
-        types: {
-            rev: false,
-            pred: { type: 'Type', names: [] },
-        },
-        sourcehosts: {
-            rev: false,
-            pred: { type: 'SourceHost', hosts: [] },
-        },
-        sourcenames: {
-            rev: false,
-            pred: { type: 'SourceName', names: [] },
-        },
+        ids: [],
+        tags: [],
+        types: [],
+        sourcehosts: [],
+        sourcenames: [],
     };
 };
 
@@ -65,15 +50,19 @@ export const fixed_query_to_norm = ({
             .map(v => {
                 const ret = [];
 
-                const push_if = (arr: any[], obj: any) => {
-                    if (arr.length > 0) ret.push(obj);
+                const push_if = (arr: any[]) => {
+                    if (arr.length > 0) {
+                        arr.map(filter => {
+                            ret.push(filter);
+                        });
+                    }
                 };
 
-                push_if(v.ids.pred.ids, v.ids);
-                push_if(v.tags.pred.tags, v.tags);
-                push_if(v.types.pred.names, v.types);
-                push_if(v.sourcehosts.pred.hosts, v.sourcehosts);
-                push_if(v.sourcenames.pred.names, v.sourcenames);
+                push_if(v.ids);
+                push_if(v.tags);
+                push_if(v.types);
+                push_if(v.sourcehosts);
+                push_if(v.sourcenames);
 
                 return ret;
             })
@@ -81,3 +70,20 @@ export const fixed_query_to_norm = ({
         collection,
     };
 };
+export enum FilterType {
+    ID = 'ID',
+    Host = 'Host',
+    Source = 'Source',
+    Tag = 'Tag',
+    Type = 'Type',
+}
+
+export interface FilterInput {
+    active: boolean;
+    exclude: boolean;
+    isWildCard: boolean;
+    filterField: FilterType;
+    value: string;
+}
+
+export type TemperateFilterArray = FilterInput[];

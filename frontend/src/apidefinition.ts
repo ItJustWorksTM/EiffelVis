@@ -1,4 +1,7 @@
 /* eslint-disable camelcase */
+
+import type { TemperateFilterArray } from './uitypes';
+
 // Interally tagged type for types that are part of a enum
 type TypeTag<T, K> = K & { type: T };
 
@@ -78,7 +81,7 @@ export const event_filter_type_eq = (lhs: EventFilterType, rhs: EventFilterType)
     ((): boolean => {
         switch (lhs.type) {
             case 'Id':
-                return lhs.ids.every(val => (rhs as Id).ids.includes(val));
+                return lhs.ids.every(val => (rhs as Id).ids.every(rhs_val => val == rhs_val));
             case 'SourceHost':
                 return lhs.hosts.every(val =>
                     (rhs as SourceHost).hosts.every(rhs_val => string_compare_eq(val, rhs_val)),

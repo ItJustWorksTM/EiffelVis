@@ -13,7 +13,7 @@ EiffelVis is a scalable Eiffel pipeline traffic visualization stack built on Rus
 
 The Eiffel Protocol consists of multiple [Eiffel Events](https://github.com/eiffel-community/eiffel/tree/master/eiffel-vocabulary) which each have a defined purpose and structure. In a typical CI pipeline which uses the Eiffel Protocol, there can be hundreds of events which are generated over a short time period. Visualizing large amounts of data such as thousands of Eiffel Events can be difficult, and that's where EiffelVis stands out. EiffelVis is a data visualization and data manipulation tool for Eiffel Events.
 
-# Useful Links:
+# Useful Links
 
 - [How to contribute](./CONTRIBUTING.md)
 - [Issue tracker](https://github.com/ItJustWorksTM/EiffelVis/issues)
@@ -33,21 +33,28 @@ These instructions are an example of how you may run EiffelVis locally.
 ## Installation
 
 1. Clone the repository using SSH (or HTTP)
+
    ```bash
    git clone git@github.com:ItJustWorksTM/EiffelVis.git
    ```
+
 2. After going to the root folder where the repository was cloned, install dependencies for the frontend
+
    ```bash
    cd EiffelVis/frontend
    npm install
    ```
+
 3. Compile and run the frontend
+
    ```bash
    npm run dev
    ```
+
 4. The frontend will now be running on port `localhost:8080`. If you go to this address in your browser, you should be able to view the EiffelVis client. As you will see, there are no events and there is no graph. To see events we need to set up the backend through which we will also load the graph data.
 
 5. As the client will be running in the current terminal, open a new terminal to run the backend. Go to the root directory of EiffelVis and run the commands
+
    ```bash
    cd EiffelVis/backend
    cargo run -- --help
@@ -77,14 +84,14 @@ Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
 
 # Event Sender and testing instructions (for default rabbitmq configuration)
 
-1. start your rabbitmq server 
-  `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac. 
+1. start your rabbitmq server
+  `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac.
 2. If not activated, activate the management pluggin by running `rabbitmq-plugins enable rabbitmq_management`
 3. go to `http://localhost:15672`to enter the rabbitMQ management page. (default credentials are username & password: `guest`)
 4. go to the queue panel and create a new queue. The queue has to use the same name as the one you are going to use with the backend (default `hello`)
 5 go to the exchange panel and select `amq.fanout`in the list.
-6. Click on `Bindings`and add the binding of this exchange to the queue using the same name as step 3. 
+6. Click on `Bindings`and add the binding of this exchange to the queue using the same name as step 3.
 7. go into `EiffelVis/backend/tools/event_sender`and run the command `cargo run -- -r <any_routing_key>` (you can also add other options, run to `cargo run -- --help`for more info)
 8. go into `EiffelVis/backend`and run `cargo run`
 9. go into `EiffelVis/frontend`and run `npm run dev`
-10. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph. 
+10. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph.

@@ -9,11 +9,21 @@
     import { FullEvent, query_eq } from './apidefinition';
     import { deep_copy } from './utils';
     import config from './config.json';
-    import { empty_fixed_event_filters, FixedQuery, fixed_query_to_norm } from './uitypes';
+    import {
+        empty_fixed_event_filters,
+        FilterInput,
+        FilterType,
+        FixedQuery,
+        fixed_query_to_norm,
+        TemperateFilterArray,
+    } from './uitypes';
     import Settings from './components/settings/Settings.svelte';
 
     export let connection: EiffelVisConnection;
-
+    let event_filters_sets: TemperateFilterArray[] = [[]];
+    $: event_filters_sets;
+    let select_filter_set = 0;
+    $: select_filter_set;
     let graph_elem: G6Graph = null;
     let active_stream: QueryStream = null;
     let awaiting_query_request: boolean = false;
@@ -172,7 +182,14 @@
         graph_elem.updateTimeBar(show_timebar);
     };
 
-    const add_filter = () => {};
+    const add_filter_set = () => {
+        if (event_filters_sets) {
+            let empty_filter_set = [];
+            event_filters_sets.push(empty_filter_set);
+        } else {
+            event_filters_sets = [];
+        }
+    };
 
     // TODO: add loading for this
     const on_node_selected = async (e: any) => {
@@ -188,10 +205,34 @@
         current_query.range_filter = { begin: null, end: null };
 
         const filters = empty_fixed_event_filters();
-        filters.ids.pred.ids = [selected_node.meta.id];
+        filters.ids[0] = {
+            rev: false,
+            pred: { type: 'Id', ids: [selected_node.meta.id] },
+        };
         current_query.event_filters = [filters];
 
-        submit_state_query();
+        add_selected_node_as_root_to_filter();
+    };
+    const add_selected_node_as_root_to_filter = () => {
+        let new_filter = <FilterInput>{
+            active: true,
+            isWildCard: false,
+            exclude: false,
+            filterField: FilterType.ID,
+            value: selected_node.meta.id,
+        };
+        console.log(select_filter_set);
+        let target_filter_set = event_filters_sets[select_filter_set];
+        target_filter_set.forEach((filter, i) => {
+            if (filter.filterField == FilterType.ID) {
+                target_filter_set.splice(i, 1);
+                target_filter_set = [...target_filter_set];
+                console.log(target_filter_set);
+            }
+        });
+        console.log(target_filter_set);
+        target_filter_set = [...target_filter_set, new_filter];
+        event_filters_sets[select_filter_set] = target_filter_set;
     };
 
     const reset_graph_options = () => {
@@ -351,16 +392,18 @@
         <!-- panels  -->
         <Panel
             {show_filter_panel}
+            bind:event_filters_sets
             show_legend_placeholder={show_legend}
             {use_selected_as_root}
-            {current_query}
-            {current_query_changed}
-            {add_filter}
-            {qhistory}
-            {awaiting_query_request}
+            bind:current_query
+            bind:current_query_changed
+            {add_filter_set}
+            bind:qhistory
+            bind:awaiting_query_request
             submit_state_query_placeholder={submit_state_query}
             {selected_node}
             {styles}
+            bind:select_filter_set
         />
     </div>
     <div class="flex flex-col fixed z-0 items-center">
@@ -381,7 +424,7 @@
         class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg"
     >
         <div
-            class="pointer-events-auto rounded-lg w-3/6 min-w-min h-3/6 relative"
+            class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
             class:hidden={!show_settings}
         >
             <Settings

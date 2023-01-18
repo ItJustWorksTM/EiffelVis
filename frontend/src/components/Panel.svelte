@@ -1,16 +1,18 @@
 <script lang="ts">
-    import GraphOptions from './GraphOptions.svelte';
     import ColorLegend from './ColorLegend.svelte';
     import EventDetail from './EventDetail.svelte';
     import QueryForm from './QueryForm.svelte';
-    import { FixedQuery, fixed_query_to_norm } from '../uitypes';
+    import { FixedQuery, fixed_query_to_norm, TemperateFilterArray } from '../uitypes';
     import { FullEvent, query_eq } from '../apidefinition';
 
     //Boolean variables
     export let show_legend_placeholder: boolean;
     export let awaiting_query_request: boolean;
     export let current_query_changed: boolean;
+    export let event_filters_sets: TemperateFilterArray[];
     export let show_filter_panel: boolean;
+    export let select_filter_set = 0;
+    $: event_filters_sets[select_filter_set];
 
     $: current_query_changed =
         qhistory.length > 0 &&
@@ -21,7 +23,7 @@
 
     //Object variables; used for onClick actions.
     export let use_selected_as_root: () => void;
-    export let add_filter: () => void;
+    export let add_filter_set: () => void;
     export let submit_state_query_placeholder: () => void;
     export let current_query: FixedQuery;
     export let qhistory: FixedQuery[];
@@ -38,7 +40,7 @@
         <ColorLegend {styles} />
     </div>
     <div
-        class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg overflow-y-auto"
+        class="mt-auto pointer-events-auto bg-base-200 shadow-md rounded-r-lg"
         class:show={show_filter_panel}
         class:hidden={!show_filter_panel}
     >
@@ -46,11 +48,11 @@
             <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
                 <EventDetail {selected_node} on:useroot={use_selected_as_root} />
             </div>
-            <h1 class="text-lg py-2">Filter Options</h1>
-            <QueryForm bind:query={current_query} />
+            <h1 class="text-lg py-2">Filter Options:</h1>
+            <QueryForm bind:query={current_query} bind:event_filters_sets bind:select_filter_set />
             <div class="btn-group w-full flex flex-row mt-2">
-                <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
-                    + new filter</button
+                <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter_set}>
+                    + filter set</button
                 >
                 <button
                     class="btn btn-sm btn-primary basis-1/3"
@@ -65,8 +67,12 @@
                 <button
                     class="btn btn-sm btn-primary basis-1/3"
                     class:loading={awaiting_query_request}
-                    disabled={awaiting_query_request || !current_query_changed}
-                    on:click={submit_state_query_placeholder}>submit</button
+                    disabled={awaiting_query_request ||
+                        (!current_query_changed &&
+                            event_filters_sets[select_filter_set].length == 0)}
+                    on:click={() => {
+                        submit_state_query_placeholder();
+                    }}>submit</button
                 >
             </div>
         </div>
