@@ -8,9 +8,9 @@
     <table>
         <thead>
             <tr>
-                <th align="center"> Field </th>
-                <th align="center" colspan="2"> Value </th>
-                <th />
+                <th class="w-4/13" align="center"> Field </th>
+                <th class="w-8/13" align="center" colspan="2"> Value </th>
+                <th class="w-1/13"><div class="w-4" /></th>
             </tr>
         </thead>
         {#each values as value, i}
